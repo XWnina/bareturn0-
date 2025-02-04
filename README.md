@@ -28,6 +28,23 @@
 - **JetBrains Rider Editor**
 - **Visual Studio Community**
   *⚠️ 注意：Visual Studio Community 不是 VS Code (Visual Studio Code)*
+### 🛠 设置外部代码编辑器（重要！）
+
+如果你的项目使用 **VS Code** 或 **Rider**，但打开 C# 文件时 Unity 仍然使用默认的 **MonoDevelop** 或错误的 IDE，需要进行以下设置：
+
+1. 进入 **Edit → Preferences → External Tools**  
+2. 在 **External Script Editor** 里选择：
+   - **Visual Studio Code (code)**
+   - **JetBrains Rider**
+   - **Visual Studio (Community/Professional)**
+3. 勾选 **Generate .csproj files for:**  
+   ✅ Embedded packages  
+   ✅ Local packages  
+   ✅ Registry packages  
+   ✅ Git packages  
+   ✅ Built-in packages  
+
+这样，Unity 才能正确生成 **.csproj** 文件，确保代码补全正常。 ✅
 
 ---
 
@@ -44,14 +61,14 @@
 ### 3️⃣ 安装依赖
 下载完 Node.js 后，进入后端根目录：
 ```bash
-cd bareturn0-backend
+cd backend_express
 ```
 安装依赖：
 ```bash
 npm install
 ```
 ### 4️⃣ 测试后端是否正常运行
-在bareturn0-backend文件夹下运行
+在backend_express文件夹下运行
 ```bash
 npm start
 ```
