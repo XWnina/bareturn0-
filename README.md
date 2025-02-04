@@ -1,3 +1,65 @@
-# temp407407407
+# 🚀 **bareturn0: 基于 Unity 前端 + Node.js + Express + MongoDB 的后端 API**
 
-test123
+## 📦 技术栈
+
+| **技术**       | **版本**     |
+|--------------|------------|
+| **Unity**   | `6`        |
+| **Node.js** | `v22.13.1` |
+| **Express.js** | `^4.21.2` |
+| **MongoDB**  | `未知`     |
+
+---
+
+## 📌 bareturn0_unity
+
+### 1️⃣ 下载 Unity Hub
+🔗 [Unity Hub 下载地址](https://unity.com/download)
+
+### 2️⃣ 下载 Unity 6
+打开 Unity Hub，下载安装 Unity 6。
+
+### 3️⃣ 在 Unity 中打开项目
+1. 打开 **Unity Hub**
+2. 点击 `"Open"` 选择项目目录
+
+### 4️⃣ 选择 Unity 代码编辑器
+建议使用：
+- **JetBrains Rider Editor**
+- **Visual Studio Community**
+  *⚠️ 注意：Visual Studio Community 不是 VS Code (Visual Studio Code)*
+
+---
+
+## 📌 bareturn0-backend
+
+### 1️⃣ 选择 Express.js（Node.js）代码编辑器
+推荐使用：
+- **Visual Studio Code (VS Code)**
+
+### 2️⃣ 下载 Node.js
+🔗 [Node.js 下载地址](https://nodejs.org/en)
+请下载 **v22.13.1**（Node.js LTS 版本）
+
+### 3️⃣ 安装依赖
+下载完 Node.js 后，进入后端根目录：
+```bash
+cd bareturn0-backend
+```
+安装依赖：
+```bash
+npm install
+```
+### 4️⃣ 测试后端是否正常运行
+在bareturn0-backend文件夹下运行
+```bash
+npm start
+```
+然后会显示
+```bash
+> backend_express@1.0.0 start
+> node src/app.js
+Server is running on http://localhost:3000
+```
+打开浏览器输入: http://localhost:3000
+网页显示：Hello, Bareturn0 Backend!说明后端运行正常
