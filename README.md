@@ -32,12 +32,28 @@
 
 如果你的项目使用 **VS Code** 或 **Rider** 或**Visual Studio Community**，但打开 C# 文件时 Unity 仍然使用默认的 **MonoDevelop** 或错误的 IDE，需要进行以下设置：
 
+#### mac:
 1. 进入 **unity → setting → External Tools**  
 2. 在 **External Script Editor** 里选择：
    - **Visual Studio Code (code)**
    - **JetBrains Rider**
    - **Visual Studio (Community/Professional)**
+
+#### Windows:
+1. 进入 **Edit → Preferences → External Tools**  
+2. 在 **External Script Editor** 里选择：
+   - **Visual Studio Code (code)**
+   - **JetBrains Rider**
+   - **Visual Studio (Community/Professional)**
+3. 勾选 **Generate .csproj files for:**  
+   ✅ Embedded packages  
+   ✅ Local packages  
+   ✅ Registry packages  
+   ✅ Git packages  
+   ✅ Built-in packages  
+
 这样，Unity 才能正确生成 **.csproj** 文件，确保代码补全正常。 ✅
+
 
 ---
 
