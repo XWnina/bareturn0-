@@ -90,8 +90,135 @@ Server is running on http://localhost:3000
 打开浏览器输入: http://localhost:3000
 网页显示：Hello, Bareturn0 Backend!说明后端运行正常
 
-# 🛠 后端代码结构（只是个例子大概说一下每个文件夹是干嘛的，目前src下面的文件夹基本是空的）
+# 🛠 前后项目结构
+## 前端unity
 
+本项目遵循标准的 Unity 目录结构，以保持文件的整洁和组织性。
+
+### 📁 Assets
+`Assets/` 目录是 Unity 项目的主资源存放地。它包含以下子目录：
+
+#### 📂 Animations
+存放 **动画** 相关文件，包括：
+- `.anim`（动画剪辑）
+- `.controller`（动画状态机）
+- `.overrideController`（动画重写控制器）
+
+---
+
+#### 📂 Audio
+存放 **音频资源**，进一步分为：
+- 📂 `Music` - 背景音乐文件（`*.mp3`, `*.wav` 等）
+- 📂 `SFX` - 音效文件，如按钮点击、环境音等
+
+---
+
+#### 📂 Editor
+存放 **Unity 编辑器扩展脚本**。此文件夹中的代码 **仅在编辑器中运行**，不会影响游戏运行时。
+
+---
+
+#### 📂 Fonts
+存放 **字体文件**（`.ttf`, `.otf`）。
+
+---
+
+#### 📂 Materials
+存放 **材质（Material）**，用于定义游戏对象的外观。
+
+---
+
+#### 📂 Models
+存放 **3D 模型**，进一步分为：
+- 📂 `Characters` - 角色模型
+- 📂 `Props` - 道具和场景物件
+
+支持的格式包括：
+- `.fbx`
+- `.obj`
+- `.blend`
+
+---
+
+#### 📂 Plugins
+存放 **第三方插件** 或 **原生插件（Native Plugins）**。
+
+---
+
+#### 📂 Prefabs
+存放 **预制体（Prefab）**，用于重复使用的游戏对象，如：
+- 角色
+- UI 界面组件
+- 物品/道具
+
+---
+
+#### 📂 Resources
+存放 **代码动态加载的资源**，例如：
+- 通过 `Resources.Load()` 加载的音频、图片、JSON 数据等
+
+⚠️ **注意**：`Resources` 目录下的资源会被打包到最终的构建文件中，使用时要谨慎，以免影响性能。
+
+---
+
+#### 📂 Scenes
+存放 **Unity 场景（`.unity` 文件）**，如：
+- `MainMenu.unity` - 主菜单
+- `Level1.unity` - 关卡 1
+- `Level2.unity` - 关卡 2
+
+---
+
+#### 📂 Scripts
+存放 **C# 脚本**，进一步分为：
+- 📂 `Managers` - 游戏管理器（如 `GameManager.cs`）
+- 📂 `Player` - 玩家控制相关脚本
+- 📂 `UI` - UI 交互相关脚本
+
+---
+
+#### 📂 StreamingAssets
+存放 **流式资源（Streaming Assets）**，如：
+- 视频（`*.mp4`）
+- 配置文件（`*.json`）
+- 其他需要在运行时直接访问的文件
+
+💡 **注意**：`StreamingAssets` 中的文件不会被 Unity 压缩，会原样存储到最终构建文件中。
+
+---
+
+#### 📂 Textures
+存放 **图片纹理**（`*.png`, `*.jpg`, `*.tga` 等）。
+
+---
+
+#### 📂 ThirdParty (第三方插件)
+存放 **外部插件和 SDK**（如 AdMob, Firebase, Photon 等）。
+
+---
+
+### 📁 Packages
+Unity **Package Manager（UPM）** 依赖项存放位置，不建议手动修改。
+
+---
+
+### 📁 ProjectSettings
+存放 **Unity 项目的全局设置**，如：
+- `InputManager.asset`（输入映射）
+- `Physics2DSettings.asset`（物理设置）
+- `TagManager.asset`（标签和图层）
+
+---
+
+### 💡 额外建议
+✅ **请保持目录结构清晰**，避免文件混乱  
+✅ **使用 `.gitignore` 忽略 `.DS_Store`、`Library`、`Logs` 等不必要的文件  
+✅ **资源命名遵循统一格式**（如 `Player_Run.anim`, `BG_Music.mp3`）  
+✅ **定期清理未使用的资源**，优化项目大小  
+
+---
+
+## 后端 express(node.js)（只是个例子大概说一下每个文件夹是干嘛的，目前src下面的文件夹基本是空的）
 ```bash
 bareturn0-backend/
 │── node_modules/         # npm 依赖
