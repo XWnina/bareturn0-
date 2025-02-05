@@ -60,3 +60,5 @@ crashlytics-build.properties
 # Allow the Packages folder to be tracked
 !Packages/manifest.json
 !Packages/packages-lock.json
+
+DS_Store
