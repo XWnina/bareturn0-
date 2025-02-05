@@ -17,11 +17,12 @@
 🔗 [Unity Hub 下载地址](https://unity.com/download)
 
 ### 2️⃣ 下载 Unity 6
-打开 Unity Hub，下载安装 Unity 6。
+打开 Unity Hub，下载安装 Unity 6(editor version选择6000.0.34f1)。
 
 ### 3️⃣ 在 Unity 中打开项目
 1. 打开 **Unity Hub**
 2. 点击 `"Add"` 选择`"Add project from disk"`,选择项目根目录
+3. editor version选择6000.0.34f1选择对的时候editor version右侧不会出现⚠️
 
 ### 4️⃣ 选择 Unity 代码编辑器
 建议使用：
