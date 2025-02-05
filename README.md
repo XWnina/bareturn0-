@@ -21,7 +21,7 @@
 
 ### 3️⃣ 在 Unity 中打开项目
 1. 打开 **Unity Hub**
-2. 点击 `"Open"` 选择项目目录
+2. 点击 `"Add"` 选择`"Add project from disk"`,选择项目根目录
 
 ### 4️⃣ 选择 Unity 代码编辑器
 建议使用：
