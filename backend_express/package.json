@@ -10,12 +10,16 @@
   "author": "Xiuwen Fang, Xinyi Guan,Yuchuan Huang, Xinyi Wu",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.21.2"
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongodb": "^6.13.0",
+    "mongoose": "^8.10.0"
   },
   "engines": {
-  "node": "22.13.1",
-  "npm": ">=10"
+    "node": "22.13.1",
+    "npm": ">=10"
   }
 }
-
-
