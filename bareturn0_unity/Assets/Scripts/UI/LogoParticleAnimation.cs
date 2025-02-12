@@ -11,24 +11,22 @@ namespace UI
         public RectTransform logoTransform; // Logo 缩放控制
         public RectTransform[] letterImages; // 字母图片 RectTransform
         public ParticleSystem logoParticleSystem; // 粒子系统
-        public VideoPlayer backgroundVideoPlayer; // 第一个背景视频播放器
-        public VideoPlayer transitionVideoPlayer; // 第二个背景视频播放器
-        public VideoClip firstVideoClip;  // 第一个视频
-        public VideoClip secondVideoClip; // 第二个视频
-        private Vector2[] _originalPositions; // 记录字母的初始位置
+        public VideoPlayer backgroundVideoPlayer; // 背景视频播放器
+        public VideoClip firstVideoClip;  // 视频
+        private Vector2[] _originalPositions; 
         
         void Start()
         {
-            // 确保第一个 Video Player 绑定了不同的视频
+            // 确保 Video Player 绑定了视频
             if (backgroundVideoPlayer != null && firstVideoClip != null)
             {
                 backgroundVideoPlayer.clip = firstVideoClip;
                 backgroundVideoPlayer.Play();
-                StartCoroutine(TransitionToSecondVideo(22f)); // 22秒后切换背景视频并开始 Logo 动画
+                StartCoroutine(ShowLogoAfterDelay(5f)); // 视频播放 5 秒后显示 Logo
             }
             else
             {
-                Debug.LogError("❌ 第一个背景视频未绑定，请在 Inspector 里绑定 Video Player 组件和 Video Clip！");
+                Debug.LogError("❌ 背景视频未绑定，请在 Inspector 里绑定 Video Player 组件和 Video Clip！");
             }
             
             // 初始化状态
@@ -44,36 +42,7 @@ namespace UI
             }
         }
         
-        IEnumerator TransitionToSecondVideo(float delay)
-        {
-            yield return new WaitForSeconds(delay);
-            
-            float fadeDuration = 2f;
-            float timer = 0;
-            while (timer < fadeDuration)
-            {
-                timer += Time.deltaTime;
-                float alpha = Mathf.Lerp(1, 0, timer / fadeDuration);
-                backgroundVideoPlayer.targetCameraAlpha = alpha;
-                yield return null;
-            }
-            
-            backgroundVideoPlayer.Stop();
-            backgroundVideoPlayer.targetCameraAlpha = 0;
-            
-            if (transitionVideoPlayer != null && secondVideoClip != null)
-            {
-                transitionVideoPlayer.clip = secondVideoClip;
-                transitionVideoPlayer.Play(); // 播放第二个背景视频
-                StartCoroutine(FadeInLogo(1f)); // 1秒后渐显 Logo
-            }
-            else
-            {
-                Debug.LogError("❌ 第二个背景视频未绑定，请在 Inspector 里绑定 Video Player 组件和 Video Clip！");
-            }
-        }
-        
-        IEnumerator FadeInLogo(float delay)
+        IEnumerator ShowLogoAfterDelay(float delay)
         {
             yield return new WaitForSeconds(delay);
             StartCoroutine(PlayIntroAnimation());
