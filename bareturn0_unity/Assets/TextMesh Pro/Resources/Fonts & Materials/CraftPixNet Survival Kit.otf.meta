@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 46a33d41663d7c943bd535b02ec4d572
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - CraftPixNet Survival Kit
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 251cd986ce57b124690e5be0d85f7252, type: 3}
+  customCharacters: 
+  fontRenderingMode: 2
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
