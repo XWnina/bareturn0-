@@ -15,6 +15,6 @@ MonoBehaviour:
   cardName: Attack
   description: delt 1 dmg
   cost: 1
-  damage: 1
+  damage: 2
   artwork: {fileID: 0}
   cardType: 0
