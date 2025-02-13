@@ -1,14 +1,28 @@
-const express = require('express');
+const express = require("express");
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
+
+// DB Connection
+dotenv.config();
+connectDB();
+
+// App setup
 const app = express();
+app.use(express.json());
 
-const PORT = 3000;
+// Routes
+app.use("/users", require("./routes/userRoutes")); // User routes
+app.use("/savefiles", require("./routes/saveFileRoutes")); // Save file routes
 
-// 定义一个简单的 API
-app.get('/', (req, res) => {
-    res.send('Hello, Bareturn0 Backend!');
+// Backend API Testing
+app.get("/", (req, res) => {
+    res.send("Hello, Bareturn0 Backend! 🚀 API is working!");
 });
 
-// 启动服务器
+// Server Testing
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    console.log(`\nServer starts successfully, running on http://localhost:${PORT}`)
+    console.log("\n=====Request & Response Log (set on backend_express/src/utils/logger.js)=====");
 });
+
