@@ -1,2 +1,3 @@
 *.DS_Store
 bareturn0_unity/.vsconfig
+src/scripts_for_db_testing/*
