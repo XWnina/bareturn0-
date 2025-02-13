@@ -13,6 +13,7 @@ app.use(express.json());
 // Routes
 app.use("/users", require("./routes/userRoutes")); // User routes
 app.use("/savefiles", require("./routes/saveFileRoutes")); // Save file routes
+app.use("/progress", require("./routes/progressRoutes")); // 更新的进度查询 API
 
 // Backend API Testing
 app.get("/", (req, res) => {
