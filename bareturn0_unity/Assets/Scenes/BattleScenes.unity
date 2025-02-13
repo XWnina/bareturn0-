@@ -155,7 +155,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.42, y: -0.85}
+  m_AnchoredPosition: {x: 2.42, y: -0.95}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &109970143
@@ -174,6 +174,7 @@ MonoBehaviour:
   maxHealth: 40
   speed: 8
   attackDamage: 5
+  animatorController: {fileID: 811497316}
 --- !u!50 &109970144
 Rigidbody2D:
   serializedVersion: 5
@@ -1050,11 +1051,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentHealth: 50
   maxHealth: 50
-  initialEnergy: 3
-  energyGainPerRound: 1
+  initialEnergy: 5
+  energyGainPerRound: 2
   currentEnergy: 0
   speed: 10
   currentArmor: 0
+  animatorController: {fileID: 1182409712}
 --- !u!212 &219764940
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1552,6 +1554,7 @@ MonoBehaviour:
   enemy: {fileID: 109970143}
   endActionButton: {fileID: 319843588}
   state: 0
+  lastAttackDamage: 0
 --- !u!4 &650180007
 Transform:
   m_ObjectHideFlags: 0
@@ -1714,6 +1717,7 @@ GameObject:
   - component: {fileID: 811497313}
   - component: {fileID: 811497314}
   - component: {fileID: 811497315}
+  - component: {fileID: 811497316}
   m_Layer: 5
   m_Name: EnemyUI
   m_TagString: Untagged
@@ -1817,6 +1821,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &811497316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 811497312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7386dbbf9cb1334f9405d5a4089a7af, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
 --- !u!1 &900061244
 GameObject:
   m_ObjectHideFlags: 0
@@ -1964,6 +1981,7 @@ GameObject:
   - component: {fileID: 1182409709}
   - component: {fileID: 1182409710}
   - component: {fileID: 1182409711}
+  - component: {fileID: 1182409712}
   m_Layer: 5
   m_Name: PlayerUI
   m_TagString: Untagged
@@ -2067,6 +2085,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1182409712
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1182409708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63754fbe12dc79942bb4f6b935c05edd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 0}
 --- !u!1 &1299497320
 GameObject:
   m_ObjectHideFlags: 0
@@ -2567,8 +2598,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_wordSpacing: 0

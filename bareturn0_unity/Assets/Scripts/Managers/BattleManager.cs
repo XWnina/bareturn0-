@@ -25,6 +25,7 @@ public class BattleManager : MonoBehaviour
     public BattleState state;
 
     private int roundNumber = 0;
+    public int lastAttackDamage;
 
     public int CurrentRoundNumber
     {
@@ -217,6 +218,16 @@ public class BattleManager : MonoBehaviour
         return 0;
     }
 
+    //Triiger hit
+    public void TriggerEnemyHit()
+    {
+        enemy.TakeDamage(lastAttackDamage);
+    }
+
+    public void TriggerPlayerHit()
+    {
+        player.TakeDamage(lastAttackDamage); // 让玩家播放受击动画并扣血
+    }
 
 
 
@@ -224,6 +235,10 @@ public class BattleManager : MonoBehaviour
     //当玩家使用一张牌
     public void UseCard(CardData cardData, CardView cardView)
     {
+        if (state != BattleState.PlayerAction)
+        {
+            return;
+        }
         // 1. 检查能量
         if (player.currentEnergy < cardData.cost)
         {
@@ -238,7 +253,8 @@ public class BattleManager : MonoBehaviour
         switch (cardData.cardType)
         {
             case CardType.Attack:
-                enemy.TakeDamage(cardData.damage);
+                player.Attack();
+                lastAttackDamage = cardData.damage;
                 break;
             case CardType.Defend:
                 // 给玩家增加护甲/防御

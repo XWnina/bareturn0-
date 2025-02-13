@@ -10,14 +10,22 @@ public class EnemyController : MonoBehaviour
 
     public int attackDamage = 5;
 
+    [SerializeField] EnemyAnimator animatorController;
+
     private void Awake()
     {
         currentHealth = maxHealth;
     }
 
+    public void Attack()
+    {
+        animatorController?.EnemyAttackAnimation();
+    }
+
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        animatorController?.EnemyHurttAnimation();
         Debug.Log("Enemy takes " + damage + " damage. HP=" + currentHealth);
 
         if (currentHealth <= 0)
@@ -31,6 +39,8 @@ public class EnemyController : MonoBehaviour
     public void PerformAction()
     {
         Debug.Log($"Enemy attacks player for {attackDamage}");
-        BattleManager.Instance.player.TakeDamage(attackDamage);
+        Attack(); // ´¥·¢µÐÈË¹¥»÷¶¯»­
+        // ´æ´¢¹¥»÷ÉËº¦£¬ÉÔºó `TriggerPlayerHit()` ²Å»áÔì³ÉÉËº¦
+        BattleManager.Instance.lastAttackDamage = attackDamage;
     }
 }

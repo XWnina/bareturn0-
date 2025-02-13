@@ -16,11 +16,22 @@ public class PlayerController : MonoBehaviour
     //护甲
     public int currentArmor = 0;
 
+    [SerializeField] private PlayerAnimator animatorController;
+
+
+    public void Attack()
+    {
+        animatorController?.PlayAttackAnimation(); // 触发攻击动画
+    }
+
     public void TakeDamage(int damage)
     {
         int effectiveDamage = Mathf.Max(damage - currentArmor, 0);
         currentArmor = Mathf.Max(currentArmor - damage, 0);
         currentHealth -= effectiveDamage;
+
+        animatorController?.PlayHurtAnimation(); // 受击动画
+
         Debug.Log("Player takes " + effectiveDamage + " damage. HP=" + currentHealth);
     }
 
