@@ -15,6 +15,6 @@ MonoBehaviour:
   cardName: Heavy Attack
   description: delt 7 dmg
   cost: 3
-  damage: 7
+  damage: 50
   artwork: {fileID: 0}
   cardType: 0

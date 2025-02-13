@@ -207,12 +207,14 @@ public class BattleManager : MonoBehaviour
         {
             Debug.Log("Player HP = 0, Lose");
             state = BattleState.BattleEnd;
+            BattleUIManager.Instance.ShowBattleResult(false);
             return -1;
         }
         else if (enemy.currentHealth <= 0)
         {
             Debug.Log("Enemy HP = 0, Win");
             state = BattleState.BattleEnd;
+            BattleUIManager.Instance.ShowBattleResult(true);
             return 1;
         }
         return 0;
@@ -235,6 +237,7 @@ public class BattleManager : MonoBehaviour
     //当玩家使用一张牌
     public void UseCard(CardData cardData, CardView cardView)
     {
+        //0. 检查是否为玩家回合
         if (state != BattleState.PlayerAction)
         {
             return;
@@ -243,6 +246,7 @@ public class BattleManager : MonoBehaviour
         if (player.currentEnergy < cardData.cost)
         {
             Debug.Log("Not enough energy to use " + cardData.cardName);
+            BattleUIManager.Instance.ShowEnergyWarning(); //Show Warning
             return; // 中止，不执行后续
         }
 

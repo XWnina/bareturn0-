@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af4d6d6adf0810d4583376e695fb712a, type: 3}
-  m_Name: Attack 3
+  m_Name: Heavy Attack 1
   m_EditorClassIdentifier: 
-  cardName: Attack
-  description: delt 1 dmg
-  cost: 1
-  damage: 2
+  cardName: Heavy Attack
+  description: delt 7 dmg
+  cost: 3
+  damage: 7
   artwork: {fileID: 0}
   cardType: 0
