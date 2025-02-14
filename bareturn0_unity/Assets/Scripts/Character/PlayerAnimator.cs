@@ -4,6 +4,10 @@ public class PlayerAnimator : MonoBehaviour
 {
     [SerializeField] private Animator animator;
 
+    [Header("Audio")]
+    public AudioSource audioSource;  // 角色的音频组件
+    public AudioClip attackSound;    // 攻击音效
+
     private void Awake()
     {
         animator = GetComponent<Animator>(); // 获取 Animator 组件
@@ -42,8 +46,13 @@ public class PlayerAnimator : MonoBehaviour
 
     public void TriggerHit()
     {
+
         // 这里通知敌人受到攻击
         BattleManager.Instance.TriggerEnemyHit();
+        if (attackSound != null)
+        {
+            audioSource.PlayOneShot(attackSound); // 播放音效
+        }
     }
 
 }
