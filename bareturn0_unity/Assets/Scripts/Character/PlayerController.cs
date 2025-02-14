@@ -19,9 +19,12 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private PlayerAnimator animatorController;
 
 
+
+
     public void Attack()
     {
         animatorController?.PlayAttackAnimation(); // ´¥·¢¹¥»÷¶¯»­
+
     }
 
     public void TakeDamage(int damage)

@@ -253,22 +253,14 @@ public class BattleManager : MonoBehaviour
         // 2. 扣除能量
         player.currentEnergy -= cardData.cost;
 
-        // 3. 执行效果 TODO
-        switch (cardData.cardType)
+        // 3. 执行效果
+        if (cardData.cardEffect != null)
         {
-            case CardType.Attack:
-                player.Attack();
-                lastAttackDamage = cardData.damage;
-                break;
-            case CardType.Defend:
-                // 给玩家增加护甲/防御
-                player.GainArmor(cardData.damage);
-                // 这里我暂用 cardData.damage当作防御值，你可换成cardData.armor
-                break;
-            case CardType.Heal:
-                player.Heal(cardData.damage);
-                break;
-                // 其它类型请自行扩展
+            cardData.cardEffect.ApplyEffect(this, cardData);
+        }
+        else
+        {
+            Debug.Log("No card effect assigned to " + cardData.cardName);
         }
 
         // 4. 把卡从手牌移到弃牌堆
