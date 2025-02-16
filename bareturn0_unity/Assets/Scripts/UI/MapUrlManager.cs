@@ -55,15 +55,7 @@ public class MapUrlManager : MonoBehaviour
             Debug.Log("Fetched Current Level: " + CurrentLevel);
 
             // 通知 LevelButtonManager 更新 UI
-            LevelButtonManager levelManager = FindFirstObjectByType<LevelButtonManager>();
-            if (levelManager != null)
-            {
-                levelManager.UpdateLevelButtons();
-            }
-            else
-            {
-                Debug.LogError("LevelButtonManager not found!");
-            }
+            LevelButtonManager.Instance.UpdateLevelUI();
         }
         else
         {
