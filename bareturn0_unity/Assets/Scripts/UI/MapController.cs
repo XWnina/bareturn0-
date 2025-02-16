@@ -1,115 +1,90 @@
-using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
 
-public class MapController : MonoBehaviour
+public class LevelButtonManager : MonoBehaviour
 {
-    private string apiBaseUrl = "http://localhost:3000"; // 你的后端地址
+    [System.Serializable]
+    public class LevelButton
+    {
+        public Button button;
+        public Image icon;
+        public TextMeshProUGUI levelText;
+        public GameObject youAreHereIndicator;
+        public Vector2 position;
+    }
 
-    public TextMeshProUGUI progressText; // 用于显示当前关卡
-    public GameObject[] levelIcons; // 地图上所有的关卡按钮
-    public Color completedColor = Color.green; // 已完成关卡的颜色
-    public Color currentColor = Color.yellow; // 当前关卡的颜色
-    public Color lockedColor = Color.gray; // 未解锁关卡的颜色
-
-    private string username;
-    private string saveName;
+    public List<LevelButton> levelButtons;
+    public Sprite passedIcon;
+    public Sprite lockedIcon;
     private int currentLevel = 0;
 
     void Start()
     {
-        StartCoroutine(GetUserInfo());
+        // 获取 currentLevel
+        currentLevel = MapUrlManager.CurrentLevel;
+        SetButtonPositions();
+        UpdateLevelButtons();
     }
 
-    IEnumerator GetUserInfo()
+    public void UpdateLevelButtons()
     {
-        string url = apiBaseUrl + "/users/me"; // 这里应该是获取当前用户的 API
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        yield return request.SendWebRequest();
+        currentLevel = MapUrlManager.CurrentLevel; // 获取最新的 currentLevel
 
-        if (request.result == UnityWebRequest.Result.Success)
+        for (int i = 0; i < levelButtons.Count; i++)
         {
-            string json = request.downloadHandler.text;
-            UserData data = JsonUtility.FromJson<UserData>(json);
+            LevelButton lb = levelButtons[i];
 
-            username = data.username;
-            saveName = data.saveName; // 这里需要后端返回 `saveName`
+            lb.levelText.text = "Level " + (i + 1);
+            lb.icon.sprite = i < currentLevel ? passedIcon : lockedIcon;
 
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(saveName))
+            if (lb.youAreHereIndicator != null)
             {
-                StartCoroutine(GetUserLevel());
-            }
-        }
-        else
-        {
-            Debug.LogError("Error fetching user info: " + request.error);
-        }
-    }
-
-    IEnumerator GetUserLevel()
-    {
-        string url = apiBaseUrl + "/progress/" + username + "/" + saveName;
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            string json = request.downloadHandler.text;
-            UserProgressData data = JsonUtility.FromJson<UserProgressData>(json);
-            currentLevel = data.currentLevel;
-
-            if (progressText != null)
-            {
-                progressText.text = "You are at Level: " + currentLevel;
-            }
-
-            UpdateMapUI();
-        }
-        else
-        {
-            Debug.LogError("Error fetching user progress: " + request.error);
-        }
-    }
-
-    void UpdateMapUI()
-    {
-        for (int i = 0; i < levelIcons.Length; i++)
-        {
-            Button levelButton = levelIcons[i].GetComponent<Button>();
-            Image levelImage = levelIcons[i].GetComponent<Image>();
-
-            if (i < currentLevel)
-            {
-                levelImage.color = completedColor; // 绿色：已完成
-                levelButton.interactable = true;
-            }
-            else if (i == currentLevel)
-            {
-                levelImage.color = currentColor; // 黄色：当前关卡
-                levelButton.interactable = true;
+                lb.youAreHereIndicator.gameObject.SetActive(i == currentLevel);
             }
             else
             {
-                levelImage.color = lockedColor; // 灰色：未解锁
-                levelButton.interactable = false;
+                Debug.LogError($"Missing You Are Here Indicator in Level {i + 1}");
             }
+
+            int levelIndex = i;
+            lb.button.onClick.RemoveAllListeners();
+            lb.button.onClick.AddListener(() => OnLevelButtonClick(levelIndex));
         }
     }
 
-    [System.Serializable]
-    private class UserData
+    public void OnLevelButtonClick(int levelIndex)
     {
-        public string username;
-        public string saveName;
+        if (levelIndex <= currentLevel)
+        {
+            Debug.Log("Starting Level " + (levelIndex + 1));
+            // SceneManager.LoadScene("Level" + (levelIndex + 1));
+        }
+        else
+        {
+            Debug.Log("This level is locked!");
+        }
     }
 
-    [System.Serializable]
-    private class UserProgressData
+    public void SetButtonPositions()
+{
+    foreach (var lb in levelButtons)
     {
-        public string username;
-        public string saveName;
-        public int currentLevel;
+        if (lb.button != null)
+        {
+            RectTransform rt = lb.button.GetComponent<RectTransform>();
+            rt.anchoredPosition = lb.position; // 设置手动指定的位置
+        }
+    }
+}
+
+    public void UnlockNextLevel()
+    {
+        if (currentLevel < levelButtons.Count - 1)
+        {
+            currentLevel++;
+            UpdateLevelButtons();
+        }
     }
 }
