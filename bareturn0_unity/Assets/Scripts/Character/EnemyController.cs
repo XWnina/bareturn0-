@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class EnemyController : MonoBehaviour
@@ -31,9 +32,20 @@ public class EnemyController : MonoBehaviour
         if (currentHealth <= 0)
         {
             currentHealth = 0;
+            
             Debug.Log("Enemy is dead!");
-            // 触发死亡逻辑
+            StartCoroutine(HandleDeath());
         }
+    }
+
+    private IEnumerator HandleDeath()
+    {
+        animatorController.EnemyDeathAnimation(); // 播放死亡动画
+
+        yield return new WaitForSeconds(1.2f); // 等待动画播放完成
+
+        Destroy(gameObject); // 移除敌人对象（或者可以替换成游戏胜利界面）
+        BattleManager.Instance.CheckWinLose(); // 重新检查战斗胜负
     }
 
     public void PerformAction()
