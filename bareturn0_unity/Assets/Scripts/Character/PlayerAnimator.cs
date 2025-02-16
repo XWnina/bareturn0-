@@ -7,6 +7,8 @@ public class PlayerAnimator : MonoBehaviour
     [Header("Audio")]
     public AudioSource audioSource;  // 角色的音频组件
     public AudioClip attackSound;    // 攻击音效
+    public AudioClip hurtSound; //受击音效
+    public AudioClip GainEnergySound;
 
     private void Awake()
     {
@@ -41,6 +43,19 @@ public class PlayerAnimator : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("Defend");
+        }
+    }
+
+    public void PlayGainEnergyAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("GainEnergy");
+        }
+        if (GainEnergySound != null)
+        {
+            float volumeMultiplier = 2.5f;
+            audioSource.PlayOneShot(GainEnergySound, volumeMultiplier);
         }
     }
 

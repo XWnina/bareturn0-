@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af4d6d6adf0810d4583376e695fb712a, type: 3}
-  m_Name: Energize 1
+  m_Name: CheatAttack
   m_EditorClassIdentifier: 
-  cardName: Energize
-  description: Gain 1 Energy
+  cardName: CheatAttack
+  description: You are Cheating!!
   cost: 0
-  artwork: {fileID: 21300000, guid: a67d2e382d25d4a478f5846a9fe1cc4b, type: 3}
+  artwork: {fileID: 21300000, guid: a68ffbb1d55132441bf8d7290ebdb6b4, type: 3}
   quality: 2
-  cardEffect: {fileID: 11400000, guid: e91fc8b465d901241b830b2f97ec45b5, type: 2}
+  cardEffect: {fileID: 11400000, guid: a1b948eefd7ab12449d315cfefd98d40, type: 2}

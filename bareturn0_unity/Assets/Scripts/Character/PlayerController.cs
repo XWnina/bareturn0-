@@ -49,4 +49,10 @@ public class PlayerController : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         Debug.Log("Player heals " + amount + ". HP=" + currentHealth);
     }
+
+    public void GainEnergy(int amount)
+    {
+        currentEnergy += amount;
+        animatorController?.PlayGainEnergyAnimation();
+    }
 }
