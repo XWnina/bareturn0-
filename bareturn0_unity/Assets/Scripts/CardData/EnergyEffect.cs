@@ -7,7 +7,7 @@ public class EnergyEffect : CardEffect
 
     public override void ApplyEffect(BattleManager battleManager, CardData cardData)
     {
-        battleManager.player.currentEnergy += energyGain;
+        battleManager.player.GainEnergy(energyGain);
         Debug.Log($"Player gains {energyGain} energy.");
     }
 }
