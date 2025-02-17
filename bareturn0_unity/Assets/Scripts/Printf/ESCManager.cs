@@ -40,7 +40,7 @@ public class ESCManager : MonoBehaviour
 
     void Update()
     {
-        Debug.Log("ESCManager Update is running...");
+        //Debug.Log("ESCManager Update is running...");
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Debug.Log("ESC Pressed!");
@@ -49,19 +49,19 @@ public class ESCManager : MonoBehaviour
     }
 
 
-    void TogglePause()
+    public void TogglePause()
     {
-        isPaused = !isPaused;
-
-        if (isPaused)
+        if (pauseMenu.activeSelf) // 如果已经激活，就关闭
         {
-            Debug.Log("Game Paused!");
-            pauseMenu.SetActive(true);  // 显示暂停菜单
-            Time.timeScale = 0f;  // 暂停游戏
+            Debug.Log("Unpausing Game...");
+            pauseMenu.SetActive(false);
+            Time.timeScale = 1f; // 恢复游戏
         }
-        else
+        else // 否则就开启暂停菜单
         {
-            ContinueGame();
+            Debug.Log("Pausing Game...");
+            pauseMenu.SetActive(true);
+            Time.timeScale = 0f; // 暂停游戏
         }
     }
 
