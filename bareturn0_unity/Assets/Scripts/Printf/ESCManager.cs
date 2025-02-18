@@ -1,82 +1,107 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Debug = UnityEngine.Debug;
+using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class ESCManager : MonoBehaviour
 {
     public GameObject pauseMenu;
     public Button continueButton;
     public Button backButton;
-
     private bool isPaused = false;
+    private DialogManager dialogManager; // 获取 DialogManager
 
     void Start()
     {
-        Debug.Log("PauseMenu: " + (pauseMenu != null ? "OK" : "NULL"));
-        Debug.Log("ContinueButton: " + (continueButton != null ? "OK" : "NULL"));
-        Debug.Log("BackButton: " + (backButton != null ? "OK" : "NULL"));
+        dialogManager = FindObjectOfType<DialogManager>(); // 获取 DialogManager 组件
 
-        if (pauseMenu == null)
-        {
-            Debug.LogError("ERROR: PauseMenu is NOT assigned in the Inspector!");
-        }
-        if (continueButton == null)
-        {
-            Debug.LogError("ERROR: ContinueButton is NOT assigned in the Inspector!");
-        }
-        if (backButton == null)
-        {
-            Debug.LogError("ERROR: BackButton is NOT assigned in the Inspector!");
-        }
+        if (continueButton != null)
+            continueButton.onClick.AddListener(ContinueGame);
 
-        pauseMenu.SetActive(false);  // 确保开始时隐藏
+        if (backButton != null)
+            backButton.onClick.AddListener(BackToMainPage);
 
-        // 绑定按钮点击事件
-        continueButton.onClick.AddListener(ContinueGame);
-        backButton.onClick.AddListener(BackToMainPage);
+        pauseMenu.SetActive(false);
     }
-
 
     void Update()
     {
-        //Debug.Log("ESCManager Update is running...");
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log("ESC Pressed!");
             TogglePause();
+        }
+
+        // 拦截鼠标点击，确保只有 Continue 和 Back 按钮可以点击
+        if (isPaused && Input.GetMouseButtonDown(0))
+        {
+            if (!IsClickOnButton(continueButton) && !IsClickOnButton(backButton))
+            {
+                Debug.Log("点击无效，必须点击 Continue 或 Back");
+                return;
+            }
         }
     }
 
-
     public void TogglePause()
     {
-        if (pauseMenu.activeSelf) // 如果已经激活，就关闭
+        isPaused = !isPaused;
+        pauseMenu.SetActive(isPaused);
+
+        if (dialogManager != null)
         {
-            Debug.Log("Unpausing Game...");
-            pauseMenu.SetActive(false);
-            Time.timeScale = 1f; // 恢复游戏
+            dialogManager.isPaused = isPaused; // 同步暂停状态到 DialogManager
         }
-        else // 否则就开启暂停菜单
+
+        if (isPaused)
         {
-            Debug.Log("Pausing Game...");
-            pauseMenu.SetActive(true);
-            Time.timeScale = 0f; // 暂停游戏
+            Debug.Log("游戏暂停...");
+            Time.timeScale = 0f;
+            pauseMenu.transform.SetAsLastSibling();
+        }
+        else
+        {
+            Debug.Log("游戏恢复...");
+            Time.timeScale = 1f;
         }
     }
 
     void ContinueGame()
     {
-        Debug.Log("Continue Button Clicked!");
+        isPaused = false;
         pauseMenu.SetActive(false);
         Time.timeScale = 1f;
-        isPaused = false;
+
+        if (dialogManager != null)
+        {
+            dialogManager.isPaused = false; // 恢复对话推进
+        }
     }
 
     void BackToMainPage()
     {
-        Debug.Log("Back to Main Page Clicked!");
         Time.timeScale = 1f;
-        SceneManager.LoadScene("MainPage");
+        SceneManager.LoadScene("MainScene");
+    }
+
+    bool IsClickOnButton(Button button)
+    {
+        if (button == null) return false;
+
+        PointerEventData eventData = new PointerEventData(EventSystem.current)
+        {
+            position = Input.mousePosition
+        };
+
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventData, results);
+
+        foreach (var result in results)
+        {
+            if (result.gameObject == button.gameObject)
+                return true;
+        }
+
+        return false;
     }
 }

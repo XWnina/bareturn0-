@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      erasebg-transformed_0: 1536996641685361034
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
