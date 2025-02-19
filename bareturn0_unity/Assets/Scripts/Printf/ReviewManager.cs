@@ -17,22 +17,23 @@ public class ReviewManager : MonoBehaviour
         if (isLoaded) return;
         isLoaded = true;
 
-        // **获取聊天记录**
+        DisplayChatHistory();
+
+        backButton.onClick.AddListener(GoBack);
+    }
+
+    void DisplayChatHistory()
+    {
         List<string> chatHistory = ChatData.chatHistory;
 
-        // **显示聊天记录**
         foreach (string message in chatHistory)
         {
             GameObject newMessage = Instantiate(messagePrefab, content);
             newMessage.GetComponent<TMP_Text>().text = message;
         }
 
-        // **滚动到底部**
         Canvas.ForceUpdateCanvases();
         scrollRect.verticalNormalizedPosition = 0f;
-
-        // **绑定返回按钮**
-        backButton.onClick.AddListener(GoBack);
     }
 
     void GoBack()

@@ -13,59 +13,50 @@ public class DialogManager : MonoBehaviour
     public TextMeshProUGUI npcText;
     public Button reviewButton;
 
-    private Queue<string> playerLines;
-    private Queue<string> npcLines;
     private bool isPlayerTurn = true;
     private bool enterPressed = false;
-    public bool isPaused = false; // 由 ESCManager 控制，暂停时禁止对话
+    public bool isPaused = false; 
 
     void Start()
     {
-        playerLines = new Queue<string>();
-        npcLines = new Queue<string>();
-
-        playerLines.Enqueue("wddacwifjv??#$");
-        npcLines.Enqueue("Oh, finally you are here, welcome.");
-
-        npcDialog.SetActive(false);
-        playerDialog.SetActive(true);
-
-        // **游戏启动时清除旧的聊天记录**
         if (ChatData.currentDialogueIndex == 0)
         {
             ChatData.ResetChatData();
+            ChatData.playerLines.Enqueue("wddacwifjv??#$");
+            ChatData.npcLines.Enqueue("Oh, finally you are here, welcome.");
         }
 
-        // **恢复聊天进度**
-        int savedIndex = ChatData.currentDialogueIndex;
-        for (int i = 0; i < savedIndex; i++)
-        {
-            if (isPlayerTurn && npcLines.Count > 0) npcLines.Dequeue();
-            else if (!isPlayerTurn && playerLines.Count > 0) playerLines.Dequeue();
-            isPlayerTurn = !isPlayerTurn;
-        }
+        playerDialog.SetActive(false);
+        npcDialog.SetActive(false);
+        
+        RestoreChatProgress();
 
-        // **确保继续对话**
-        if (isPlayerTurn && playerLines.Count > 0)
-            playerText.text = playerLines.Peek();
-        else if (!isPlayerTurn && npcLines.Count > 0)
-            npcText.text = npcLines.Peek();
-
-        // 绑定 Review 按钮
         if (reviewButton != null)
             reviewButton.onClick.AddListener(OpenReviewDialog);
+    }
+
+    void RestoreChatProgress()
+    {
+        // 恢复对话框状态，并确保历史顺序正确
+        if (ChatData.currentDialogueIndex % 2 == 0 && ChatData.playerLines.Count > 0)
+        {
+            playerDialog.SetActive(true);
+            playerText.text = ChatData.playerLines.Peek();
+            isPlayerTurn = true;
+        }
+        else if (ChatData.npcLines.Count > 0)
+        {
+            npcDialog.SetActive(true);
+            npcText.text = ChatData.npcLines.Peek();
+            isPlayerTurn = false;
+        }
     }
 
     void Update()
     {
         if (isPaused) return;
 
-        if (Input.GetMouseButtonDown(0))
-        {
-            ShowNextDialogue();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Return) && !enterPressed)
+        if (Input.GetMouseButtonDown(0) || (Input.GetKeyDown(KeyCode.Return) && !enterPressed))
         {
             enterPressed = true;
             ShowNextDialogue();
@@ -81,15 +72,12 @@ public class DialogManager : MonoBehaviour
     {
         if (isPlayerTurn)
         {
-            if (npcLines.Count > 0)
+            if (ChatData.npcLines.Count > 0)
             {
-                string message = npcLines.Dequeue();
-
-                // **只存储新的聊天内容**
-                if (ChatData.chatHistory.Count <= ChatData.currentDialogueIndex)
-                {
-                    ChatData.chatHistory.Add("Natasha: " + message);
-                }
+                string message = ChatData.npcLines.Dequeue();
+                
+                // **存储对话，确保按顺序插入**
+                ChatData.chatHistory.Add("Natasha: " + message);
 
                 playerDialog.SetActive(false);
                 npcDialog.SetActive(true);
@@ -100,14 +88,12 @@ public class DialogManager : MonoBehaviour
         }
         else
         {
-            if (playerLines.Count > 0)
+            if (ChatData.playerLines.Count > 0)
             {
-                string message = playerLines.Dequeue();
-
-                if (ChatData.chatHistory.Count <= ChatData.currentDialogueIndex)
-                {
-                    ChatData.chatHistory.Add("You: " + message);
-                }
+                string message = ChatData.playerLines.Dequeue();
+                
+                // **存储对话，确保按顺序插入**
+                ChatData.chatHistory.Add("You: " + message);
 
                 npcDialog.SetActive(false);
                 playerDialog.SetActive(true);
