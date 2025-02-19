@@ -2,13 +2,17 @@
 
 public static class ChatData
 {
-    public static List<string> chatHistory = new List<string>(); // 聊天记录
-    public static int currentDialogueIndex = 0; // 当前对话进度索引
+    public static List<string> chatHistory = new List<string>();
+    public static int currentDialogueIndex = 0;
+    public static bool isChatPaused = false;
+    public static Queue<string> playerLines = new Queue<string>();
+    public static Queue<string> npcLines = new Queue<string>();
 
-    // **重置聊天数据（游戏重新运行时调用）**
     public static void ResetChatData()
     {
         chatHistory.Clear();
         currentDialogueIndex = 0;
+        playerLines.Clear();
+        npcLines.Clear();
     }
 }
