@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      bareturn0_wood_0: -7155243423188539315
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

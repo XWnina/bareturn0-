@@ -17,7 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/BattleScenes.unity
     guid: fb734a258e9146d46b87819905d76f07
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/SampleScene.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
@@ -27,8 +27,11 @@ EditorBuildSettings:
     path: Assets/Scenes/PrintfTeaching.unity
     guid: ceea10bc3032a7b44af786a367e3b3a6
   - enabled: 1
-    path: Assets/Scenes/LoadScene.unity
-    guid: 483dbe50a70c54d1bbf4f9fa2edb7142
+   path: Assets/Scenes/LoadScene.unity
+   guid: 483dbe50a70c54d1bbf4f9fa2edb7142
+ - enabled: 1
+   path: Assets/Scenes/ReviewDialog.unity
+   guid: 0b3a78b36326507499a85034ced41456
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

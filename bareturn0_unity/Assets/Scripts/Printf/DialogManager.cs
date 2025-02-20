@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class DialogManager : MonoBehaviour
 {
@@ -10,43 +11,57 @@ public class DialogManager : MonoBehaviour
     public GameObject npcDialog;
     public TextMeshProUGUI playerText;
     public TextMeshProUGUI npcText;
+    public Button reviewButton;
 
-    private Queue<string> playerLines;
-    private Queue<string> npcLines;
     private bool isPlayerTurn = true;
-    private bool enterPressed = false; // 防止长按Enter触发多次
+    private bool enterPressed = false;
+    public bool isPaused = false; 
 
     void Start()
     {
-        playerLines = new Queue<string>();
-        npcLines = new Queue<string>();
+        if (ChatData.currentDialogueIndex == 0)
+        {
+            ChatData.ResetChatData();
+            ChatData.playerLines.Enqueue("wddacwifjv??#$");
+            ChatData.npcLines.Enqueue("Oh, finally you are here, welcome.");
+        }
 
-        playerLines.Enqueue("Huh, where am I?");
-        npcLines.Enqueue("Oh, finally you are here, welcome.");
-        playerLines.Enqueue("What's THIS world??");
-        npcLines.Enqueue("This is ...");
-
+        playerDialog.SetActive(false);
         npcDialog.SetActive(false);
-        playerDialog.SetActive(true);
-        playerText.text = playerLines.Dequeue();
+        
+        RestoreChatProgress();
+
+        if (reviewButton != null)
+            reviewButton.onClick.AddListener(OpenReviewDialog);
+    }
+
+    void RestoreChatProgress()
+    {
+        // 恢复对话框状态，并确保历史顺序正确
+        if (ChatData.currentDialogueIndex % 2 == 0 && ChatData.playerLines.Count > 0)
+        {
+            playerDialog.SetActive(true);
+            playerText.text = ChatData.playerLines.Peek();
+            isPlayerTurn = true;
+        }
+        else if (ChatData.npcLines.Count > 0)
+        {
+            npcDialog.SetActive(true);
+            npcText.text = ChatData.npcLines.Peek();
+            isPlayerTurn = false;
+        }
     }
 
     void Update()
     {
-        // 检测鼠标点击
-        if (Input.GetMouseButtonDown(0))
-        {
-            ShowNextDialogue();
-        }
+        if (isPaused) return;
 
-        // 检测按键按下
-        if (Input.GetKeyDown(KeyCode.Return) && !enterPressed)
+        if (Input.GetMouseButtonDown(0) || (Input.GetKeyDown(KeyCode.Return) && !enterPressed))
         {
             enterPressed = true;
             ShowNextDialogue();
         }
 
-        // 检测按键松开，防止长按触发多次
         if (Input.GetKeyUp(KeyCode.Return))
         {
             enterPressed = false;
@@ -57,22 +72,34 @@ public class DialogManager : MonoBehaviour
     {
         if (isPlayerTurn)
         {
-            if (npcLines.Count > 0)
+            if (ChatData.npcLines.Count > 0)
             {
+                string message = ChatData.npcLines.Dequeue();
+                
+                // **存储对话，确保按顺序插入**
+                ChatData.chatHistory.Add("Natasha: " + message);
+
                 playerDialog.SetActive(false);
                 npcDialog.SetActive(true);
-                npcText.text = npcLines.Dequeue();
+                npcText.text = message;
                 isPlayerTurn = false;
+                ChatData.currentDialogueIndex++;
             }
         }
         else
         {
-            if (playerLines.Count > 0)
+            if (ChatData.playerLines.Count > 0)
             {
+                string message = ChatData.playerLines.Dequeue();
+                
+                // **存储对话，确保按顺序插入**
+                ChatData.chatHistory.Add("You: " + message);
+
                 npcDialog.SetActive(false);
                 playerDialog.SetActive(true);
-                playerText.text = playerLines.Dequeue();
+                playerText.text = message;
                 isPlayerTurn = true;
+                ChatData.currentDialogueIndex++;
             }
             else
             {
@@ -80,5 +107,10 @@ public class DialogManager : MonoBehaviour
                 npcDialog.SetActive(false);
             }
         }
+    }
+
+    public void OpenReviewDialog()
+    {
+        SceneManager.LoadScene("ReviewDialog");
     }
 }
