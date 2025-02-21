@@ -56,9 +56,8 @@ public class DialogManager : MonoBehaviour
     {
         if (isPaused) return;
 
-        if (Input.GetMouseButtonDown(0) || (Input.GetKeyDown(KeyCode.Return) && !enterPressed))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            enterPressed = true;
             ShowNextDialogue();
         }
 
