@@ -7,6 +7,7 @@ using System.Collections.Generic;
 public class ESCManager : MonoBehaviour
 {
     public GameObject pauseMenu;
+    public Button escButton;
     public Button continueButton;
     public Button backButton;
     private bool isPaused = false;
@@ -21,6 +22,9 @@ public class ESCManager : MonoBehaviour
 
         if (backButton != null)
             backButton.onClick.AddListener(BackToMainPage);
+
+        if (escButton != null)
+            escButton.onClick.AddListener(TogglePause);
 
         pauseMenu.SetActive(false);
     }
@@ -46,7 +50,7 @@ public class ESCManager : MonoBehaviour
     public void TogglePause()
     {
         isPaused = !isPaused;
-        pauseMenu.SetActive(isPaused);
+        pauseMenu.SetActive(true);
 
         if (dialogManager != null)
         {

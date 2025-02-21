@@ -1031,6 +1031,59 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenu: {fileID: 987197492}
+  escButton: {fileID: 0}
+  continueButton: {fileID: 513393834}
+  backButton: {fileID: 1997965971}
+--- !u!1 &592165119
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 592165120}
+  - component: {fileID: 592165121}
+  m_Layer: 5
+  m_Name: ESCManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &592165120
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 592165119}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1882851506}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &592165121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 592165119}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cea2fffd0346fb743ba1219e118f8991, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pauseMenu: {fileID: 987197492}
+  escButton: {fileID: 1954053510}
   continueButton: {fileID: 513393834}
   backButton: {fileID: 1997965971}
 --- !u!1 &644906018
@@ -1397,7 +1450,6 @@ GameObject:
   - component: {fileID: 987197493}
   - component: {fileID: 987197495}
   - component: {fileID: 987197494}
-  - component: {fileID: 987197496}
   m_Layer: 5
   m_Name: PauseMenu
   m_TagString: Untagged
@@ -1464,21 +1516,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 987197492}
   m_CullTransparentMesh: 1
---- !u!114 &987197496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 987197492}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cea2fffd0346fb743ba1219e118f8991, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseMenu: {fileID: 987197492}
-  continueButton: {fileID: 513393834}
-  backButton: {fileID: 1997965971}
 --- !u!1 &1363975749
 GameObject:
   m_ObjectHideFlags: 0
@@ -2886,6 +2923,7 @@ RectTransform:
   - {fileID: 480678076}
   - {fileID: 105149556}
   - {fileID: 987197493}
+  - {fileID: 592165120}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3085,7 +3123,6 @@ GameObject:
   - component: {fileID: 1954053512}
   - component: {fileID: 1954053511}
   - component: {fileID: 1954053510}
-  - component: {fileID: 1954053513}
   m_Layer: 5
   m_Name: PauseButton
   m_TagString: Untagged
@@ -3156,19 +3193,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1954053511}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1954053513}
-        m_TargetAssemblyTypeName: ESCManager, Assembly-CSharp
-        m_MethodName: TogglePause
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1954053511
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3207,21 +3232,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1954053508}
   m_CullTransparentMesh: 1
---- !u!114 &1954053513
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1954053508}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cea2fffd0346fb743ba1219e118f8991, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pauseMenu: {fileID: 987197492}
-  continueButton: {fileID: 513393834}
-  backButton: {fileID: 1997965971}
 --- !u!1 &1969364830
 GameObject:
   m_ObjectHideFlags: 0
@@ -3494,6 +3504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenu: {fileID: 987197492}
+  escButton: {fileID: 0}
   continueButton: {fileID: 513393834}
   backButton: {fileID: 1997965971}
 --- !u!1 &2044082173
