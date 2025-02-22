@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
@@ -49,6 +49,18 @@ public class PauseMenuManager : MonoBehaviour
 
     public void ReturnToMainMenu()
     {
+        ResetGameProgress();
         SceneManager.LoadScene("MainScene");
+    }
+    
+    private void ResetGameProgress()
+    {
+        // **清空聊天记录**
+        DialogManager.chatHistory.Clear();
+
+        // **重置对话队列**
+        DialogManager.savedDialogQueue.Clear();
+        DialogManager.hasSavedState = false;
+        DialogManager.isDialogFinished = false;
     }
 }
