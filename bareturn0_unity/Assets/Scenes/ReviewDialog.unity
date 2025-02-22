@@ -241,10 +241,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee2612d465fa5864bbaa0d635c35f2e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  messagePrefab: {fileID: 1679452714}
-  content: {fileID: 1557528282}
-  scrollRect: {fileID: 239634281}
-  backButton: {fileID: 1478194565}
 --- !u!1 &284523269
 GameObject:
   m_ObjectHideFlags: 0
@@ -307,7 +303,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 10
+  orthographic size: 100
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -332,7 +328,7 @@ Transform:
   m_GameObject: {fileID: 284523269}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 472, y: 287, z: -10}
+  m_LocalPosition: {x: 543, y: 262, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -932,6 +928,7 @@ RectTransform:
   - {fileID: 1719545111}
   - {fileID: 239634280}
   - {fileID: 1478194564}
+  - {fileID: 1968026607}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -951,10 +948,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee2612d465fa5864bbaa0d635c35f2e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  messagePrefab: {fileID: 1679452714}
-  content: {fileID: 1557528282}
-  scrollRect: {fileID: 239634281}
-  backButton: {fileID: 1478194565}
 --- !u!1 &1286905165
 GameObject:
   m_ObjectHideFlags: 0
@@ -1215,10 +1208,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee2612d465fa5864bbaa0d635c35f2e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  messagePrefab: {fileID: 1679452714}
-  content: {fileID: 1557528282}
-  scrollRect: {fileID: 239634281}
-  backButton: {fileID: 1478194565}
 --- !u!1 &1516847881
 GameObject:
   m_ObjectHideFlags: 0
@@ -1709,6 +1698,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1756068486}
   m_CullTransparentMesh: 1
+--- !u!1 &1968026606
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1968026607}
+  - component: {fileID: 1968026608}
+  m_Layer: 5
+  m_Name: ChatHistoryManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1968026607
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968026606}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1135362079}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1968026608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1968026606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfbcf2dbb5dc72e4ea46d0444a6bfc1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  chatHistoryText: {fileID: 1679452716}
+  backButton: {fileID: 1478194565}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
