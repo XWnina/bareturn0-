@@ -1,115 +1,121 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
+using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class DialogManager : MonoBehaviour
 {
+    public TextMeshProUGUI textP; // 玩家文本框
+    public TextMeshProUGUI textN; // NPC文本框
     public GameObject playerDialog;
     public GameObject npcDialog;
-    public TextMeshProUGUI playerText;
-    public TextMeshProUGUI npcText;
-    public Button reviewButton;
+    public GameObject pauseMenu;
+    public Button escButton; // ESC 按钮
+    public Button reviewDialogButton; // 聊天记录按钮
+    private Queue<string> dialogQueue;
+    private bool isPaused = false;
+    private bool isPlayerTurn = true; // 交替控制对话轮次
+    private static Queue<string> savedDialogQueue = new Queue<string>(); // 存储对话队列状态
+    private static bool hasSavedState = false; // 标记是否已有保存状态
+    private static bool isDialogFinished = false; // 记录对话是否已结束
 
-    private bool isPlayerTurn = true;
-    private bool enterPressed = false;
-    public bool isPaused = false; 
+    public static List<string> chatHistory = new List<string>();
 
     void Start()
     {
-        if (ChatData.currentDialogueIndex == 0)
+        //LoadSampleDialog();
+        if (isDialogFinished)
         {
-            ChatData.ResetChatData();
-            ChatData.playerLines.Enqueue("wddacwifjv??#$");
-            ChatData.npcLines.Enqueue("Oh, finally you are here, welcome.");
+            playerDialog.SetActive(false);
+            npcDialog.SetActive(false);
+            return; // **如果对话已经结束，不再重新开始**
         }
-
-        playerDialog.SetActive(false);
-        npcDialog.SetActive(false);
-        
-        RestoreChatProgress();
-
-        if (reviewButton != null)
-            reviewButton.onClick.AddListener(OpenReviewDialog);
-    }
-
-    void RestoreChatProgress()
-    {
-        // 恢复对话框状态，并确保历史顺序正确
-        if (ChatData.currentDialogueIndex % 2 == 0 && ChatData.playerLines.Count > 0)
+        dialogQueue = new Queue<string>();
+        if (hasSavedState && savedDialogQueue.Count > 0)
         {
-            playerDialog.SetActive(true);
-            playerText.text = ChatData.playerLines.Peek();
-            isPlayerTurn = true;
+            dialogQueue = new Queue<string>(savedDialogQueue); // 恢复对话进度
         }
-        else if (ChatData.npcLines.Count > 0)
+        else
         {
-            npcDialog.SetActive(true);
-            npcText.text = ChatData.npcLines.Peek();
-            isPlayerTurn = false;
+            dialogQueue = new Queue<string>();
+            LoadSampleDialog(); // 只在初次加载时调用
         }
+        ShowNextSentence();
+
+        // 绑定按钮事件
+        escButton.onClick.AddListener(PauseDialog);
+        reviewDialogButton.onClick.AddListener(GoToChatHistory);
     }
 
     void Update()
     {
-        if (isPaused) return;
-
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (!isPaused && Input.GetKeyDown(KeyCode.Return))
         {
-            ShowNextDialogue();
+            ShowNextSentence();
         }
 
-        if (Input.GetKeyUp(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            enterPressed = false;
+            PauseDialog();
         }
     }
 
-    void ShowNextDialogue()
+    void LoadSampleDialog()
     {
-        if (isPlayerTurn)
-        {
-            if (ChatData.npcLines.Count > 0)
-            {
-                string message = ChatData.npcLines.Dequeue();
-                
-                // **存储对话，确保按顺序插入**
-                ChatData.chatHistory.Add("Natasha: " + message);
+        // 交替对话
+        dialogQueue.Enqueue("You: dhwiadhacnwiodi(Huh, What happened?)");
+        dialogQueue.Enqueue("Natasha: Oh, finally you are here.");
+        dialogQueue.Enqueue("You: wejiowjdijvkw(Who are you? Where am I?)");
+        dialogQueue.Enqueue("Natasha: Welcome to Bareturn0's world!");
+    }
 
-                playerDialog.SetActive(false);
-                npcDialog.SetActive(true);
-                npcText.text = message;
-                isPlayerTurn = false;
-                ChatData.currentDialogueIndex++;
-            }
+    public void ShowNextSentence()
+    {
+        if (dialogQueue.Count == 0)
+        {
+            isDialogFinished = true; // **对话结束，标记为 true**
+            playerDialog.SetActive(false);
+            npcDialog.SetActive(false);
+            return;
+        }
+        string sentence = dialogQueue.Dequeue();
+        chatHistory.Add(sentence);
+
+        if (!sentence.StartsWith("Natasha:"))
+        {
+            isPlayerTurn = false; // 下次轮到 NPC
+            playerDialog.SetActive(true);
+            npcDialog.SetActive(false);
+            textP.text = sentence;
         }
         else
         {
-            if (ChatData.playerLines.Count > 0)
-            {
-                string message = ChatData.playerLines.Dequeue();
-                
-                // **存储对话，确保按顺序插入**
-                ChatData.chatHistory.Add("You: " + message);
-
-                npcDialog.SetActive(false);
-                playerDialog.SetActive(true);
-                playerText.text = message;
-                isPlayerTurn = true;
-                ChatData.currentDialogueIndex++;
-            }
-            else
-            {
-                playerDialog.SetActive(false);
-                npcDialog.SetActive(false);
-            }
+            isPlayerTurn = true; // 下次轮到用户
+            playerDialog.SetActive(false);
+            npcDialog.SetActive(true);
+            textN.text = sentence;
         }
     }
 
-    public void OpenReviewDialog()
+    public void PauseDialog()
     {
+        isPaused = true;
+        pauseMenu.SetActive(true);
+    }
+
+    public void ResumeDialog()
+    {
+        isPaused = false;
+        pauseMenu.SetActive(false);
+    }
+
+    public void GoToChatHistory()
+    {
+        isPaused = true;
+        // **保存对话进度**
+        savedDialogQueue = new Queue<string>(dialogQueue);
+        hasSavedState = true;
         SceneManager.LoadScene("ReviewDialog");
     }
 }
