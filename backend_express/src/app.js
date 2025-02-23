@@ -23,7 +23,8 @@ app.get("/", (req, res) => {
 // Server Testing
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`\nServer starts successfully, running on http://localhost:${PORT}`)
+    console.log(`\nServer starts successfully, running on http://localhost:${PORT}`);
+    console.log("Success! MongoDB Connected!");
     console.log("\n=====Request & Response Log (set on backend_express/src/utils/logger.js)=====");
 });
 
