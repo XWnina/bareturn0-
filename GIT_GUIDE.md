@@ -16,11 +16,23 @@ git rebase main
 ```bash
 # Check files with modification
 git status
-# Add, commit, and push changes
+
+# Add and commit files 
 git add .
-# Use status to check the added files are correctly selected and at the correct areas
 git commit -m "Your commit message"
-git push origin <working-branch>
+
+# Conflict check:
+# If possible, check if the remote main branch has any changes before push-> if having any, pull it down and merge into the working branch before pushing
+# Might meet conflicts
+git checkout main
+git fetch
+git pull 
+git checkout <working-branch>
+git rebase main
+
+# Push
+# Noticed that you don't need to push and merge for every single conflict
+git push
 ```
 #### Manual Step: Merge your push commit on github web.
 The following are for keeping the updates to local branches, also contains the command to keep your working branch up-to-date with `main` on remote. 
@@ -56,3 +68,4 @@ Other notes:
 * `git log --oneline --graph --all` would show a linear commit history without unnecessary merge commits.
 * The remote repository should display your latest commits on both the `main` and your `<working-branch>`.
 * If meeting conflicts, fix the conflicts first.
+* Always use status to check the added/ committed files are correctly selected and at the correct areas
