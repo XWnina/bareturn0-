@@ -39,10 +39,11 @@ The following are for keeping the updates to local branches, also contains the c
 ```bash
 # Update branches after merging into the main
 git checkout main
-git pull origin main
+git fetch
+git pull
 git checkout <working-branch>
 git rebase main
-git push --force
+git push
 ```
 ---
 ## Final Check: What to Expect if Everything Is Done Correctly
