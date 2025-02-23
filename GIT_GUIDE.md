@@ -43,7 +43,7 @@ git fetch
 git pull
 git checkout <working-branch>
 git rebase main
-git push
+git push origin <working-branch>
 ```
 ---
 ## Final Check: What to Expect if Everything Is Done Correctly
