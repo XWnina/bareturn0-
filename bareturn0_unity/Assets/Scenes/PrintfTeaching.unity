@@ -2157,9 +2157,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   textP: {fileID: 486294828}
   textN: {fileID: 732021826}
+  userInputField: {fileID: 2049464553}
   playerDialog: {fileID: 480678072}
   npcDialog: {fileID: 105149555}
   pauseMenu: {fileID: 987197492}
+  inputPanel: {fileID: 1596511991}
+  submitButton: {fileID: 1397259367}
   escButton: {fileID: 1954053510}
   reviewDialogButton: {fileID: 1852471380}
 --- !u!4 &1647364586
