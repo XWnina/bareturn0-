@@ -2,20 +2,10 @@ const express = require("express");
 const SaveFile = require("../models/SaveFile");
 const authMiddleware = require("../middlewares/authMiddleware");
 const { logRequestResponse } = require("../utils/logger");
+const User = require("../models/User");
+
 
 const router = express.Router();
-
-// Get all save files
-router.get("/", authMiddleware, async (req, res) => {
-    try {
-        const saves = await SaveFile.find({ userId: req.user.id });
-        logRequestResponse(req, res, saves);
-        res.json(saves);
-    } catch (err) {
-        logRequestResponse(req, res, { error: err.message });
-        res.status(500).json({ error: err.message });
-    }
-});
 
 // Create a new save file
 router.post("/", authMiddleware, async (req, res) => {
@@ -26,6 +16,7 @@ router.post("/", authMiddleware, async (req, res) => {
             userId: req.user.id,
             saveName,
         });
+
         if (existingSave) {
             const errorResponse = {
                 error: "Save file with this name already exists",
@@ -52,48 +43,74 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 });
 
-// Delete a save file
-router.delete("/:saveName", authMiddleware, async (req, res) => {
+// Update playerName
+router.put("/:saveName/updatePlayerName", authMiddleware, async (req, res) => {
     try {
-        const save = await SaveFile.findOneAndDelete({
-            userId: req.user.id,
-            saveName: req.params.saveName,
-        });
-
-        if (!save) {
-            const errorResponse = { error: "Save file not found" };
-            logRequestResponse(req, res, errorResponse);
-            return res.status(404).json(errorResponse);
+        const { playerName } = req.body;
+        if (!playerName) {
+            return res.status(400).json({ error: "Player name is required" });
         }
 
-        const successResponse = { message: "Save deleted successfully" };
-        logRequestResponse(req, res, successResponse);
-        res.json(successResponse);
-    } catch (err) {
-        logRequestResponse(req, res, { error: err.message });
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Update a save file
-router.put("/:saveName", authMiddleware, async (req, res) => {
-    try {
         const save = await SaveFile.findOneAndUpdate(
             { userId: req.user.id, saveName: req.params.saveName },
-            { $set: req.body },
+            { $set: { playerName } },
             { new: true }
         );
 
         if (!save) {
-            const errorResponse = { error: "Save file not found" };
-            logRequestResponse(req, res, errorResponse);
-            return res.status(404).json(errorResponse);
+            return res.status(404).json({ error: "Save file not found" });
         }
 
-        logRequestResponse(req, res, save);
-        res.json(save);
+        res.json({ message: "Player name updated successfully", save });
     } catch (err) {
-        logRequestResponse(req, res, { error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update progress
+router.put("/:saveName/updateProgress", authMiddleware, async (req, res) => {
+    try {
+        const { progress } = req.body;
+        if (progress === undefined) {
+            return res.status(400).json({ error: "Progress is required" });
+        }
+
+        const save = await SaveFile.findOneAndUpdate(
+            { userId: req.user.id, saveName: req.params.saveName },
+            { $set: { progress } },
+            { new: true }
+        );
+
+        if (!save) {
+            return res.status(404).json({ error: "Save file not found" });
+        }
+
+        res.json({ message: "Progress updated successfully", save });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Update coins
+router.put("/:saveName/updateCoins", authMiddleware, async (req, res) => {
+    try {
+        const { coins } = req.body;
+        if (coins === undefined) {
+            return res.status(400).json({ error: "Coins are required" });
+        }
+
+        const save = await SaveFile.findOneAndUpdate(
+            { userId: req.user.id, saveName: req.params.saveName },
+            { $set: { coins } },
+            { new: true }
+        );
+
+        if (!save) {
+            return res.status(404).json({ error: "Save file not found" });
+        }
+
+        res.json({ message: "Coins updated successfully", save });
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });
@@ -113,6 +130,49 @@ router.get("/me", authMiddleware, async (req, res) => {
 
         res.json(saveFile);
     } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get the save file for the current logged-in user
+router.get("/me", authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        const saveFile = await SaveFile.findOne({ userId: user._id });
+        if (!saveFile) {
+            return res.status(404).json({ error: "Save file not found" });
+        }
+
+        res.json(saveFile);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+// Delete a save file
+router.delete("/:saveName", authMiddleware, async (req, res) => {
+    try {
+        const save = await SaveFile.findOneAndDelete({
+            userId: req.user.id,
+            saveName: req.params.saveName,
+        });
+
+        if (!save) {
+            const errorResponse = { error: "Save file not found" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(404).json(errorResponse);
+        }
+
+        const successResponse = { message: "Save deleted successfully" };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
+    } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
         res.status(500).json({ error: err.message });
     }
 });
