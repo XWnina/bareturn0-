@@ -22,17 +22,27 @@ router.post("/", authMiddleware, async (req, res) => {
     try {
         const { saveName, progress, coins } = req.body;
 
-        const existingSave = await SaveFile.findOne({ userId: req.user.id, saveName });
+        const existingSave = await SaveFile.findOne({
+            userId: req.user.id,
+            saveName,
+        });
         if (existingSave) {
-            const errorResponse = { error: "Save file with this name already exists" };
+            const errorResponse = {
+                error: "Save file with this name already exists",
+            };
             logRequestResponse(req, res, errorResponse);
             return res.status(400).json(errorResponse);
         }
 
-        const newSave = new SaveFile({ saveName, progress, coins, userId: req.user.id });
+        const newSave = new SaveFile({
+            saveName,
+            progress,
+            coins,
+            userId: req.user.id,
+        });
 
         await newSave.save();
-        
+
         const successResponse = { message: "Save file created successfully" };
         logRequestResponse(req, res, successResponse, newSave);
         res.status(201).json(newSave);
@@ -42,11 +52,13 @@ router.post("/", authMiddleware, async (req, res) => {
     }
 });
 
-
 // Delete a save file
 router.delete("/:saveName", authMiddleware, async (req, res) => {
     try {
-        const save = await SaveFile.findOneAndDelete({ userId: req.user.id, saveName: req.params.saveName });
+        const save = await SaveFile.findOneAndDelete({
+            userId: req.user.id,
+            saveName: req.params.saveName,
+        });
 
         if (!save) {
             const errorResponse = { error: "Save file not found" };
@@ -86,6 +98,23 @@ router.put("/:saveName", authMiddleware, async (req, res) => {
     }
 });
 
+// Get the save file for the current logged-in user
+router.get("/me", authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
 
+        const saveFile = await SaveFile.findOne({ userId: user._id });
+        if (!saveFile) {
+            return res.status(404).json({ error: "Save file not found" });
+        }
+
+        res.json(saveFile);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 module.exports = router;

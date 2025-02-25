@@ -100,12 +100,16 @@ public class LoginRegisterUI : MonoBehaviour
             var jsonResponse = JsonUtility.FromJson<LoginResponse>(request.downloadHandler.text);
             PlayerPrefs.SetString("token", jsonResponse.token);
             loginResponseMessage.text = "Login successful!";
+            UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
         }
         else
         {
-            loginResponseMessage.text = "Login failed: " + request.downloadHandler.text;
+            var errorResponse = JsonUtility.FromJson<ErrorResponse>(request.downloadHandler.text);
+            loginResponseMessage.text = "Login failed: " + errorResponse.error;
         }
+
     }
+
 
     // Coroutine for sending register request
     private IEnumerator RegisterRequest()
@@ -131,9 +135,11 @@ public class LoginRegisterUI : MonoBehaviour
         }
         else
         {
-            registerResponseMessage.text = "Error: " + request.downloadHandler.text;
+            var errorResponse = JsonUtility.FromJson<ErrorResponse>(request.downloadHandler.text);
+            registerResponseMessage.text = "Registration failed: " + errorResponse.error;
         }
     }
+
 
     // JSON class for sending user credentials
     [System.Serializable]
@@ -149,4 +155,12 @@ public class LoginRegisterUI : MonoBehaviour
     {
         public string token;
     }
+
+    // JSON class for handling error response
+    [System.Serializable]
+    private class ErrorResponse
+    {
+        public string error;
+    }
+
 }
