@@ -417,11 +417,11 @@ public class DialogManager : MonoBehaviour
             case 5:
                 dialogQueue.Enqueue("Natasha: Awesome! You've completed the lesson on C Magic.");
                 dialogQueue.Enqueue("Natasha: Now you understand how to print basic types!");
-                //dialogQueue.Enqueue("Natasha: Let's test your knowledge with some challenges!");
+                dialogQueue.Enqueue("Natasha: You can go explore this world first, and we will meet again.");
 
                 chatHistory.Add("Natasha: Awesome! You've completed the lesson on C Magic.");
-                chatHistory.Add("Natasha: Now you understand how to print characters, words, integers, and decimal numbers!");
-                //chatHistory.Add("Natasha: Let's test your knowledge with some challenges! "); 
+                chatHistory.Add("Natasha: Now you understand how to print basic types!");
+                chatHistory.Add("Natasha: You can go explore this world first, and we will meet again."); 
 
                 ShowNextSentence();
 
