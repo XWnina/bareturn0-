@@ -86,7 +86,7 @@ public class DialogManager : MonoBehaviour
     void LoadSampleDialog()
     {
         // 交替对话
-        if(chatHistory.Count == 0)
+        if (chatHistory.Count == 0)
         {
             dialogQueue.Enqueue("You: dhwiadhacnwiodi(Huh, What happened?)");
             dialogQueue.Enqueue("Natasha: Oh, finally you are here.");
@@ -216,39 +216,32 @@ public class DialogManager : MonoBehaviour
             if (isTeachingMode)
             {
                 bool correctInput = false;
+                string outputText = argument;
+                isNamingTask = false;
 
                 switch (teachingStep)
                 {
-                    case 1:
-                        correctInput = (formatSpecifier == "%c" && argument == "'A'");
+                    case 1: // `%c`
+                        correctInput = System.Text.RegularExpressions.Regex.IsMatch(argument, @"^'.{1}'$"); // 任意单个字符
+                        if (correctInput) outputText = argument.Trim('\''); // 去掉引号
                         break;
-                    case 2:
-                        correctInput = (formatSpecifier == "%s" && argument == "\"Hello\"");
+                    case 2: // `%s`
+                        correctInput = System.Text.RegularExpressions.Regex.IsMatch(argument, "^\".*\"$"); // 任意字符串
+                        if (correctInput) outputText = argument.Trim('\"'); // 去掉引号
                         break;
-                    case 3:
-                        correctInput = (formatSpecifier == "%d" && argument == "123");
+                    case 3: // `%d`
+                        correctInput = int.TryParse(argument, out _); // 检查是否是整数
                         break;
-                    case 4:
-                        correctInput = (formatSpecifier == "%lf" && argument == "3.14");
+                    case 4: // `%lf`
+                        correctInput = double.TryParse(argument, out _); // 检查是否是浮点数
                         break;
                 }
-
                 if (correctInput)
                 {
-                    string outputText = argument;
-                    if (teachingStep == 1 && argument.StartsWith("'") && argument.EndsWith("'"))
-                    {
-                        outputText = argument.Substring(1, argument.Length - 2);
-                    }
-                    else if (teachingStep == 2 && argument.StartsWith("\"") && argument.EndsWith("\""))
-                    {
-                        outputText = argument.Substring(1, argument.Length - 2);
-                    }
-
                     textP.text = "You: " + outputText;
                     chatHistory.Add("You: " + outputText);
 
-                    teachingStep++; 
+                    teachingStep++;
                     StartCoroutine(ShowTeachingStepAfterDelay(1f));
                     return;
                 }
@@ -421,7 +414,7 @@ public class DialogManager : MonoBehaviour
 
                 chatHistory.Add("Natasha: Awesome! You've completed the lesson on C Magic.");
                 chatHistory.Add("Natasha: Now you understand how to print basic types!");
-                chatHistory.Add("Natasha: You can go explore this world first, and we will meet again."); 
+                chatHistory.Add("Natasha: You can go explore this world first, and we will meet again.");
 
                 ShowNextSentence();
 
