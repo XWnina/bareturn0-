@@ -122,23 +122,25 @@ namespace UI
         private Vector2 GetRandomStartPosition()
         {
             float x, y;
+            float offset = 1.2f; // 让字母更远离屏幕，1.2表示屏幕尺寸的1.2倍
+
             int edge = Random.Range(0, 4);
             switch (edge)
             {
-                case 0:
+                case 0: // 上方
                     x = Random.Range(-Screen.width * 0.5f, Screen.width * 0.5f);
-                    y = Screen.height * 0.6f;
+                    y = Screen.height * offset;
                     break;
-                case 1:
+                case 1: // 下方
                     x = Random.Range(-Screen.width * 0.5f, Screen.width * 0.5f);
-                    y = -Screen.height * 0.6f;
+                    y = -Screen.height * offset;
                     break;
-                case 2:
-                    x = -Screen.width * 0.6f;
+                case 2: // 左侧
+                    x = -Screen.width * offset;
                     y = Random.Range(-Screen.height * 0.5f, Screen.height * 0.5f);
                     break;
-                case 3:
-                    x = Screen.width * 0.6f;
+                case 3: // 右侧
+                    x = Screen.width * offset;
                     y = Random.Range(-Screen.height * 0.5f, Screen.height * 0.5f);
                     break;
                 default:
