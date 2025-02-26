@@ -115,7 +115,7 @@ router.put("/:saveName/updateCoins", authMiddleware, async (req, res) => {
     }
 });
 
-// Get the save file for the current logged-in user
+// Get all save files for the current logged-in user
 router.get("/me", authMiddleware, async (req, res) => {
     try {
         const user = await User.findById(req.user.id);
@@ -123,12 +123,12 @@ router.get("/me", authMiddleware, async (req, res) => {
             return res.status(404).json({ error: "User not found" });
         }
 
-        const saveFile = await SaveFile.findOne({ userId: user._id });
-        if (!saveFile) {
-            return res.status(404).json({ error: "Save file not found" });
+        const saveFiles = await SaveFile.find({ userId: user._id });
+        if (!saveFiles || saveFiles.length === 0) {
+            return res.status(404).json({ error: "No save files found" });
         }
 
-        res.json(saveFile);
+        res.json(saveFiles);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
