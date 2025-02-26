@@ -17,11 +17,13 @@ public class DialogManager : MonoBehaviour
     public Button submitButton;
     public Button escButton; // ESC 按钮
     public Button reviewDialogButton; // 聊天记录按钮
+    //SendDialogInfoManager sendDialogInfoManager;
 
 
     private Queue<string> dialogQueue;
     private bool isPaused = false;
-    private string playerName = "You"; // 玩家默认名字
+    public string playerName = "You"; // 玩家默认名字
+    public int processNum = 0;
     private bool isNamingTask = false; // 是否正在输入名字任务
     private bool isFirstSentenceComplete = false;
     private bool isTeachingMode = false; // ✅ 是否在教学模式
@@ -34,6 +36,7 @@ public class DialogManager : MonoBehaviour
 
     void Start()
     {
+        //sendDialogInfoManager = FindFirstObjectByType<SendDialogInfoManager>();
         //LoadSampleDialog();
         if (isDialogFinished)
         {
@@ -106,7 +109,10 @@ public class DialogManager : MonoBehaviour
             isDialogFinished = true; // **对话结束，标记为 true**
             savedDialogQueue.Clear();
             playerDialog.SetActive(false);
+            processNum = 1;
             npcDialog.SetActive(false);
+            //sendDialogInfoManager.SavePlayerData(playerName, processNum);
+            StartCoroutine(LoadSceneAfterDelay("draftMap", 1f));
             return;
         }
 
@@ -117,10 +123,10 @@ public class DialogManager : MonoBehaviour
             sentence = sentence.Replace("##SHOW_INPUT##", ""); // ✅ 移除标记
             inputPanel.SetActive(true); // ✅ 显示输入框
         }
-        //else
-        //{
-        //    inputPanel.SetActive(false); // ✅ 确保其他情况下 `inputPanel` 不显示
-        //}
+        else
+        {
+            inputPanel.SetActive(false); // ✅ 确保其他情况下 `inputPanel` 不显示
+        }
         if (!chatHistory.Contains(sentence))
         {
             chatHistory.Add(sentence);
@@ -171,7 +177,6 @@ public class DialogManager : MonoBehaviour
     public void ValidateUserInput()
     {
         string userInput = userInputField.text.Trim();
-        //System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(@"^printf\(""(.+)""\);$");
         System.Text.RegularExpressions.Regex regex = new System.Text.RegularExpressions.Regex(
         @"^printf\(\s*""([^""]+)""\s*(?:,\s*(.+))?\s*\);$"
     );
@@ -193,9 +198,6 @@ public class DialogManager : MonoBehaviour
                 chatHistory.Add("You: " + playerName);
                 textP.text = "You: " + playerName;
                 isNamingTask = false; // ✅ 结束名字任务
-
-                // ✅ 存入数据库
-                //SavePlayerNameToDatabase(playerName);
 
                 //Invoke(nameof(ShowNextSentence), 0.5f);
                 StartCoroutine(ShowNPCBeforeTeaching(1f));
@@ -335,8 +337,8 @@ public class DialogManager : MonoBehaviour
 
         playerDialog.SetActive(false);
         npcDialog.SetActive(true);
-        textN.text = "Natasha: Great" + playerName + ", now let's learn more about printf magic!";
-        chatHistory.Add("Natasha: Great" + playerName + ", now let's learn more about printf magic!");
+        textN.text = "Natasha: Great " + playerName + ", now let's learn more about printf magic!";
+        chatHistory.Add("Natasha: Great " + playerName + ", now let's learn more about printf magic!");
 
         yield return new WaitForSeconds(1f);
 
@@ -362,9 +364,9 @@ public class DialogManager : MonoBehaviour
                 dialogQueue.Enqueue("Natasha: Let's start simple! The `%c` format specifier prints a single character.");
                 dialogQueue.Enqueue("Natasha: Try: printf(\"%c\", 'A'); and see what happens! ##SHOW_INPUT##");
 
-                chatHistory.Add("Natasha: Welcome to C Magic! In this world, printf() is the key to communication.");
-                chatHistory.Add("Natasha: Let's start simple! The `%c` format specifier prints a single character.");
-                chatHistory.Add("Natasha: Try: printf(\"%c\", 'A'); and see what happens! ");
+                //chatHistory.Add("Natasha: Welcome to C Magic! In this world, printf() is the key to communication.");
+                //chatHistory.Add("Natasha: Let's start simple! The `%c` format specifier prints a single character.");
+                //chatHistory.Add("Natasha: Try: printf(\"%c\", 'A'); and see what happens! ");
 
                 ShowNextSentence(); // ✅ 触发 Natasha 开始逐步说出三句话
                 break;
@@ -375,10 +377,10 @@ public class DialogManager : MonoBehaviour
                 dialogQueue.Enqueue("Natasha: The `%s` format specifier is used for strings (a sequence of characters).");
                 dialogQueue.Enqueue("Natasha: Try: printf(\"%s\", \"Hello\"); to send a full message! ##SHOW_INPUT##");
 
-                chatHistory.Add("Natasha: Great! You just printed a single character.");
-                chatHistory.Add("Natasha: Now, let's print a full word.");
-                chatHistory.Add("Natasha: Natasha: The `%s` format specifier is used for strings (a sequence of characters).");
-                chatHistory.Add("Natasha: Try: printf(\"%s\", \"Hello\"); to send a full message!");
+                //chatHistory.Add("Natasha: Great! You just printed a single character.");
+                //chatHistory.Add("Natasha: Now, let's print a full word.");
+                //chatHistory.Add("Natasha: Natasha: The `%s` format specifier is used for strings (a sequence of characters).");
+                //chatHistory.Add("Natasha: Try: printf(\"%s\", \"Hello\"); to send a full message!");
 
                 ShowNextSentence();
                 break;
@@ -388,9 +390,9 @@ public class DialogManager : MonoBehaviour
                 dialogQueue.Enqueue("Natasha: To print an integer (a whole number), we use `%d`.");
                 dialogQueue.Enqueue("Natasha: Try: printf(\"%d\", 123); to display a number. ##SHOW_INPUT##");
 
-                chatHistory.Add("Natasha: Well done! But sometimes, we need to work with numbers.");
-                chatHistory.Add("Natasha: To print an integer (a whole number), we use `%d`.");
-                chatHistory.Add("Natasha: Try: printf(\"%d\", 123); to display a number.");
+                //chatHistory.Add("Natasha: Well done! But sometimes, we need to work with numbers.");
+                //chatHistory.Add("Natasha: To print an integer (a whole number), we use `%d`.");
+                //chatHistory.Add("Natasha: Try: printf(\"%d\", 123); to display a number.");
 
                 ShowNextSentence();
                 break;
@@ -400,32 +402,41 @@ public class DialogManager : MonoBehaviour
                 dialogQueue.Enqueue("Natasha: For floating-point numbers (numbers with decimals), we use `%lf`.");
                 dialogQueue.Enqueue("Natasha: Try: printf(\"%lf\", 3.14); to print a decimal value. ##SHOW_INPUT##");
 
-                chatHistory.Add("Natasha: You're getting the hang of it! Now let's deal with decimal numbers.");
-                chatHistory.Add("Natasha: For floating-point numbers (numbers with decimals), we use `%lf`.");
-                chatHistory.Add("Natasha: Try: printf(\"%lf\", 3.14); to print a decimal value.");
+                //chatHistory.Add("Natasha: You're getting the hang of it! Now let's deal with decimal numbers.");
+                //chatHistory.Add("Natasha: For floating-point numbers (numbers with decimals), we use `%lf`.");
+                //chatHistory.Add("Natasha: Try: printf(\"%lf\", 3.14); to print a decimal value.");
 
                 ShowNextSentence();
                 break;
 
             case 5:
-                dialogQueue.Enqueue("Natasha: Awesome! You've completed the lesson on C Magic.");
+                dialogQueue.Enqueue("Natasha: Awesome! You've completed the lesson on printf Magic.");
                 dialogQueue.Enqueue("Natasha: Now you understand how to print basic types!");
                 dialogQueue.Enqueue("Natasha: You can go explore this world first, and we will meet again.");
 
-                chatHistory.Add("Natasha: Awesome! You've completed the lesson on C Magic.");
-                chatHistory.Add("Natasha: Now you understand how to print basic types!");
-                chatHistory.Add("Natasha: You can go explore this world first, and we will meet again.");
+                //chatHistory.Add("Natasha: Awesome! You've completed the lesson on C Magic.");
+                //chatHistory.Add("Natasha: Now you understand how to print basic types!");
+                //chatHistory.Add("Natasha: You can go explore this world first, and we will meet again.");
 
                 ShowNextSentence();
 
                 isTeachingMode = false; // ✅ 结束教学
                 teachingStep = 0;
+                //isDialogFinished = true;
+                inputPanel.SetActive(false);
+                //SceneManager.LoadScene("draftMap");
                 break;
         }
 
 
         yield return new WaitForSeconds(1f);
         //inputPanel.SetActive(true); // ✅ 让用户输入
+    }
+
+    private IEnumerator LoadSceneAfterDelay(string sceneName, float delay)
+    {
+        yield return new WaitForSeconds(delay); // ✅ 等待指定时间
+        SceneManager.LoadScene(sceneName); // ✅ 跳转到指定场景
     }
 
     private string GenerateRandomGarbage()
