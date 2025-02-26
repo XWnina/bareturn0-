@@ -12,19 +12,19 @@ public class ChatHistoryManager : MonoBehaviour
     void Start()
     {
         List<string> chatHistory = DialogManager.GetChatHistory();
-        //DisplayChatHistory();
+        DisplayChatHistory();
         chatHistoryText.text = string.Join("\n", chatHistory);
         backButton.onClick.AddListener(BackToDialog);
     }
 
-    //void DisplayChatHistory()
-    //{
-    //    chatHistoryText.text = "";
-    //    foreach (string entry in DialogManager.chatHistory)
-    //    {   
-    //        chatHistoryText.text += entry + "\n";
-    //    }
-    //}
+    void DisplayChatHistory()
+    {
+        chatHistoryText.text = "";
+        foreach (string entry in DialogManager.chatHistory)
+        {
+            chatHistoryText.text += entry + "\n";
+        }
+    }
 
     public void BackToDialog()
     {
