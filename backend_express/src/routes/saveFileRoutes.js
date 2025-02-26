@@ -5,7 +5,6 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const { logRequestResponse } = require("../utils/logger");
 const User = require("../models/User");
 
-
 const router = express.Router();
 
 // Create a new save file
@@ -19,9 +18,7 @@ router.post("/", authMiddleware, async (req, res) => {
         });
 
         if (existingSave) {
-            const errorResponse = {
-                error: "Save file with this name already exists",
-            };
+            const errorResponse = { error: "Save file with this name already exists" };
             logRequestResponse(req, res, errorResponse);
             return res.status(400).json(errorResponse);
         }
@@ -34,47 +31,44 @@ router.post("/", authMiddleware, async (req, res) => {
         });
 
         await newSave.save();
+        const saveFileCount = await SaveFile.countDocuments({ userId: req.user.id });
 
-       // Count existing save files AFTER saving (to check if it's the first)
-       const saveFileCount = await SaveFile.countDocuments({ userId: req.user.id });
+        let achievementUnlocked = null;
 
-       let achievementUnlocked = null;
+        if (saveFileCount === 1) {
+            const freshmanAchievement = await Achievement.findOne({ name: "Freshman" });
 
-       // If this is the user's first save file, unlock "Freshman" achievement
-       if (saveFileCount === 1) {
-           const freshmanAchievement = await Achievement.findOne({ name: "Freshman" });
+            if (freshmanAchievement) {
+                newSave.unlockedAchievements.push({
+                    achievementId: freshmanAchievement._id,
+                    achievedDate: new Date(),
+                });
 
-           if (freshmanAchievement) {
-               newSave.unlockedAchievements.push({
-                   achievementId: freshmanAchievement._id,
-                   achievedDate: new Date(),
-               });
+                await newSave.save();
 
-               await newSave.save(); // Save the updated unlocked achievements
+                achievementUnlocked = {
+                    message: "Freshman achievement unlocked!",
+                    achievement: {
+                        name: freshmanAchievement.name,
+                        method: freshmanAchievement.method,
+                        achievedDate: new Date(),
+                    },
+                };
+            }
+        }
 
-               achievementUnlocked = {
-                   message: "Freshman achievement unlocked!",
-                   achievement: {
-                       name: freshmanAchievement.name,
-                       method: freshmanAchievement.method,
-                       achievedDate: new Date(),
-                   },
-               };
-           }
-       }
+        const successResponse = {
+            message: "Save file created successfully",
+            saveFile: newSave,
+            ...(achievementUnlocked && { achievementUnlocked }),
+        };
 
-       const successResponse = {
-           message: "Save file created successfully",
-           saveFile: newSave,
-           ...(achievementUnlocked && { achievementUnlocked }), // Include achievement data only if unlocked
-       };
-
-       logRequestResponse(req, res, successResponse);
-       res.status(201).json(successResponse);
-   } catch (err) {
-       logRequestResponse(req, res, { error: err.message });
-       res.status(500).json({ error: err.message });
-   }
+        logRequestResponse(req, res, successResponse);
+        res.status(201).json(successResponse);
+    } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Update playerName
@@ -82,7 +76,9 @@ router.put("/:saveName/updatePlayerName", authMiddleware, async (req, res) => {
     try {
         const { playerName } = req.body;
         if (!playerName) {
-            return res.status(400).json({ error: "Player name is required" });
+            const errorResponse = { error: "Player name is required" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(400).json(errorResponse);
         }
 
         const save = await SaveFile.findOneAndUpdate(
@@ -92,11 +88,16 @@ router.put("/:saveName/updatePlayerName", authMiddleware, async (req, res) => {
         );
 
         if (!save) {
-            return res.status(404).json({ error: "Save file not found" });
+            const errorResponse = { error: "Save file not found" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(404).json(errorResponse);
         }
 
-        res.json({ message: "Player name updated successfully", save });
+        const successResponse = { message: "Player name updated successfully", save };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
     } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
         res.status(500).json({ error: err.message });
     }
 });
@@ -106,7 +107,9 @@ router.put("/:saveName/updateProgress", authMiddleware, async (req, res) => {
     try {
         const { progress } = req.body;
         if (progress === undefined) {
-            return res.status(400).json({ error: "Progress is required" });
+            const errorResponse = { error: "Progress is required" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(400).json(errorResponse);
         }
 
         const save = await SaveFile.findOneAndUpdate(
@@ -116,11 +119,16 @@ router.put("/:saveName/updateProgress", authMiddleware, async (req, res) => {
         );
 
         if (!save) {
-            return res.status(404).json({ error: "Save file not found" });
+            const errorResponse = { error: "Save file not found" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(404).json(errorResponse);
         }
 
-        res.json({ message: "Progress updated successfully", save });
+        const successResponse = { message: "Progress updated successfully", save };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
     } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
         res.status(500).json({ error: err.message });
     }
 });
@@ -130,7 +138,9 @@ router.put("/:saveName/updateCoins", authMiddleware, async (req, res) => {
     try {
         const { coins } = req.body;
         if (coins === undefined) {
-            return res.status(400).json({ error: "Coins are required" });
+            const errorResponse = { error: "Coins are required" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(400).json(errorResponse);
         }
 
         const save = await SaveFile.findOneAndUpdate(
@@ -140,88 +150,32 @@ router.put("/:saveName/updateCoins", authMiddleware, async (req, res) => {
         );
 
         if (!save) {
-            return res.status(404).json({ error: "Save file not found" });
+            const errorResponse = { error: "Save file not found" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(404).json(errorResponse);
         }
 
-        res.json({ message: "Coins updated successfully", save });
+        const successResponse = { message: "Coins updated successfully", save };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
     } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
         res.status(500).json({ error: err.message });
     }
 });
 
-// Get all save files for the current logged-in user
+// Get all save files for the current user
 router.get("/me", authMiddleware, async (req, res) => {
     try {
-        const user = await User.findById(req.user.id);
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
+        const saveFiles = await SaveFile.find({ userId: req.user.id });
 
-        const saveFiles = await SaveFile.find({ userId: user._id });
-        if (!saveFiles || saveFiles.length === 0) {
-            return res.status(404).json({ error: "No save files found" });
-        }
-
+        logRequestResponse(req, res, { saveFiles });
         res.json(saveFiles);
     } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
         res.status(500).json({ error: err.message });
     }
 });
-
-// Get progress for a specific save file
-router.get("/:saveName/progress", authMiddleware, async (req, res) => {
-    try {
-        const saveFile = await SaveFile.findOne({
-            userId: req.user.id,
-            saveName: req.params.saveName,
-        });
-
-        if (!saveFile) {
-            return res.status(404).json({ error: "Save file not found" });
-        }
-
-        res.json({ progress: saveFile.progress });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Get coins for a specific save file
-router.get("/:saveName/coins", authMiddleware, async (req, res) => {
-    try {
-        const saveFile = await SaveFile.findOne({
-            userId: req.user.id,
-            saveName: req.params.saveName,
-        });
-
-        if (!saveFile) {
-            return res.status(404).json({ error: "Save file not found" });
-        }
-
-        res.json({ coins: saveFile.coins });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
-// Get playerName for a specific save file
-router.get("/:saveName/playerName", authMiddleware, async (req, res) => {
-    try {
-        const saveFile = await SaveFile.findOne({
-            userId: req.user.id,
-            saveName: req.params.saveName,
-        });
-
-        if (!saveFile) {
-            return res.status(404).json({ error: "Save file not found" });
-        }
-
-        res.json({ playerName: saveFile.playerName });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-});
-
 
 // Delete a save file
 router.delete("/:saveName", authMiddleware, async (req, res) => {
