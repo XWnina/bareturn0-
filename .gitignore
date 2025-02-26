@@ -1,4 +1,4 @@
 *.DS_Store
 bareturn0_unity/.vsconfig
 ./**/scripts_for_db_testing/*
-bareturn0_unity/Assets/TextMesh Pro/Resources/Fonts & Materials/CraftPixNet Survival Kit SDF.assetgit rebase --abort
+bareturn0_unity/Assets/TextMesh Pro/Resources/Fonts & Materials/CraftPixNet Survival Kit SDF.asset
