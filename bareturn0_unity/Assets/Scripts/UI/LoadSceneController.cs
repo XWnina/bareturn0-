@@ -1,13 +1,28 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
 
 namespace UI // ✅ 添加正确的命名空间
 {
+    public static class JsonHelper
+    {
+        public static List<T> FromJson<T>(string json)
+        {
+            string newJson = "{\"array\":" + json + "}";
+            Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
+            return wrapper.array;
+        }
+
+        [System.Serializable]
+        private class Wrapper<T>
+        {
+            public List<T> array;
+        }
+    }
+
     public class LoadSceneController : MonoBehaviour
     {
         public GameObject saveFileButtonPrefab; // 预制体
@@ -40,31 +55,49 @@ namespace UI // ✅ 添加正确的命名空间
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                Debug.Log("Save Files: " + request.downloadHandler.text);
+                Debug.Log("Raw JSON Response: " + request.downloadHandler.text);
 
-                // ✅ 先尝试解析为单个对象
-                SaveFile singleSave = JsonUtility.FromJson<SaveFile>(request.downloadHandler.text);
-    
-                List<SaveFile> savesList = new List<SaveFile> { singleSave };
+                List<SaveFile> savesList = new List<SaveFile>();
+
+                // ✅ 尝试解析为数组
+                if (request.downloadHandler.text.StartsWith("["))
+                {
+                    savesList = JsonHelper.FromJson<SaveFile>(request.downloadHandler.text);
+                }
+                else // ✅ 解析单个对象
+                {
+                    SaveFile singleSave = JsonUtility.FromJson<SaveFile>(request.downloadHandler.text);
+                    savesList.Add(singleSave);
+                }
+
+                if (savesList.Count == 0)
+                {
+                    Debug.LogError("No save files returned from server!");
+                }
 
                 foreach (SaveFile save in savesList)
                 {
-                    GameObject newButton = Instantiate(saveFileButtonPrefab, contentPanel);
-                    TMP_Text buttonText = newButton.GetComponentInChildren<TMP_Text>();
+                    Debug.Log($"Instantiating save: {save.saveName}, Player: {save.playerName}, Progress: {save.progress}, Coins: {save.coins}");
 
-                    if (buttonText != null)
+                    GameObject newButton = Instantiate(saveFileButtonPrefab, contentPanel);
+                    SaveFileButton buttonComponent = newButton.GetComponent<SaveFileButton>();
+                    
+                    if (buttonComponent != null)
                     {
-                        buttonText.text = $"{save.saveName} - Player: {save.playerName} - Progress: {save.progress}, Coins: {save.coins}";
+                        buttonComponent.SetSaveData(save.saveName, save.playerName, save.progress, save.coins);
                     }
                     else
                     {
-                        Debug.LogError("TMP_Text component not found on SaveFileButton prefab!");
+                        Debug.LogError("SaveFileButton component not found on prefab!");
                     }
-
+                    
                     newButton.GetComponent<Button>().onClick.AddListener(() => SetCurrentSaveAndLoad(save.saveName));
                 }
             }
-
+            else
+            {
+                Debug.LogError("Failed to fetch save files: " + request.downloadHandler.text);
+            }
         }
 
         void SetCurrentSaveAndLoad(string saveName)
@@ -72,12 +105,6 @@ namespace UI // ✅ 添加正确的命名空间
             _currentSaveName = saveName; // ✅ 存储 saveName 在全局变量
             PlayerPrefs.SetString("currentSaveName", saveName);
             SceneManager.LoadScene("draftMap"); // 加载游戏场景
-        }
-
-        [System.Serializable]
-        private class SaveFileResponse
-        {
-            public List<SaveFile> saves;
         }
 
         [System.Serializable]
@@ -89,5 +116,4 @@ namespace UI // ✅ 添加正确的命名空间
             public int coins;
         }
     }
-    
 }
