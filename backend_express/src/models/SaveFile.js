@@ -1,12 +1,15 @@
 const mongoose = require("mongoose");
 
 const SaveFileSchema = new mongoose.Schema({
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Reference to the User model
     saveName: { type: String, required: true },
-    playerName: { type: String, default: "|" },
+    playerName: { type: String, default: "|" }, // Default player name is "|"
     progress: { type: Number, default: 0 },
     coins: { type: Number, default: 0 },
-    timeStamp: { type: Date, default: Date.now },
+    unlockedAchievements: [{
+        achievementId: { type: mongoose.Schema.Types.ObjectId, ref: "Achievement" },
+        achievedDate: { type: Date, default: null }
+    }]  // Reference to the Achievement model
 }, { timestamps: true });
 
 module.exports = mongoose.model("SaveFile", SaveFileSchema);

@@ -1,5 +1,6 @@
 const express = require("express");
 const SaveFile = require("../models/SaveFile");
+const Achievement = require("../models/Achievement");
 const authMiddleware = require("../middlewares/authMiddleware");
 const { logRequestResponse } = require("../utils/logger");
 const User = require("../models/User");
@@ -34,13 +35,46 @@ router.post("/", authMiddleware, async (req, res) => {
 
         await newSave.save();
 
-        const successResponse = { message: "Save file created successfully" };
-        logRequestResponse(req, res, successResponse, newSave);
-        res.status(201).json(newSave);
-    } catch (err) {
-        logRequestResponse(req, res, { error: err.message });
-        res.status(500).json({ error: err.message });
-    }
+       // Count existing save files AFTER saving (to check if it's the first)
+       const saveFileCount = await SaveFile.countDocuments({ userId: req.user.id });
+
+       let achievementUnlocked = null;
+
+       // If this is the user's first save file, unlock "Freshman" achievement
+       if (saveFileCount === 1) {
+           const freshmanAchievement = await Achievement.findOne({ name: "Freshman" });
+
+           if (freshmanAchievement) {
+               newSave.unlockedAchievements.push({
+                   achievementId: freshmanAchievement._id,
+                   achievedDate: new Date(),
+               });
+
+               await newSave.save(); // Save the updated unlocked achievements
+
+               achievementUnlocked = {
+                   message: "Freshman achievement unlocked!",
+                   achievement: {
+                       name: freshmanAchievement.name,
+                       method: freshmanAchievement.method,
+                       achievedDate: new Date(),
+                   },
+               };
+           }
+       }
+
+       const successResponse = {
+           message: "Save file created successfully",
+           saveFile: newSave,
+           ...(achievementUnlocked && { achievementUnlocked }), // Include achievement data only if unlocked
+       };
+
+       logRequestResponse(req, res, successResponse);
+       res.status(201).json(successResponse);
+   } catch (err) {
+       logRequestResponse(req, res, { error: err.message });
+       res.status(500).json({ error: err.message });
+   }
 });
 
 // Update playerName
