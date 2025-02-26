@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class BattleUIManager : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class BattleUIManager : MonoBehaviour
     [Header("Battle Result UI")]
     public GameObject battleResultPanel; // 结算面板
     public TextMeshProUGUI resultText; // 胜利/失败文本
-    //public Button returnButton; // 返回菜单按钮
+    public Button returnButton; // 返回菜单按钮
 
     [Header("Basic Battle Informations")]
     public TextMeshProUGUI playerHealthText;
@@ -71,14 +72,14 @@ public class BattleUIManager : MonoBehaviour
         resultText.color = isVictory ? Color.green : Color.red;
 
         // 监听返回菜单按钮
-        //returnButton.onClick.RemoveAllListeners();
-        //returnButton.onClick.AddListener(ReturnToMainMenu);
+        returnButton.onClick.RemoveAllListeners();
+        returnButton.onClick.AddListener(ReturnToMap);
     }
 
-    public void ReturnToMainMenu()
+    public void ReturnToMap()
     {
-        Debug.Log("Returning to main menu...");
-        // 这里可以加载主菜单场景，例如 SceneManager.LoadScene("MainMenu");
+        Debug.Log("Returning to map...");
+        SceneManager.LoadScene("draftMap");
     }
 
     private void Update()
