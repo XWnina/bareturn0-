@@ -13,14 +13,22 @@ router.post("/register", async (req, res) => {
         const { username, password } = req.body;
 
         // Check if username and password are provided
-        if (!username || typeof username !== "string" || username.trim().length === 0) {
-            const errorResponse = { error: "Username is required and cannot be empty" };
+        if (
+            !username ||
+            typeof username !== "string" ||
+            username.trim().length === 0
+        ) {
+            const errorResponse = {
+                error: "Username is required and cannot be empty",
+            };
             logRequestResponse(req, res, errorResponse);
             return res.status(400).json(errorResponse);
         }
 
         if (!password || typeof password !== "string" || password.length < 6) {
-            const errorResponse = { error: "Password is required and must be at least 6 characters long" };
+            const errorResponse = {
+                error: "Password is required and must be at least 6 characters long",
+            };
             logRequestResponse(req, res, errorResponse);
             return res.status(400).json(errorResponse);
         }
@@ -63,12 +71,21 @@ router.post("/login", async (req, res) => {
             return res.status(400).json(errorResponse);
         }
 
+        // if (user.logStatus) {
+        //     const errorResponse = { error: "User is already logged in" };
+        //     logRequestResponse(req, res, errorResponse);
+        //     return res.status(400).json(errorResponse);
+        // }
+
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             const errorResponse = { error: "Incorrect password" };
             logRequestResponse(req, res, errorResponse);
             return res.status(400).json(errorResponse);
         }
+
+        user.logStatus = true;
+        await user.save();
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
             expiresIn: "7d",
@@ -126,6 +143,28 @@ router.delete("/:username", async (req, res) => {
         res.json(successResponse);
     } catch (err) {
         logRequestResponse(req, res, { error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+router.post("/logout", async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            return res.status(400).json({ error: "Username is required" });
+        }
+
+        const user = await User.findOne({ username });
+        if (!user) {
+            return res.status(400).json({ error: "User does not exist" });
+        }
+
+        // Set logStatus to false
+        user.logStatus = false;
+        await user.save();
+
+        res.json({ message: "Logout successful" });
+    } catch (err) {
         res.status(500).json({ error: err.message });
     }
 });

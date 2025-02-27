@@ -1,28 +1,45 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.Networking;
+using System.Collections;
 using UnityEngine.UI;
 
-public class SettingController : MonoBehaviour 
+public class LogoutManager : MonoBehaviour
 {
-    public Button LogoutButton; // Drag the button into this field in the Inspector
-    private void Start()
+    public Button logoutButton;
+    private string logoutUrl = "https://localhost:3000/users/logout"; // Replace with actual API endpoint
+
+    public void Logout(string username)
     {
-        if (LogoutButton != null)
+        StartCoroutine(LogoutRequest(username));
+    }
+
+    private IEnumerator LogoutRequest(string username)
+    {
+        WWWForm form = new WWWForm();
+        form.AddField("username", username);
+
+        using (UnityWebRequest www = UnityWebRequest.Post(logoutUrl, form))
         {
-            LogoutButton.onClick.AddListener(ClearAllPlayerPrefs);
-            // Debug.Log("Button listener successfully assigned.");
+            yield return www.SendWebRequest();
+
+            if (www.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Logout successful: " + www.downloadHandler.text);
+            }
+            else
+            {
+                Debug.LogError("Logout failed: " + www.error);
+            }
         }
-        else
-        {
-            Debug.LogError("LogoutButton is not assigned in the Inspector!");
-        }
+
+        ClearAllPlayerPrefs();
     }
 
     public void ClearAllPlayerPrefs()
     {
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save(); // Ensure changes are saved
-        //  Debug.Log("All PlayerPrefs data cleared.");
+        Debug.Log("All PlayerPrefs data cleared.");
 
         UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScene");
     }
