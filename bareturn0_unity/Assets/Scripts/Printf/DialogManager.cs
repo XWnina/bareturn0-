@@ -17,7 +17,7 @@ public class DialogManager : MonoBehaviour
     public Button submitButton;
     public Button escButton; // ESC 按钮
     public Button reviewDialogButton; // 聊天记录按钮
-    SendDialogInfoManager sendDialogInfoManager;
+    public SendDialogInfoManager sendDialogInfoManager;
 
 
     private Queue<string> dialogQueue;
@@ -111,7 +111,16 @@ public class DialogManager : MonoBehaviour
             playerDialog.SetActive(false);
             processNum = 1;
             npcDialog.SetActive(false);
-            sendDialogInfoManager.SavePlayerData(playerName, processNum);
+            //sendDialogInfoManager.SavePlayerData(playerName, processNum);
+            if (sendDialogInfoManager != null)
+            {
+                sendDialogInfoManager.SavePlayerData(playerName, processNum);
+            }
+            else
+            {
+                Debug.LogError("❌ SendDialogInfoManager is NULL! Could not save data.");
+            }
+
             StartCoroutine(LoadSceneAfterDelay("draftMap", 1f));
             return;
         }

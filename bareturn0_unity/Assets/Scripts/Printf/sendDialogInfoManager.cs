@@ -1,13 +1,22 @@
 ﻿using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
-
+using System.Text;
 
 public class SendDialogInfoManager : MonoBehaviour
 {
-    private string baseUrl = "http://localhost:3000"; // 你的后端 API 地址
-    private string saveName = "save1"; // 存档名称
-    //private string userId = "67bf7a133d7ba917fb6bf5bf"; // 用户 ID
+    private string baseUrl = "http://localhost:3000/"; // 你的后端 API 地址
+    private string saveName; // 存档名称
+
+    void Start()
+    {
+        // 从 PlayerPrefs 读取存档名称
+        saveName = PlayerPrefs.GetString("currentSaveName", "");
+        if (string.IsNullOrEmpty(saveName))
+        {
+            Debug.LogError("❌ Save name is not set in PlayerPrefs!");
+        }
+    }
 
     public void SavePlayerData(string playerName, int progress)
     {
@@ -17,7 +26,22 @@ public class SendDialogInfoManager : MonoBehaviour
 
     private IEnumerator UpdatePlayerName(string playerName)
     {
-        string url = $"{baseUrl}/{saveName}/updatePlayerName";
+        string token = PlayerPrefs.GetString("token", "");
+        //string saveName = PlayerPrefs.GetString("currentSaveName", ""); // ✅ 读取存档名称
+
+        if (string.IsNullOrEmpty(token))
+        {
+            Debug.LogError("❌ No Token Found! Player is not authenticated.");
+            yield break;
+        }
+
+        if (string.IsNullOrEmpty(saveName))
+        {
+            Debug.LogError("❌ No SaveName Found! Cannot update player name.");
+            yield break;
+        }
+
+        string url = $"{baseUrl}savefiles/{saveName}/updatePlayerName"; // ✅ 修正 URL
         string jsonData = JsonUtility.ToJson(new PlayerNameData(playerName));
 
         using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
@@ -26,6 +50,7 @@ public class SendDialogInfoManager : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Authorization", "Bearer " + token); // ✅ 添加 Token
 
             yield return request.SendWebRequest();
 
@@ -42,7 +67,22 @@ public class SendDialogInfoManager : MonoBehaviour
 
     private IEnumerator UpdateProgress(int progress)
     {
-        string url = $"{baseUrl}/{saveName}/updateProgress";
+        string token = PlayerPrefs.GetString("token", "");
+        //string saveName = PlayerPrefs.GetString("currentSaveName", ""); // ✅ 读取存档名称
+
+        if (string.IsNullOrEmpty(token))
+        {
+            Debug.LogError("❌ No Token Found! Player is not authenticated.");
+            yield break;
+        }
+
+        if (string.IsNullOrEmpty(saveName))
+        {
+            Debug.LogError("❌ No SaveName Found! Cannot update progress.");
+            yield break;
+        }
+
+        string url = $"{baseUrl}savefiles/{saveName}/updateProgress"; // ✅ 修正 URL
         string jsonData = JsonUtility.ToJson(new ProgressData(progress));
 
         using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
@@ -51,6 +91,7 @@ public class SendDialogInfoManager : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Authorization", "Bearer " + token); // ✅ 添加 Token
 
             yield return request.SendWebRequest();
 
@@ -63,6 +104,15 @@ public class SendDialogInfoManager : MonoBehaviour
                 Debug.LogError("❌ Failed to update progress: " + request.error);
             }
         }
+    }
+
+
+    // 确保 `saveName` 在游戏内某个地方被正确存入
+    public static void SetSaveName(string newSaveName)
+    {
+        PlayerPrefs.SetString("currentSaveName", newSaveName);
+        PlayerPrefs.Save(); // **重要！保存数据**
+        Debug.Log("✅ Save name stored: " + newSaveName);
     }
 
     [System.Serializable]

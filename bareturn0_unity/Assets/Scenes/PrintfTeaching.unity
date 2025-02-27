@@ -2209,6 +2209,7 @@ MonoBehaviour:
   submitButton: {fileID: 1397259367}
   escButton: {fileID: 1954053510}
   reviewDialogButton: {fileID: 1852471380}
+  sendDialogInfoManager: {fileID: 1179091288}
   playerName: You
   processNum: 0
 --- !u!4 &1647364586
