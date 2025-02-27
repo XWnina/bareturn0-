@@ -26,31 +26,31 @@ public class LevelButtonManager : MonoBehaviour
         //UpdateLevelUI();
     }
     public void UpdateLevelUI()
+{
+    currentLevelIndex = MapUrlManager.CurrentLevel;
+    Debug.Log($"LevelButtonController: Updating Level UI: Current Level = {currentLevelIndex}");
+
+    for (int i = 0; i < levels.Count; i++)
     {
-        currentLevelIndex = MapUrlManager.CurrentLevel;
-        Debug.Log($"🔍 Updating Level UI: Current Level = {currentLevelIndex}");
-        for (int i = 0; i < levels.Count; i++)
+        LevelData level = levels[i];
+
+        if (i < currentLevelIndex) // Levels that have been completed
         {
-            LevelData level = levels[i];
+            level.icon.sprite = level.passedSprite;
+        }
 
-            if (i + 1 < currentLevelIndex)
-            {
-                level.icon.sprite = level.passedSprite;
-            }
-            else if (i + 1 == currentLevelIndex)
-            {
-                youAreHereIndicator.transform.position = level.levelButton.transform.position;
-                youAreHereIndicator.SetActive(true);
-            }
-            else
-            {
-                level.icon.sprite = level.lockedSprite;
-            }
-            
-
-
+        if (i == currentLevelIndex) // The current level (where the indicator should be)
+        {
+            youAreHereIndicator.transform.position = level.levelButton.transform.position;
+            youAreHereIndicator.SetActive(true);
+        }
+        else if (i > currentLevelIndex) // Locked levels
+        {
+            level.icon.sprite = level.lockedSprite;
         }
     }
+}
+
 
     public void CompleteLevel(int levelIndex)
     {
