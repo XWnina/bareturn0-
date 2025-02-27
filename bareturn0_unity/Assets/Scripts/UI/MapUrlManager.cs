@@ -28,38 +28,47 @@ public class MapUrlManager : MonoBehaviour
     }
 
     IEnumerator GetUserLevel()
+{
+    string url = $"{apiBaseUrl}/me"; // Fetch all save files for the user
+
+    UnityWebRequest request = UnityWebRequest.Get(url);
+    request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("authToken", "")); // Assuming auth token is stored
+    yield return request.SendWebRequest();
+
+    if (request.result == UnityWebRequest.Result.Success)
     {
-        string url = $"{apiBaseUrl}/me"; // Fetch all save files for the user
+        string json = request.downloadHandler.text;
+        SaveFileData[] saveFiles = JsonHelper.FromJson<SaveFileData>(json); // Deserialize array
 
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("authToken", "")); // Assuming auth token is stored
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
+        foreach (var save in saveFiles)
         {
-            string json = request.downloadHandler.text;
-            SaveFileData[] saveFiles = JsonHelper.FromJson<SaveFileData>(json); // Deserialize array
-
-            foreach (var save in saveFiles)
+            if (save.saveName == saveName) // Match the correct save file
             {
-                if (save.saveName == saveName) // Match the correct save file
+                CurrentLevel = save.progress; // Use progress as current level
+                Debug.Log($"[MapUrlManager] Successfully fetched progress: {CurrentLevel} for save: {saveName}");
+
+                // ✅ Notify LevelButtonManager after fetching data
+                if (LevelButtonManager.Instance != null)
                 {
-                    CurrentLevel = save.progress; // Use progress as current level
-                    Debug.Log("Fetched Current Level: " + CurrentLevel);
-
-                    // Notify LevelButtonManager to update UI
                     LevelButtonManager.Instance.UpdateLevelUI();
-                    yield break; // Stop loop after finding the correct save
                 }
-            }
+                else
+                {
+                    Debug.LogError("[MapUrlManager] LevelButtonManager Instance is NULL!");
+                }
 
-            Debug.LogError("Save file not found for the current user.");
+                yield break; // Stop loop after finding the correct save
+            }
         }
-        else
-        {
-            Debug.LogError("Error fetching user progress: " + request.error);
-        }
+
+        Debug.LogError($"[MapUrlManager] Save file '{saveName}' not found for the current user.");
     }
+    else
+    {
+        Debug.LogError($"[MapUrlManager] Error fetching user progress: {request.error}");
+    }
+}
+
 
     [System.Serializable]
     private class SaveFileData
