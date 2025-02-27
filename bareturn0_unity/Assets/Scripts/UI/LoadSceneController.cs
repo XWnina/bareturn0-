@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using TMPro;
 
 namespace UI // ✅ 添加正确的命名空间
 {
@@ -28,6 +29,7 @@ namespace UI // ✅ 添加正确的命名空间
         public GameObject saveFileButtonPrefab; // 预制体
         public Transform contentPanel; // `Content` 物体
         public Button backButton;
+        public TMP_Text noSaveMessage; // ✅ 新增文本提示
         private string _apiBaseUrl = "http://localhost:3000/savefiles/me"; // 获取当前用户存档
         private string _currentSaveName; // ✅ 添加全局变量
 
@@ -73,6 +75,17 @@ namespace UI // ✅ 添加正确的命名空间
                 if (savesList.Count == 0)
                 {
                     Debug.LogError("No save files returned from server!");
+                    if (noSaveMessage != null)
+                    {
+                        noSaveMessage.text = "There is no archive for this account";
+                        noSaveMessage.gameObject.SetActive(true);
+                    }
+                    yield break;
+                }
+
+                if (noSaveMessage != null)
+                {
+                    noSaveMessage.gameObject.SetActive(false);
                 }
 
                 foreach (SaveFile save in savesList)
