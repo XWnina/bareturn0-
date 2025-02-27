@@ -177,6 +177,69 @@ router.get("/me", authMiddleware, async (req, res) => {
     }
 });
 
+// Get progress for a specific save file
+router.get("/:saveName/progress", authMiddleware, async (req, res) => {
+    try {
+        const save = await SaveFile.findOne({ userId: req.user.id, saveName: req.params.saveName });
+        
+        if (!save) {
+            const errorResponse = { error: "Save file not found" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(404).json(errorResponse);
+        }
+        
+        const successResponse = { progress: save.progress };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
+    } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get coins for a specific save file
+router.get("/:saveName/coins", authMiddleware, async (req, res) => {
+    try {
+        const save = await SaveFile.findOne({ userId: req.user.id, saveName: req.params.saveName });
+        
+        if (!save) {
+            const errorResponse = { error: "Save file not found" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(404).json(errorResponse);
+        }
+        
+        const successResponse = { coins: save.coins };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
+    } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get player name for a specific save file
+router.get("/:saveName/playerName", authMiddleware, async (req, res) => {
+    try {
+        const save = await SaveFile.findOne({ userId: req.user.id, saveName: req.params.saveName });
+        
+        if (!save) {
+            const errorResponse = { error: "Save file not found" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(404).json(errorResponse);
+        }
+        
+        const successResponse = { playerName: save.playerName };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
+    } catch (err) {
+        logRequestResponse(req, res, { error: err.message });
+        res.status(500).json({ error: err.message });
+    }
+});
+
+module.exports = router;
+
+
 // Delete a save file
 router.delete("/:saveName", authMiddleware, async (req, res) => {
     try {
