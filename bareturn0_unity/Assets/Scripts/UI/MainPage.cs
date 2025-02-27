@@ -65,7 +65,7 @@ namespace UI
                 yield break;
             }
 
-            string jsonData = $"{{\"saveName\": \"{saveName}\", \"progress\": 1, \"coins\": 0}}";
+            string jsonData = $"{{\"saveName\": \"{saveName}\", \"progress\": 0, \"coins\": 0}}";
             UnityWebRequest request = new UnityWebRequest(_apiBaseUrl, "POST");
             byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);

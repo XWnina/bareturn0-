@@ -91,7 +91,7 @@ namespace UI // ✅ 添加正确的命名空间
                         Debug.LogError("SaveFileButton component not found on prefab!");
                     }
                     
-                    newButton.GetComponent<Button>().onClick.AddListener(() => SetCurrentSaveAndLoad(save.saveName));
+                    newButton.GetComponent<Button>().onClick.AddListener(() => SetCurrentSaveAndLoad(save.saveName, save.progress));
                 }
             }
             else
@@ -100,11 +100,19 @@ namespace UI // ✅ 添加正确的命名空间
             }
         }
 
-        void SetCurrentSaveAndLoad(string saveName)
+        void SetCurrentSaveAndLoad(string saveName, int progress)
         {
             _currentSaveName = saveName; // ✅ 存储 saveName 在全局变量
             PlayerPrefs.SetString("currentSaveName", saveName);
-            SceneManager.LoadScene("draftMap"); // 加载游戏场景
+            
+            if (progress == 0)
+            {
+                SceneManager.LoadScene("PrintfTeaching"); // 进度为 0，跳转到 PrintfTeaching
+            }
+            else
+            {
+                SceneManager.LoadScene("draftMap"); // 进度不为 0，跳转到地图
+            }
         }
 
         [System.Serializable]
