@@ -22,7 +22,7 @@ public class SettingController : MonoBehaviour
     {
         PlayerPrefs.DeleteAll();
         PlayerPrefs.Save(); // Ensure changes are saved
-        //  Debug.Log("All PlayerPrefs data cleared.");
+        Debug.Log("All PlayerPrefs data cleared.");
 
         UnityEngine.SceneManagement.SceneManager.LoadScene("LoginScene");
     }
