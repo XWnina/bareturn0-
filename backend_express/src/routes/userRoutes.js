@@ -149,23 +149,34 @@ router.delete("/:username", async (req, res) => {
 
 router.post("/logout", async (req, res) => {
     try {
-        const { username } = req.body;
-        if (!username) {
-            return res.status(400).json({ error: "Username is required" });
+        const token = req.headers.authorization?.split(" ")[1]; // Extract token from header
+        if (!token) {
+            const errorResponse = { error: "Unauthorized: No token provided" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(401).json(errorResponse);
         }
 
-        const user = await User.findOne({ username });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const userId = decoded.id;
+
+        const user = await User.findById(userId);
         if (!user) {
-            return res.status(400).json({ error: "User does not exist" });
+            const errorResponse = { error: "User does not exist" };
+            logRequestResponse(req, res, errorResponse);
+            return res.status(400).json(errorResponse);
         }
 
         // Set logStatus to false
         user.logStatus = false;
         await user.save();
 
-        res.json({ message: "Logout successful" });
+        const successResponse = { message: "Logout successful" };
+        logRequestResponse(req, res, successResponse);
+        res.json(successResponse);
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        const errorResponse = { error: err.message };
+        logRequestResponse(req, res, errorResponse);
+        res.status(500).json(errorResponse);
     }
 });
 

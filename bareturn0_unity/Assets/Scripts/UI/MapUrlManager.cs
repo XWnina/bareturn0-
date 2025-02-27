@@ -5,19 +5,16 @@ using UnityEngine.Networking;
 
 public class MapUrlManager : MonoBehaviour
 {
-    private string apiBaseUrl = "http://localhost:3000/api/savefiles"; // Update API base URL
+    //private string apiBaseUrl = "http://localhost:3000/savefiles"; // Update API base URL
     public static int CurrentLevel { get; private set; } = 0; // Store user progress level
 
-    private string username;
+    //private string username;
     private string saveName;
 
     void Start()
     {
-        // Retrieve stored values from PlayerPrefs
-        username = PlayerPrefs.GetString("username", "");
-        saveName = PlayerPrefs.GetString("saveName", "");
-
-        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(saveName))
+        saveName = PlayerPrefs.GetString("currentSaveName", "");
+        if (!string.IsNullOrEmpty(saveName))
         {
             StartCoroutine(GetUserLevel());
         }
@@ -28,70 +25,77 @@ public class MapUrlManager : MonoBehaviour
     }
 
     IEnumerator GetUserLevel()
-{
-    string url = $"{apiBaseUrl}/me"; // Fetch all save files for the user
-
-    UnityWebRequest request = UnityWebRequest.Get(url);
-    request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("authToken", "")); // Assuming auth token is stored
-    yield return request.SendWebRequest();
-
-    if (request.result == UnityWebRequest.Result.Success)
     {
-        string json = request.downloadHandler.text;
-        SaveFileData[] saveFiles = JsonHelper.FromJson<SaveFileData>(json); // Deserialize array
-
-        foreach (var save in saveFiles)
+        saveName = PlayerPrefs.GetString("currentSaveName", "");
+        if (string.IsNullOrEmpty(saveName))
         {
-            if (save.saveName == saveName) // Match the correct save file
-            {
-                CurrentLevel = save.progress; // Use progress as current level
-                Debug.Log($"[MapUrlManager] Successfully fetched progress: {CurrentLevel} for save: {saveName}");
+            Debug.LogError("MapUrlManager: SaveName is missing in PlayerPrefs!");
+            yield break;
+        }
 
-                // ✅ Notify LevelButtonManager after fetching data
+        string url = $"http://localhost:3000/savefiles/{saveName}/progress";
+        //  Debug.Log($"[MapUrlManager] Requesting: {url}");
+
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        string authToken = PlayerPrefs.GetString("token", "");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+        //  Debug.Log($"[MapUrlManager] Using auth token: {authToken}");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string json = request.downloadHandler.text;
+            //  Debug.Log($"✅ [MapUrlManager] Server Response: {json}");
+
+            ProgressResponse progressData = JsonUtility.FromJson<ProgressResponse>(json);
+            if (progressData != null)
+            {
+                CurrentLevel = progressData.progress;
+                Debug.Log($"MapUrlManager: Successfully fetched progress: {CurrentLevel} for save: {saveName}");
+
                 if (LevelButtonManager.Instance != null)
                 {
                     LevelButtonManager.Instance.UpdateLevelUI();
                 }
                 else
                 {
-                    Debug.LogError("[MapUrlManager] LevelButtonManager Instance is NULL!");
+                    Debug.LogError("[MapUrlManager] ❌ LevelButtonManager Instance is NULL!");
                 }
-
-                yield break; // Stop loop after finding the correct save
+            }
+            else
+            {
+                Debug.LogError("[MapUrlManager] ❌ Failed to parse JSON response.");
             }
         }
-
-        Debug.LogError($"[MapUrlManager] Save file '{saveName}' not found for the current user.");
-    }
-    else
-    {
-        Debug.LogError($"[MapUrlManager] Error fetching user progress: {request.error}");
-    }
-}
-
-
-    [System.Serializable]
-    private class SaveFileData
-    {
-        public string saveName;
-        public int progress; // Assuming progress represents the current level
-        public int coins;
-    }
-}
-
-// Helper class to deserialize JSON arrays
-public static class JsonHelper
-{
-    public static T[] FromJson<T>(string json)
-    {
-        string newJson = "{ \"array\": " + json + "}";
-        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
-        return wrapper.array;
+        else
+        {
+            Debug.LogError($"[MapUrlManager] ❌ Error fetching user progress: {request.error}");
+        }
     }
 
     [System.Serializable]
-    private class Wrapper<T>
+    private class ProgressResponse
     {
-        public T[] array;
+        public int progress;
+    }
+
+
+
+    // Helper class to deserialize JSON arrays
+    public static class JsonHelper
+    {
+        public static T[] FromJson<T>(string json)
+        {
+            string newJson = "{ \"array\": " + json + "}";
+            Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
+            return wrapper.array;
+        }
+
+        [System.Serializable]
+        private class Wrapper<T>
+        {
+            public T[] array;
+        }
     }
 }
