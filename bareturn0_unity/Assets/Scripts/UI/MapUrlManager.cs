@@ -13,10 +13,7 @@ public class MapUrlManager : MonoBehaviour
 
     void Start()
     {
-        // Retrieve stored values from PlayerPrefs
-        //username = PlayerPrefs.GetString("username", "");
         saveName = PlayerPrefs.GetString("currentSaveName", "");
-        Debug.LogError("12345dsfrdg");
         if (!string.IsNullOrEmpty(saveName))
         {
             StartCoroutine(GetUserLevel());
@@ -32,30 +29,30 @@ public class MapUrlManager : MonoBehaviour
         saveName = PlayerPrefs.GetString("currentSaveName", "");
         if (string.IsNullOrEmpty(saveName))
         {
-            Debug.LogError("[MapUrlManager] ❌ SaveName is missing in PlayerPrefs!");
+            Debug.LogError("MapUrlManager: SaveName is missing in PlayerPrefs!");
             yield break;
         }
 
         string url = $"http://localhost:3000/savefiles/{saveName}/progress";
-        Debug.Log($"[MapUrlManager] Requesting: {url}");
+        //  Debug.Log($"[MapUrlManager] Requesting: {url}");
 
         UnityWebRequest request = UnityWebRequest.Get(url);
-        string authToken = PlayerPrefs.GetString("authToken", "");
+        string authToken = PlayerPrefs.GetString("token", "");
         request.SetRequestHeader("Authorization", "Bearer " + authToken);
-        Debug.Log($"[MapUrlManager] Using auth token: {authToken}");
+        //  Debug.Log($"[MapUrlManager] Using auth token: {authToken}");
 
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
         {
             string json = request.downloadHandler.text;
-            Debug.Log($"✅ [MapUrlManager] Server Response: {json}");
+            //  Debug.Log($"✅ [MapUrlManager] Server Response: {json}");
 
             ProgressResponse progressData = JsonUtility.FromJson<ProgressResponse>(json);
             if (progressData != null)
             {
                 CurrentLevel = progressData.progress;
-                Debug.Log($"[MapUrlManager] Successfully fetched progress: {CurrentLevel} for save: {saveName}");
+                Debug.Log($"MapUrlManager: Successfully fetched progress: {CurrentLevel} for save: {saveName}");
 
                 if (LevelButtonManager.Instance != null)
                 {
