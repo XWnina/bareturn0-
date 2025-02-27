@@ -100,7 +100,7 @@ public class LoginRegisterUI : MonoBehaviour
             var jsonResponse = JsonUtility.FromJson<LoginResponse>(request.downloadHandler.text);
             PlayerPrefs.SetString("token", jsonResponse.token);
             loginResponseMessage.text = "Login successful!";
-            yield return new WaitForSeconds(3);
+            yield return new WaitForSeconds(1.5f);
             UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
         }
         else
@@ -133,8 +133,8 @@ public class LoginRegisterUI : MonoBehaviour
         if (request.result == UnityWebRequest.Result.Success)
         {
             registerResponseMessage.text = "Registration successful!";
-            yield return new WaitForSeconds(3);
-            UnityEngine.SceneManagement.SceneManager.LoadScene("MainScene");
+            yield return new WaitForSeconds(1.5f);
+            ShowMainMenu();
         }
         else
         {
