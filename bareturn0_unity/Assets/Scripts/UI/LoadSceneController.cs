@@ -82,7 +82,7 @@ namespace UI // ✅ 添加正确的命名空间
 
                 if (savesList.Count == 0)
                 {
-                    Debug.LogError("No save files returned from server!");
+                    Debug.Log("No save files returned from server. Displaying message.");
                     if (noSaveMessage != null)
                     {
                         noSaveMessage.text = "There is no archive for this account";
