@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Networking;
+using TMPro;
 
 namespace UI // ✅ 添加正确的命名空间
 {
@@ -28,12 +29,21 @@ namespace UI // ✅ 添加正确的命名空间
         public GameObject saveFileButtonPrefab; // 预制体
         public Transform contentPanel; // `Content` 物体
         public Button backButton;
+        public TMP_Text noSaveMessage; // ✅ 新增文本提示
+        public GameObject confirmationDialog; // ✅ 确认对话框
+        public TMP_Text confirmationMessage;
+        public Button confirmButton;
+        public Button cancelButton;
         private string _apiBaseUrl = "http://localhost:3000/savefiles/me"; // 获取当前用户存档
         private string _currentSaveName; // ✅ 添加全局变量
+        private int _currentProgress;
 
         void Start()
         {
             backButton.onClick.AddListener(() => SceneManager.LoadScene("MainScene"));
+            confirmButton.onClick.AddListener(ConfirmLoad);
+            cancelButton.onClick.AddListener(CancelLoad);
+            confirmationDialog.SetActive(false); // 初始隐藏确认窗口
             StartCoroutine(FetchSaveFiles());
         }
 
@@ -73,6 +83,17 @@ namespace UI // ✅ 添加正确的命名空间
                 if (savesList.Count == 0)
                 {
                     Debug.LogError("No save files returned from server!");
+                    if (noSaveMessage != null)
+                    {
+                        noSaveMessage.text = "There is no archive for this account";
+                        noSaveMessage.gameObject.SetActive(true);
+                    }
+                    yield break;
+                }
+
+                if (noSaveMessage != null)
+                {
+                    noSaveMessage.gameObject.SetActive(false);
                 }
 
                 foreach (SaveFile save in savesList)
@@ -91,7 +112,7 @@ namespace UI // ✅ 添加正确的命名空间
                         Debug.LogError("SaveFileButton component not found on prefab!");
                     }
                     
-                    newButton.GetComponent<Button>().onClick.AddListener(() => SetCurrentSaveAndLoad(save.saveName, save.progress));
+                    newButton.GetComponent<Button>().onClick.AddListener(() => ShowConfirmationDialog(save.saveName, save.progress));
                 }
             }
             else
@@ -100,12 +121,30 @@ namespace UI // ✅ 添加正确的命名空间
             }
         }
 
-        void SetCurrentSaveAndLoad(string saveName, int progress)
+        void ShowConfirmationDialog(string saveName, int progress)
         {
-            _currentSaveName = saveName; // ✅ 存储 saveName 在全局变量
-            PlayerPrefs.SetString("currentSaveName", saveName);
+            _currentSaveName = saveName;
+            _currentProgress = progress;
+            confirmationMessage.text = $"Are you sure you want to load the archive \"{saveName}\" ?";
+            confirmationDialog.SetActive(true);
+        }
+
+        void ConfirmLoad()
+        {
+            confirmationDialog.SetActive(false);
+            LoadSelectedSave();
+        }
+
+        void CancelLoad()
+        {
+            confirmationDialog.SetActive(false);
+        }
+
+        void LoadSelectedSave()
+        {
+            PlayerPrefs.SetString("currentSaveName", _currentSaveName);
             
-            if (progress == 0)
+            if (_currentProgress == 0)
             {
                 SceneManager.LoadScene("PrintfTeaching"); // 进度为 0，跳转到 PrintfTeaching
             }
