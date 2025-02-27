@@ -23,11 +23,12 @@ public class LevelButtonManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
-        UpdateLevelUI();
+        //UpdateLevelUI();
     }
     public void UpdateLevelUI()
     {
-        //  currentLevelIndex = MapUrlManager.CurrentLevel;
+        currentLevelIndex = MapUrlManager.CurrentLevel;
+        Debug.Log($"🔍 Updating Level UI: Current Level = {currentLevelIndex}");
         for (int i = 0; i < levels.Count; i++)
         {
             LevelData level = levels[i];

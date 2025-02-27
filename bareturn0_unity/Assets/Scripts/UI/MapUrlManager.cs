@@ -5,19 +5,19 @@ using UnityEngine.Networking;
 
 public class MapUrlManager : MonoBehaviour
 {
-    private string apiBaseUrl = "http://localhost:3000/api/savefiles"; // Update API base URL
+    private string apiBaseUrl = "http://localhost:3000/savefiles"; // Update API base URL
     public static int CurrentLevel { get; private set; } = 0; // Store user progress level
 
-    private string username;
+    //private string username;
     private string saveName;
 
     void Start()
     {
         // Retrieve stored values from PlayerPrefs
-        username = PlayerPrefs.GetString("username", "");
-        saveName = PlayerPrefs.GetString("saveName", "");
-
-        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(saveName))
+        //username = PlayerPrefs.GetString("username", "");
+        saveName = PlayerPrefs.GetString("currentSaveName", "");
+        Debug.LogError("12345dsfrdg");
+        if (!string.IsNullOrEmpty(saveName))
         {
             StartCoroutine(GetUserLevel());
         }
@@ -28,26 +28,26 @@ public class MapUrlManager : MonoBehaviour
     }
 
     IEnumerator GetUserLevel()
-{
-    string url = $"{apiBaseUrl}/me"; // Fetch all save files for the user
-
-    UnityWebRequest request = UnityWebRequest.Get(url);
-    request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("authToken", "")); // Assuming auth token is stored
-    yield return request.SendWebRequest();
-
-    if (request.result == UnityWebRequest.Result.Success)
     {
-        string json = request.downloadHandler.text;
-        SaveFileData[] saveFiles = JsonHelper.FromJson<SaveFileData>(json); // Deserialize array
+        string url = $"http://localhost:3000/savefiles/{saveName}/progress"; // 使用后端提供的 API
 
-        foreach (var save in saveFiles)
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("authToken", "")); // 发送身份验证
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
         {
-            if (save.saveName == saveName) // Match the correct save file
+            string json = request.downloadHandler.text;
+            Debug.Log($"✅ [MapUrlManager] Server Response: {json}"); // 确保正确返回 JSON
+
+            // 解析 JSON
+            ProgressResponse progressData = JsonUtility.FromJson<ProgressResponse>(json);
+            if (progressData != null)
             {
-                CurrentLevel = save.progress; // Use progress as current level
+                CurrentLevel = progressData.progress; // 存储当前进度
                 Debug.Log($"[MapUrlManager] Successfully fetched progress: {CurrentLevel} for save: {saveName}");
 
-                // ✅ Notify LevelButtonManager after fetching data
+                // ✅ 通知 UI 更新
                 if (LevelButtonManager.Instance != null)
                 {
                     LevelButtonManager.Instance.UpdateLevelUI();
@@ -56,42 +56,40 @@ public class MapUrlManager : MonoBehaviour
                 {
                     Debug.LogError("[MapUrlManager] LevelButtonManager Instance is NULL!");
                 }
-
-                yield break; // Stop loop after finding the correct save
+            }
+            else
+            {
+                Debug.LogError("[MapUrlManager] Failed to parse JSON response.");
             }
         }
-
-        Debug.LogError($"[MapUrlManager] Save file '{saveName}' not found for the current user.");
+        else
+        {
+            Debug.LogError($"[MapUrlManager] Error fetching user progress: {request.error}");
+        }
     }
-    else
-    {
-        Debug.LogError($"[MapUrlManager] Error fetching user progress: {request.error}");
-    }
-}
 
-
+    // JSON 解析类
     [System.Serializable]
-    private class SaveFileData
+    private class ProgressResponse
     {
-        public string saveName;
-        public int progress; // Assuming progress represents the current level
-        public int coins;
-    }
-}
-
-// Helper class to deserialize JSON arrays
-public static class JsonHelper
-{
-    public static T[] FromJson<T>(string json)
-    {
-        string newJson = "{ \"array\": " + json + "}";
-        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
-        return wrapper.array;
+        public int progress;
     }
 
-    [System.Serializable]
-    private class Wrapper<T>
+
+    // Helper class to deserialize JSON arrays
+    public static class JsonHelper
     {
-        public T[] array;
+        public static T[] FromJson<T>(string json)
+        {
+            string newJson = "{ \"array\": " + json + "}";
+            Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
+            return wrapper.array;
+        }
+
+        [System.Serializable]
+        private class Wrapper<T>
+        {
+            public T[] array;
+        }
     }
 }
