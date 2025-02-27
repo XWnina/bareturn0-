@@ -83,7 +83,7 @@ namespace UI
 
                 if (savesList.Count == 0)
                 {
-                    Debug.Log("No save files returned from server. Displaying message.");
+                    Debug.Log("📢 No save files found! Showing 'New Game' message.");
                     if (noSaveMessage != null)
                     {
                         noSaveMessage.text = "There is no archive for this account";
@@ -202,6 +202,22 @@ namespace UI
 
             StartCoroutine(DeleteSaveFileCoroutine(saveName, saveButton));
         }
+        
+        void CheckIfNoSavesLeft()
+        {
+            // 🔹 获取 `contentPanel` 下的所有子对象
+            int remainingSaves = contentPanel.childCount;
+            if (remainingSaves == 0)
+            {
+                Debug.Log("📢 No save files left! Showing 'New Game' message.");
+                if (noSaveMessage != null)
+                {
+                    noSaveMessage.text = "There is no archive for this account, please use 'New Game'";
+                    noSaveMessage.gameObject.SetActive(true);
+                }
+            }
+        }
+
 
         IEnumerator DeleteSaveFileCoroutine(string saveName, GameObject saveButton)
         {
@@ -224,6 +240,10 @@ namespace UI
                 {
                     Debug.LogWarning($"⚠️ Warning: Save button for {saveName} was already null. Skipping destroy.");
                 }
+
+                // **🔹 删除后检查列表是否为空**
+                yield return new WaitForEndOfFrame(); // **等待一帧，确保 UI 更新**
+                CheckIfNoSavesLeft(); // **检查是否还剩存档**
             }
             else
             {
@@ -232,6 +252,7 @@ namespace UI
 
             isDeleting = false;
         }
+
 
         [System.Serializable]
         private class SaveFile

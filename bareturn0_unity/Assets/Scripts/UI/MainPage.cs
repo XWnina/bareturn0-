@@ -93,7 +93,10 @@ namespace UI
 
         void GoToSettings()
         {
+            PlayerPrefs.SetString("PreviousScene", SceneManager.GetActiveScene().name);
+            PlayerPrefs.Save(); // 确保数据持久化
             SceneManager.LoadScene("SettingScene");
         }
+
     }
 }
