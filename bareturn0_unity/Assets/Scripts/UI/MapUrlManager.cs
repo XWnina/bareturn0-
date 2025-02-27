@@ -1,61 +1,59 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
 public class MapUrlManager : MonoBehaviour
 {
-    private string apiBaseUrl = "http://localhost:3000"; // 你的后端 API 地址
-    public static int CurrentLevel { get; private set; } = 0; // 供外部访问
+    private string apiBaseUrl = "http://localhost:3000/api/savefiles"; // Update API base URL
+    public static int CurrentLevel { get; private set; } = 0; // Store user progress level
 
     private string username;
     private string saveName;
 
     void Start()
     {
-        StartCoroutine(GetUserInfo());
-    }
+        // Retrieve stored values from PlayerPrefs
+        username = PlayerPrefs.GetString("username", "");
+        saveName = PlayerPrefs.GetString("saveName", "");
 
-    IEnumerator GetUserInfo()
-    {
-        string url = apiBaseUrl + "/wu/save1";
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
+        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(saveName))
         {
-            string json = request.downloadHandler.text;
-            UserData data = JsonUtility.FromJson<UserData>(json);
-
-            username = data.username;
-            saveName = data.saveName;
-
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(saveName))
-            {
-                StartCoroutine(GetUserLevel());
-            }
+            StartCoroutine(GetUserLevel());
         }
         else
         {
-            Debug.LogError("Error fetching user info: " + request.error);
+            Debug.LogError("Username or SaveName is missing in PlayerPrefs!");
         }
     }
 
     IEnumerator GetUserLevel()
     {
-        string url = apiBaseUrl + "/progress/wu/save1";
+        string url = $"{apiBaseUrl}/me"; // Fetch all save files for the user
+
         UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("authToken", "")); // Assuming auth token is stored
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
         {
             string json = request.downloadHandler.text;
-            UserProgressData data = JsonUtility.FromJson<UserProgressData>(json);
-            CurrentLevel = data.currentLevel; // 更新当前关卡
+            SaveFileData[] saveFiles = JsonHelper.FromJson<SaveFileData>(json); // Deserialize array
 
-            Debug.Log("Fetched Current Level: " + CurrentLevel);
+            foreach (var save in saveFiles)
+            {
+                if (save.saveName == saveName) // Match the correct save file
+                {
+                    CurrentLevel = save.progress; // Use progress as current level
+                    Debug.Log("Fetched Current Level: " + CurrentLevel);
 
-            // 通知 LevelButtonManager 更新 UI
-            LevelButtonManager.Instance.UpdateLevelUI();
+                    // Notify LevelButtonManager to update UI
+                    LevelButtonManager.Instance.UpdateLevelUI();
+                    yield break; // Stop loop after finding the correct save
+                }
+            }
+
+            Debug.LogError("Save file not found for the current user.");
         }
         else
         {
@@ -64,17 +62,27 @@ public class MapUrlManager : MonoBehaviour
     }
 
     [System.Serializable]
-    private class UserData
+    private class SaveFileData
     {
-        public string username;
         public string saveName;
+        public int progress; // Assuming progress represents the current level
+        public int coins;
+    }
+}
+
+// Helper class to deserialize JSON arrays
+public static class JsonHelper
+{
+    public static T[] FromJson<T>(string json)
+    {
+        string newJson = "{ \"array\": " + json + "}";
+        Wrapper<T> wrapper = JsonUtility.FromJson<Wrapper<T>>(newJson);
+        return wrapper.array;
     }
 
     [System.Serializable]
-    private class UserProgressData
+    private class Wrapper<T>
     {
-        public string username;
-        public string saveName;
-        public int currentLevel;
+        public T[] array;
     }
 }
