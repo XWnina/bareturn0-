@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine.Networking;
 using TMPro;
 
-namespace UI // ✅ 添加正确的命名空间
+namespace UI
 {
     public static class JsonHelper
     {
@@ -26,24 +26,26 @@ namespace UI // ✅ 添加正确的命名空间
 
     public class LoadSceneController : MonoBehaviour
     {
-        public GameObject saveFileButtonPrefab; // 预制体
-        public Transform contentPanel; // `Content` 物体
+        public GameObject saveFileButtonPrefab;
+        public Transform contentPanel;
         public Button backButton;
-        public TMP_Text noSaveMessage; // ✅ 新增文本提示
-        public GameObject confirmationDialog; // ✅ 确认对话框
+        public TMP_Text noSaveMessage;
+        public GameObject confirmationDialog;
         public TMP_Text confirmationMessage;
         public Button confirmButton;
         public Button cancelButton;
-        private string _apiBaseUrl = "http://localhost:3000/savefiles/me"; // 获取当前用户存档
-        private string _currentSaveName; // ✅ 添加全局变量
+        private string _apiBaseUrl = "http://localhost:3000/savefiles/me";
+        private string _currentSaveName;
         private int _currentProgress;
+        private bool _isDeleteAction = false; // ✅ 区分加载 or 删除
 
         void Start()
         {
             backButton.onClick.AddListener(() => SceneManager.LoadScene("MainScene"));
-            confirmButton.onClick.AddListener(ConfirmLoad);
-            cancelButton.onClick.AddListener(CancelLoad);
-            confirmationDialog.SetActive(false); // 初始隐藏确认窗口
+            confirmButton.onClick.AddListener(() => ConfirmAction());
+
+            cancelButton.onClick.AddListener(() => confirmationDialog.SetActive(false));
+            confirmationDialog.SetActive(false);
             StartCoroutine(FetchSaveFiles());
         }
 
@@ -69,12 +71,11 @@ namespace UI // ✅ 添加正确的命名空间
 
                 List<SaveFile> savesList = new List<SaveFile>();
 
-                // ✅ 尝试解析为数组
                 if (request.downloadHandler.text.StartsWith("["))
                 {
                     savesList = JsonHelper.FromJson<SaveFile>(request.downloadHandler.text);
                 }
-                else // ✅ 解析单个对象
+                else
                 {
                     SaveFile singleSave = JsonUtility.FromJson<SaveFile>(request.downloadHandler.text);
                     savesList.Add(singleSave);
@@ -106,13 +107,23 @@ namespace UI // ✅ 添加正确的命名空间
                     if (buttonComponent != null)
                     {
                         buttonComponent.SetSaveData(save.saveName, save.playerName, save.progress, save.coins);
+                        
+                        Button deleteButton = newButton.transform.Find("Panel/DeleteButton").GetComponent<Button>();
+                        if (deleteButton != null)
+                        {
+                            deleteButton.onClick.AddListener(() => ShowConfirmationDialog(save.saveName, save.progress, newButton, true));
+
+
+
+                        }
                     }
                     else
                     {
                         Debug.LogError("SaveFileButton component not found on prefab!");
                     }
                     
-                    newButton.GetComponent<Button>().onClick.AddListener(() => ShowConfirmationDialog(save.saveName, save.progress));
+                    newButton.GetComponent<Button>().onClick.AddListener(() => ShowConfirmationDialog(save.saveName, save.progress, newButton, false));
+
                 }
             }
             else
@@ -121,24 +132,52 @@ namespace UI // ✅ 添加正确的命名空间
             }
         }
 
-        void ShowConfirmationDialog(string saveName, int progress)
+        private GameObject _selectedSaveButton; // ✅ 存储被点击的按钮
+
+
+        public void ShowConfirmationDialog(string saveName, int progress, GameObject saveButton, bool isDelete)
         {
             _currentSaveName = saveName;
             _currentProgress = progress;
-            confirmationMessage.text = $"Are you sure you want to load the archive \"{saveName}\" ?";
+            _isDeleteAction = isDelete;
+            _selectedSaveButton = saveButton; // ✅ 存储当前存档按钮
+
+            confirmationMessage.text = isDelete 
+                ? $"Are you sure you want to delete the archive \"{saveName}\" ?" 
+                : $"Are you sure you want to load the archive \"{saveName}\" ?";
+
             confirmationDialog.SetActive(true);
         }
 
-        void ConfirmLoad()
+
+
+
+
+
+
+        void ConfirmAction()
         {
             confirmationDialog.SetActive(false);
-            LoadSelectedSave();
+
+            if (_isDeleteAction)
+            {
+                Debug.Log($"🗑️ Confirmed DELETE: {_currentSaveName}");
+                DeleteSaveFile(_currentSaveName, _selectedSaveButton);
+            }
+            else
+            {
+                Debug.Log($"✅ Confirmed LOAD: {_currentSaveName}");
+                LoadSelectedSave();
+            }
+
+            // ✅ 确保状态被重置，不影响下一次操作
+            _isDeleteAction = false;
+            _selectedSaveButton = null;
         }
 
-        void CancelLoad()
-        {
-            confirmationDialog.SetActive(false);
-        }
+
+
+
 
         void LoadSelectedSave()
         {
@@ -146,12 +185,52 @@ namespace UI // ✅ 添加正确的命名空间
             
             if (_currentProgress == 0)
             {
-                SceneManager.LoadScene("PrintfTeaching"); // 进度为 0，跳转到 PrintfTeaching
+                SceneManager.LoadScene("PrintfTeaching");
             }
             else
             {
-                SceneManager.LoadScene("draftMap"); // 进度不为 0，跳转到地图
+                SceneManager.LoadScene("draftMap");
             }
+        }
+
+        private bool isDeleting = false;
+
+        public void DeleteSaveFile(string saveName, GameObject saveButton)
+        {
+            if (isDeleting) return;
+            isDeleting = true;
+
+            StartCoroutine(DeleteSaveFileCoroutine(saveName, saveButton));
+        }
+
+        IEnumerator DeleteSaveFileCoroutine(string saveName, GameObject saveButton)
+        {
+            string url = $"http://localhost:3000/savefiles/{saveName}";
+            UnityWebRequest request = UnityWebRequest.Delete(url);
+            request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("token", ""));
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log($"✅ Save file {saveName} deleted successfully.");
+
+                if (saveButton != null)
+                {
+                    Destroy(saveButton);
+                    Debug.Log($"🗑️ {saveName} UI button deleted.");
+                }
+                else
+                {
+                    Debug.LogWarning($"⚠️ Warning: Save button for {saveName} was already null. Skipping destroy.");
+                }
+            }
+            else
+            {
+                Debug.LogError($"❌ Failed to delete save file {saveName}: {request.downloadHandler.text}");
+            }
+
+            isDeleting = false;
         }
 
         [System.Serializable]
