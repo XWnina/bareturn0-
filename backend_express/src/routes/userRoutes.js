@@ -83,18 +83,6 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// User Logout: TEMPORARY SOLUTION
-router.post("/logout", authMiddleware, async (req, res) => {
-    try {
-        const successResponse = { message: "User logged out successfully" };
-        logRequestResponse(req, res, successResponse);
-        res.json(successResponse);
-    } catch (err) {
-        logRequestResponse(req, res, { error: err.message });
-        res.status(500).json({ error: err.message });
-    }
-});
-
 // Get current logged-in user
 router.get("/me", authMiddleware, async (req, res) => {
     try {
