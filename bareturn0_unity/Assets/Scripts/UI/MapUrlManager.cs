@@ -5,7 +5,7 @@ using UnityEngine.Networking;
 
 public class MapUrlManager : MonoBehaviour
 {
-    private string apiBaseUrl = "http://localhost:3000/savefiles"; // Update API base URL
+    //private string apiBaseUrl = "http://localhost:3000/savefiles"; // Update API base URL
     public static int CurrentLevel { get; private set; } = 0; // Store user progress level
 
     //private string username;
@@ -29,51 +29,60 @@ public class MapUrlManager : MonoBehaviour
 
     IEnumerator GetUserLevel()
     {
-        string url = $"http://localhost:3000/savefiles/{saveName}/progress"; // 使用后端提供的 API
+        saveName = PlayerPrefs.GetString("currentSaveName", "");
+        if (string.IsNullOrEmpty(saveName))
+        {
+            Debug.LogError("[MapUrlManager] ❌ SaveName is missing in PlayerPrefs!");
+            yield break;
+        }
+
+        string url = $"http://localhost:3000/savefiles/{saveName}/progress";
+        Debug.Log($"[MapUrlManager] Requesting: {url}");
 
         UnityWebRequest request = UnityWebRequest.Get(url);
-        request.SetRequestHeader("Authorization", "Bearer " + PlayerPrefs.GetString("authToken", "")); // 发送身份验证
+        string authToken = PlayerPrefs.GetString("authToken", "");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+        Debug.Log($"[MapUrlManager] Using auth token: {authToken}");
+
         yield return request.SendWebRequest();
 
         if (request.result == UnityWebRequest.Result.Success)
         {
             string json = request.downloadHandler.text;
-            Debug.Log($"✅ [MapUrlManager] Server Response: {json}"); // 确保正确返回 JSON
+            Debug.Log($"✅ [MapUrlManager] Server Response: {json}");
 
-            // 解析 JSON
             ProgressResponse progressData = JsonUtility.FromJson<ProgressResponse>(json);
             if (progressData != null)
             {
-                CurrentLevel = progressData.progress; // 存储当前进度
+                CurrentLevel = progressData.progress;
                 Debug.Log($"[MapUrlManager] Successfully fetched progress: {CurrentLevel} for save: {saveName}");
 
-                // ✅ 通知 UI 更新
                 if (LevelButtonManager.Instance != null)
                 {
                     LevelButtonManager.Instance.UpdateLevelUI();
                 }
                 else
                 {
-                    Debug.LogError("[MapUrlManager] LevelButtonManager Instance is NULL!");
+                    Debug.LogError("[MapUrlManager] ❌ LevelButtonManager Instance is NULL!");
                 }
             }
             else
             {
-                Debug.LogError("[MapUrlManager] Failed to parse JSON response.");
+                Debug.LogError("[MapUrlManager] ❌ Failed to parse JSON response.");
             }
         }
         else
         {
-            Debug.LogError($"[MapUrlManager] Error fetching user progress: {request.error}");
+            Debug.LogError($"[MapUrlManager] ❌ Error fetching user progress: {request.error}");
         }
     }
 
-    // JSON 解析类
     [System.Serializable]
     private class ProgressResponse
     {
         public int progress;
     }
+
 
 
     // Helper class to deserialize JSON arrays
