@@ -17,7 +17,7 @@ public class DialogManager : MonoBehaviour
     public Button submitButton;
     public Button escButton; // ESC 按钮
     public Button reviewDialogButton; // 聊天记录按钮
-    //SendDialogInfoManager sendDialogInfoManager;
+    SendDialogInfoManager sendDialogInfoManager;
 
 
     private Queue<string> dialogQueue;
@@ -103,15 +103,15 @@ public class DialogManager : MonoBehaviour
 
     public void ShowNextSentence()
     {
-        if (isDialogFinished) return; // **如果对话结束，不再执行**
-        if (dialogQueue.Count == 0)
+        //if (isDialogFinished) return; // **如果对话结束，不再执行**
+        if (dialogQueue.Count == 0 && isDialogFinished)
         {
-            isDialogFinished = true; // **对话结束，标记为 true**
+            //isDialogFinished = true; // **对话结束，标记为 true**
             savedDialogQueue.Clear();
             playerDialog.SetActive(false);
             processNum = 1;
             npcDialog.SetActive(false);
-            //sendDialogInfoManager.SavePlayerData(playerName, processNum);
+            sendDialogInfoManager.SavePlayerData(playerName, processNum);
             StartCoroutine(LoadSceneAfterDelay("draftMap", 1f));
             return;
         }
@@ -417,7 +417,7 @@ public class DialogManager : MonoBehaviour
                 //chatHistory.Add("Natasha: Awesome! You've completed the lesson on C Magic.");
                 //chatHistory.Add("Natasha: Now you understand how to print basic types!");
                 //chatHistory.Add("Natasha: You can go explore this world first, and we will meet again.");
-
+                isDialogFinished = true;
                 ShowNextSentence();
 
                 isTeachingMode = false; // ✅ 结束教学
