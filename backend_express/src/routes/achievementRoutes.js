@@ -21,8 +21,36 @@ router.get("/all", async (req, res) => {
 // Get unlocked achievements for a save file
 router.get("/:saveName/unlocked", authMiddleware, async (req, res) => {
     try {
-        const saveFile = await SaveFile.findOne({ userId: req.user.id, saveName: req.params.saveName })
-            .populate("unlockedAchievements.achievementId");
+        const saveFile = await SaveFile.findOne({
+            userId: req.user.id,
+            saveName: req.params.saveName
+        }).populate({
+            path: "unlockedAchievements.achievementId", 
+            select: "name method" // ✅ Ensure `name` and `method` (description) are included
+        });
+
+        if (!saveFile) {
+            return res.status(404).json({ error: "Save file not found" });
+        }
+
+        // Return unlocked achievements with `name`, `method`, and `achievedDate`
+        const formattedUnlocked = saveFile.unlockedAchievements.map(unlock => ({
+            achievementName: unlock.achievementId.name,
+            description: unlock.achievementId.method,  // ✅ Now includes method (condition)
+            achievedDate: unlock.achievedDate
+        }));
+
+        res.json(formattedUnlocked);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
+router.get("/:saveName/locked", authMiddleware, async (req, res) => {
+    try {
+        // Find the save file for the user
+        const saveFile = await SaveFile.findOne({ userId: req.user.id, saveName: req.params.saveName });
 
         if (!saveFile) {
             const errorResponse = { error: "Save file not found" };
@@ -30,13 +58,23 @@ router.get("/:saveName/unlocked", authMiddleware, async (req, res) => {
             return res.status(404).json(errorResponse);
         }
 
-        logRequestResponse(req, res, saveFile.unlockedAchievements);
-        res.json(saveFile.unlockedAchievements);
+        // Get all predefined achievements
+        const allAchievements = await Achievement.find({}, "name method");
+
+        // Get unlocked achievement IDs from the save file
+        const unlockedIds = saveFile.unlockedAchievements.map(a => a.achievementId.toString());
+
+        // Filter out locked achievements
+        const lockedAchievements = allAchievements.filter(a => !unlockedIds.includes(a._id.toString()));
+
+        logRequestResponse(req, res, lockedAchievements);
+        res.json(lockedAchievements);
     } catch (err) {
         logRequestResponse(req, res, { error: err.message });
         res.status(500).json({ error: err.message });
     }
 });
+
 
 router.put("/:saveName/unlock", authMiddleware, async (req, res) => {
     try {
