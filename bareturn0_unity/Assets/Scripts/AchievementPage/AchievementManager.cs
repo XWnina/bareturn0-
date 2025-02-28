@@ -21,8 +21,8 @@ public class AchievementManager : MonoBehaviour
 
         if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(saveFile))
         {
-            StartCoroutine(FetchUnlockedAchievements());
             StartCoroutine(FetchLockedAchievements());
+            StartCoroutine(FetchUnlockedAchievements());
         }
         else
         {
