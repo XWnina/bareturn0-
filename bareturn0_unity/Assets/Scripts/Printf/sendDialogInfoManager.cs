@@ -7,14 +7,20 @@ public class SendDialogInfoManager : MonoBehaviour
 {
     private string baseUrl = "http://localhost:3000/"; // 你的后端 API 地址
     private string saveName; // 存档名称
+    private string token;
 
     void Start()
     {
         // 从 PlayerPrefs 读取存档名称
         saveName = PlayerPrefs.GetString("currentSaveName", "");
+        token = PlayerPrefs.GetString("token", "");
         if (string.IsNullOrEmpty(saveName))
         {
             Debug.LogError("❌ Save name is not set in PlayerPrefs!");
+        }
+        if (string.IsNullOrEmpty(token))
+        {
+            Debug.LogError("❌ Token is not set in PlayerPrefs!");
         }
     }
 
@@ -22,7 +28,38 @@ public class SendDialogInfoManager : MonoBehaviour
     {
         StartCoroutine(UpdatePlayerName(playerName));
         StartCoroutine(UpdateProgress(progress));
+        StartCoroutine(UnlockAchievement(saveName, "Person You Know Who"));
+
     }
+
+    private IEnumerator UnlockAchievement(string saveName, string achievementName)
+    {
+        string url = $"{baseUrl}achievements/{saveName}/unlock";
+
+        string jsonData = "{ \"achievementName\": \"" + achievementName + "\" }";
+
+        using (UnityWebRequest request = new UnityWebRequest(url, "PUT"))
+        {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Authorization", "Bearer " + token);
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("✅ Achievement unlocked successfully: " + request.downloadHandler.text);
+            }
+            else
+            {
+                Debug.LogError("❌ Failed to unlock achievement: " + request.error);
+                Debug.LogError("Response: " + request.downloadHandler.text);
+            }
+        }
+    }
+
 
     private IEnumerator UpdatePlayerName(string playerName)
     {
