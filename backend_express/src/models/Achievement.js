@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const AchievementSchema = new mongoose.Schema({
-    saveFileId: { type: mongoose.Schema.Types.ObjectId, ref: "SaveFile", required: true },
+    saveFileId: { type: mongoose.Schema.Types.ObjectId, ref: "SaveFile", required: false },
     name: { type: String, required: true }, // Name of the achievement
     method: { type: String, required: true }, // Unlock method
     achievedDate: { type: Date }, // Null if locked
