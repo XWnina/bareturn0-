@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 public class MapUrlManager : MonoBehaviour
 {
     //private string apiBaseUrl = "http://localhost:3000/savefiles"; // Update API base URL
@@ -10,10 +11,12 @@ public class MapUrlManager : MonoBehaviour
 
     //private string username;
     private string saveName;
+    public Button settingButton; // 添加 Setting 按钮
 
     void Start()
     {
         saveName = PlayerPrefs.GetString("currentSaveName", "");
+        settingButton.onClick.AddListener(GoToSettings);
         if (!string.IsNullOrEmpty(saveName))
         {
             StartCoroutine(GetUserLevel());
@@ -97,5 +100,11 @@ public class MapUrlManager : MonoBehaviour
         {
             public T[] array;
         }
+    }
+    void GoToSettings()
+    {
+        PlayerPrefs.SetString("PreviousScene", SceneManager.GetActiveScene().name);
+        PlayerPrefs.Save(); // 确保数据持久化
+        SceneManager.LoadScene("SettingScene");
     }
 }
