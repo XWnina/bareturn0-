@@ -19,19 +19,20 @@ public class BattleManager : MonoBehaviour
     public DeckManager deckManager;        // 管理抽牌、弃牌
     public PlayerController player;        // 玩家控制脚本，包含当前能量、血量等
 
-    public List<EnemyController> enemies;    // 敌人控制脚本，包含血量、AI等
+    public List<EnemyController> enemies = new List<EnemyController>();
+    public LevelData levelData;
 
     public Button endActionButton;  // “结束行动”按钮
 
 
     public BattleState state;
 
-    private int roundNumber = 0;
+    
     public int lastAttackDamage;
     public EnemyController selectedEnemy;
     public bool isCardBeingDragged = false;
 
-
+    private int roundNumber = 0;
     public int CurrentRoundNumber
     {
         get { return roundNumber; }
@@ -62,17 +63,60 @@ public class BattleManager : MonoBehaviour
         //初始化玩家和敌人血量
         player.currentHealth = player.maxHealth;
 
-        // 初始化所有敌人：重置血量（你也可以在这里设置外观和动画）
-        foreach (var enemy in enemies)
-        {
-            enemy.currentHealth = enemy.maxHealth;
-            // 初始化敌人外观或动画（例如播放 idle 动作）
-        }
+        // 生成关卡中的所有敌人
+        SpawnEnemies();
 
         //初始化抽牌堆
         deckManager.SetupInitialDeck();
 
         state = BattleState.RoundStart;
+    }
+
+    // 根据 LevelData 中存储的敌人数据逐个生成敌人
+    public void SpawnEnemies()
+    {
+        if (levelData == null)
+        {
+            Debug.LogError("LevelData is not assigned in BattleManager!");
+            return;
+        }
+
+        // 例如，这里我们为每个敌人生成一个位置（可根据实际需求修改）
+        // 此处简单安排在一个横向排列的位置
+        float startX = 2;
+        float offsetX = 2;
+        Vector3 spawnPos = Vector3.zero;
+
+        for (int i = 0; i < levelData.enemyDatas.Count; i++)
+        {
+            EnemyData enemyData = levelData.enemyDatas[i];
+
+            // 根据索引计算生成位置，可以替换为更复杂的算法
+            spawnPos = new Vector3(startX + offsetX * i, 0, 0);
+            SpawnEnemy(enemyData, spawnPos);
+        }
+    }
+
+    // 根据单个 EnemyData 实例化敌人预制体并初始化属性
+    public void SpawnEnemy(EnemyData enemyData, Vector3 spawnPos)
+    {
+        if (enemyData == null || enemyData.enemyPrefab == null)
+        {
+            Debug.LogError("SpawnEnemy: Invalid EnemyData or prefab is null.");
+            return;
+        }
+
+        GameObject enemyObj = Instantiate(enemyData.enemyPrefab, spawnPos, Quaternion.identity);
+        EnemyController enemyController = enemyObj.GetComponent<EnemyController>();
+        if (enemyController != null)
+        {
+            enemyController.Initialize(enemyData);
+            enemies.Add(enemyController);
+        }
+        else
+        {
+            Debug.LogWarning("SpawnEnemy: The instantiated prefab does not have an EnemyController.");
+        }
     }
 
     // 核心：回合循环

@@ -24,6 +24,15 @@ public class EnemyController : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
+    public void Initialize(EnemyData data)
+    {
+        this.maxHealth = data.maxHealth;
+        this.currentHealth = data.maxHealth;
+        this.speed = data.speed;
+        this.attackDamage = data.attackDamage;
+        // 如果还需要别的初始化逻辑，可以放在这里
+    }
+
     public void Attack()
     {
         animatorController?.EnemyAttackAnimation();
