@@ -5,7 +5,7 @@ public class EnergyEffect : CardEffect
 {
     public int energyGain = 1; // 设置默认增加的能量
 
-    public override void ApplyEffect(BattleManager battleManager, CardData cardData)
+    public override void ApplyEffect(BattleManager battleManager, CardData cardData, EnemyController target = null)
     {
         battleManager.player.GainEnergy(energyGain);
         Debug.Log($"Player gains {energyGain} energy.");

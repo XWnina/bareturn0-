@@ -91,7 +91,18 @@ public class BattleUIManager : MonoBehaviour
             playerHealthText.text = $"HP: {BattleManager.Instance.player.currentHealth}/{BattleManager.Instance.player.maxHealth}";
 
             // 更新敌人血量显示
-            enemyHealthText.text = $"HP: {BattleManager.Instance.enemy.currentHealth}/{BattleManager.Instance.enemy.maxHealth}";
+            string enemyStatus = "";
+            int count = 1;
+            foreach (var enemy in BattleManager.Instance.enemies)
+            {
+                // 只显示存活敌人的状态
+                if (enemy.currentHealth > 0)
+                {
+                    enemyStatus += $"Enemy {count}: {enemy.currentHealth}/{enemy.maxHealth}\n";
+                    count++;
+                }
+            }
+            enemyHealthText.text = enemyStatus;
 
             // 更新玩家护盾（护甲）显示
             playerShieldText.text = $"Shield: {BattleManager.Instance.player.currentArmor}";

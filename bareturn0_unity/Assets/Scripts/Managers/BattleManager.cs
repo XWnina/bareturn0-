@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,19 +18,31 @@ public class BattleManager : MonoBehaviour
 
     public DeckManager deckManager;        // 管理抽牌、弃牌
     public PlayerController player;        // 玩家控制脚本，包含当前能量、血量等
-    public EnemyController enemy;          // 敌人控制脚本，包含血量、AI等
 
-    public Button endActionButton;  // 场景中的“结束行动”按钮
+    public List<EnemyController> enemies;    // 敌人控制脚本，包含血量、AI等
+
+    public Button endActionButton;  // “结束行动”按钮
 
 
     public BattleState state;
 
     private int roundNumber = 0;
     public int lastAttackDamage;
+    public EnemyController selectedEnemy;
+    public bool isCardBeingDragged = false;
+
 
     public int CurrentRoundNumber
     {
         get { return roundNumber; }
+    }
+
+    // 用于构建回合顺序的内部类
+    private class TurnOrderEntry
+    {
+        public bool isPlayer;
+        public EnemyController enemy; // 如果 isPlayer 为 false，则 enemy 不为 null
+        public int speed;
     }
 
 
@@ -48,7 +61,13 @@ public class BattleManager : MonoBehaviour
     {
         //初始化玩家和敌人血量
         player.currentHealth = player.maxHealth;
-        enemy.currentHealth = enemy.maxHealth;
+
+        // 初始化所有敌人：重置血量（你也可以在这里设置外观和动画）
+        foreach (var enemy in enemies)
+        {
+            enemy.currentHealth = enemy.maxHealth;
+            // 初始化敌人外观或动画（例如播放 idle 动作）
+        }
 
         //初始化抽牌堆
         deckManager.SetupInitialDeck();
@@ -78,53 +97,43 @@ public class BattleManager : MonoBehaviour
             }
             Debug.Log($"Player's energy = {player.currentEnergy}");
 
-            //2. 抽牌
-            deckManager.DrawCard(5);
 
-            //3. 判断顺序
-            int playerSpeed = player.speed;
-            int enemySpeed = enemy.speed;
-            bool playerGoesFirst = (playerSpeed >= enemySpeed);
-
-            //4. 先手行动
-            if (playerGoesFirst)
+            // 2. 构建回合顺序列表：包括玩家和所有存活的敌人
+            List<TurnOrderEntry> turnOrder = new List<TurnOrderEntry>();
+            // 添加玩家
+            turnOrder.Add(new TurnOrderEntry { isPlayer = true, enemy = null, speed = player.speed });
+            // 添加敌人（只添加存活的敌人）
+            foreach (var enemy in enemies)
             {
-                //玩家回合
-                state = BattleState.PlayerAction;
-                yield return StartCoroutine(PlayerActionPhase());
-                result = CheckWinLose();
-                if (result != 0)
+                if (enemy.currentHealth > 0)
                 {
-                    break;
-                }
-                //敌人回合
-                state = BattleState.EnemyAction;
-                yield return StartCoroutine(EnemyActionPhase());
-                result = CheckWinLose();
-                if (result != 0)
-                {
-                    break;
+                    turnOrder.Add(new TurnOrderEntry { isPlayer = false, enemy = enemy, speed = enemy.speed });
                 }
             }
-            else
+            // 根据速度从高到低排序
+            turnOrder.Sort((a, b) => b.speed.CompareTo(a.speed));
+
+            // 3. 按顺序执行各个参与者的回合
+            foreach (var entry in turnOrder)
             {
-                //敌人回合
-                state = BattleState.EnemyAction;
-                yield return StartCoroutine(EnemyActionPhase());
-                result = CheckWinLose();
-                if (result != 0)
+                if (entry.isPlayer)
                 {
-                    break;
+                    state = BattleState.PlayerAction;
+                    yield return StartCoroutine(PlayerActionPhase());
+                    if (CheckWinLose() != 0)
+                        break;
                 }
-                //玩家回合
-                state = BattleState.PlayerAction;
-                yield return StartCoroutine(PlayerActionPhase());
-                result = CheckWinLose();
-                if (result != 0)
+                else
                 {
-                    break;
+                    state = BattleState.EnemyAction;
+                    yield return StartCoroutine(EnemyActionPhase(entry.enemy));
+                    if (CheckWinLose() != 0)
+                        break;
                 }
             }
+            if (CheckWinLose() != 0) break;
+
+
 
             // 5. 回合结束
             state = BattleState.RoundEnd;
@@ -154,6 +163,8 @@ public class BattleManager : MonoBehaviour
         Debug.Log(">>> Player Turn <<<");
         bool isPlayerDone = false;
 
+        //抽牌
+        deckManager.DrawCard(5);
         // 打开按钮
         endActionButton.gameObject.SetActive(true);
         // 先清除旧的监听，以防残留
@@ -165,7 +176,7 @@ public class BattleManager : MonoBehaviour
         });
 
         // 等待玩家点击“结束行动”按钮
-        while (!isPlayerDone && player.currentHealth > 0 && enemy.currentHealth > 0)
+        while (!isPlayerDone && player.currentHealth > 0 && !AllEnemiesDefeated())
         {
             yield return null;
         }
@@ -174,25 +185,28 @@ public class BattleManager : MonoBehaviour
         endActionButton.gameObject.SetActive(false);
         Debug.Log("Player Turn End");
 
+        // 玩家回合结束时，弃掉所有手牌
+        deckManager.DiscardAllHand();
+
     }
 
     // 敌人行动阶段
-    IEnumerator EnemyActionPhase()
+    IEnumerator EnemyActionPhase(EnemyController enemy)
     {
-        Debug.Log(">>> Enemy Turn (action phase) <<<");
+        Debug.Log(">>> Enemy Turn: {enemy.name} <<<");
         // 简单示例：敌人动作
         enemy.PerformAction();
 
         // 等1秒模拟动画
         yield return new WaitForSeconds(2f);
-        Debug.Log("Enemy Turn End");
+        Debug.Log("Enemy Turn End: {enemy.name}");
     }
 
     // 回合结束，弃牌等
     IEnumerator EndRound()
     {
-        Debug.Log(">>> Round End: Discard All Player Cards...");
-        deckManager.DiscardAllHand();
+        Debug.Log(">>> Round End:");
+        //deckManager.DiscardAllHand();
 
         // TODO这里可以做一些buff计时或毒伤结算
 
@@ -210,20 +224,38 @@ public class BattleManager : MonoBehaviour
             BattleUIManager.Instance.ShowBattleResult(false);
             return -1;
         }
-        else if (enemy.currentHealth <= 0)
+        else if (AllEnemiesDefeated())
         {
-            Debug.Log("Enemy HP = 0, Win");
+            Debug.Log("All enemies defeated, Win");
             state = BattleState.BattleEnd;
-            BattleUIManager.Instance.ShowBattleResult(true);
             return 1;
         }
         return 0;
     }
 
+    private bool AllEnemiesDefeated()
+    {
+        foreach (var enemy in enemies)
+        {
+            if (enemy.currentHealth > 0)
+                return false;
+        }
+        return true;
+    }
+
     //Triiger hit
     public void TriggerEnemyHit()
     {
-        enemy.TakeDamage(lastAttackDamage);
+        if (selectedEnemy != null)
+        {
+            selectedEnemy.TakeDamage(lastAttackDamage);
+            Debug.Log($"Enemy {selectedEnemy.name} hit for {lastAttackDamage} damage.");
+            selectedEnemy = null;
+        }
+        else
+        {
+            Debug.Log("No enemy target for TriggerEnemyHit.");
+        }
     }
 
     public void TriggerPlayerHit()
@@ -235,46 +267,45 @@ public class BattleManager : MonoBehaviour
 
 
     //当玩家使用一张牌
-    public void UseCard(CardData cardData, CardView cardView)
+    public bool UseCard(CardData cardData, CardView cardView, EnemyController targetEnemy)
     {
+        Debug.Log("useCard");
         //0. 检查是否为玩家回合
         if (state != BattleState.PlayerAction)
         {
-            return;
+            return false;
         }
         // 1. 检查能量
         if (player.currentEnergy < cardData.cost)
         {
             Debug.Log("Not enough energy to use " + cardData.cardName);
             BattleUIManager.Instance.ShowEnergyWarning(); //Show Warning
-            return; // 中止，不执行后续
+            if (targetEnemy != null)
+            {
+                targetEnemy.ClearHighlight();
+            }
+            return false; // 中止，不执行后续
         }
+        Debug.Log("Enough Energy");
 
         // 2. 扣除能量
         player.currentEnergy -= cardData.cost;
 
+        if (targetEnemy != null)
+        {
+            targetEnemy.ClearHighlight();
+        }
+
         // 3. 执行效果
         if (cardData.cardEffect != null)
         {
-            cardData.cardEffect.ApplyEffect(this, cardData);
+            cardData.cardEffect.ApplyEffect(this, cardData, targetEnemy);
         }
-        else
-        {
-            Debug.Log("No card effect assigned to " + cardData.cardName);
-        }
-
         // 4. 把卡从手牌移到弃牌堆
         deckManager.Discard(cardData);
 
         // 5.Destroy卡牌UI
         Destroy(cardView.gameObject);
-
-        // 6. 检查敌人是否死亡
-        if (enemy.currentHealth <= 0)
-        {
-            Debug.Log("Enemy is defeated!");
-        }
+        return true;
     }
-
-
 }
