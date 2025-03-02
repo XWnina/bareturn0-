@@ -15,7 +15,6 @@ public class BattleUIManager : MonoBehaviour
 
     [Header("Basic Battle Informations")]
     public TextMeshProUGUI playerHealthText;
-    public TextMeshProUGUI enemyHealthText;
     public TextMeshProUGUI playerShieldText;
     public TextMeshProUGUI playerEnergyText;
     public TextMeshProUGUI roundText;
@@ -67,7 +66,7 @@ public class BattleUIManager : MonoBehaviour
     // 显示战斗结果
     public void ShowBattleResult(bool isVictory)
     {
-        battleResultPanel.SetActive(true); // 显示面板
+        battleResultPanel.SetActive(true); // 显示面板a
         resultText.text = isVictory ? "YOU WIN!!!" : "YOU LOSS...";
         resultText.color = isVictory ? Color.green : Color.red;
 
@@ -89,20 +88,6 @@ public class BattleUIManager : MonoBehaviour
         {
             // 更新玩家血量显示（当前血量/最大血量）
             playerHealthText.text = $"HP: {BattleManager.Instance.player.currentHealth}/{BattleManager.Instance.player.maxHealth}";
-
-            // 更新敌人血量显示
-            string enemyStatus = "";
-            int count = 1;
-            foreach (var enemy in BattleManager.Instance.enemies)
-            {
-                // 只显示存活敌人的状态
-                if (enemy.currentHealth > 0)
-                {
-                    enemyStatus += $"Enemy {count}: {enemy.currentHealth}/{enemy.maxHealth}\n";
-                    count++;
-                }
-            }
-            enemyHealthText.text = enemyStatus;
 
             // 更新玩家护盾（护甲）显示
             playerShieldText.text = $"Shield: {BattleManager.Instance.player.currentArmor}";

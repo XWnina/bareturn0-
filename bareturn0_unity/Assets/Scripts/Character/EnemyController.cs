@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,6 +13,7 @@ public class EnemyController : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public SpriteRenderer spriteRenderer;
     private Material originalMaterial;
     public Material outlineMaterial;
+    public GameObject hpUI;
 
     [SerializeField] EnemyAnimator animatorController;
 
@@ -44,13 +46,21 @@ public class EnemyController : MonoBehaviour, IPointerEnterHandler, IPointerExit
         animatorController?.EnemyHurttAnimation();
         Debug.Log("Enemy takes " + damage + " damage. HP=" + currentHealth);
 
+       
+
+        // À¿Õˆ¬ﬂº≠
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            
+  
             Debug.Log("Enemy is dead!");
             StartCoroutine(HandleDeath());
         }
+
+        // ∏¸–¬—™¡øUI
+        UpdateHPText();
+
+
     }
 
     private IEnumerator HandleDeath()
@@ -104,5 +114,21 @@ public class EnemyController : MonoBehaviour, IPointerEnterHandler, IPointerExit
         Highlight(false);
     }
 
+
+    public void UpdateHPText()
+    {
+        if (hpUI != null)
+        {
+            TMP_Text hpText = hpUI.GetComponent<TMP_Text>();
+            if (hpText != null)
+            {
+                hpText.text = $"HP: {currentHealth}/{maxHealth}";
+            }
+            else
+            {
+                Debug.LogWarning("UpdateHPText: TMP_Text component not found on hpUI.");
+            }
+        }
+    }
 
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,6 +22,7 @@ public class BattleManager : MonoBehaviour
 
     public List<EnemyController> enemies = new List<EnemyController>();
     public LevelData levelData;
+    public GameObject enemyHPUIPrefab;
 
     public Button endActionButton;  // “结束行动”按钮
 
@@ -100,6 +102,7 @@ public class BattleManager : MonoBehaviour
     // 根据单个 EnemyData 实例化敌人预制体并初始化属性
     public void SpawnEnemy(EnemyData enemyData, Vector3 spawnPos)
     {
+        // 1. 实例化敌人
         if (enemyData == null || enemyData.enemyPrefab == null)
         {
             Debug.LogError("SpawnEnemy: Invalid EnemyData or prefab is null.");
@@ -117,6 +120,27 @@ public class BattleManager : MonoBehaviour
         {
             Debug.LogWarning("SpawnEnemy: The instantiated prefab does not have an EnemyController.");
         }
+
+        // 2. 实例化血量UI
+        if (enemyHPUIPrefab != null) // 在 EnemyData 或其他数据处存 HPUI预制体
+        {
+            // 这里计算血量UI想要出现的位置，比如敌人头顶 offset
+            Vector3 uiPos = spawnPos + new Vector3(0, 1f, 0); // 2f 视情况调整
+
+            GameObject hpUIObj = Instantiate(enemyHPUIPrefab, uiPos, Quaternion.identity);
+
+            TMP_Text hpText = hpUIObj.GetComponent<TMP_Text>();
+            if (hpText != null && enemyController != null)
+            {
+                hpText.text = $"HP: {enemyController.currentHealth}/{enemyController.maxHealth}";
+            }
+            else
+            {
+                Debug.LogWarning("SpawnEnemy: enemyHPUIPrefab does not have a TMP_Text component.");
+            }
+            enemyController.hpUI = hpUIObj;
+        }
+
     }
 
     // 核心：回合循环
@@ -272,6 +296,7 @@ public class BattleManager : MonoBehaviour
         {
             Debug.Log("All enemies defeated, Win");
             state = BattleState.BattleEnd;
+            BattleUIManager.Instance.ShowBattleResult(true);
             return 1;
         }
         return 0;
