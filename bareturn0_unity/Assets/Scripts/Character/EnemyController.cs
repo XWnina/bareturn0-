@@ -1,21 +1,27 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public int currentHealth = 40;
     public int maxHealth = 40;
-
-    // 速度
     public int speed = 8;
-
     public int attackDamage = 5;
+
+    public SpriteRenderer spriteRenderer;
+    private Material originalMaterial;
+    public Material outlineMaterial;
 
     [SerializeField] EnemyAnimator animatorController;
 
     private void Awake()
     {
         currentHealth = maxHealth;
+        if (spriteRenderer != null)
+        {
+            originalMaterial = spriteRenderer.material;
+        }
     }
 
     public void Attack()
@@ -55,4 +61,39 @@ public class EnemyController : MonoBehaviour
         // 存储攻击伤害，稍后 `TriggerPlayerHit()` 才会造成伤害
         BattleManager.Instance.lastAttackDamage = attackDamage;
     }
+
+    // 当指针进入敌人对象时（例如在拖拽状态下），高亮敌人
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        if (BattleManager.Instance != null && BattleManager.Instance.isCardBeingDragged)
+        {
+            Highlight(true);
+        }
+    }
+
+    // 当指针离开时，取消高亮
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        if (BattleManager.Instance != null && BattleManager.Instance.isCardBeingDragged)
+        {
+            Highlight(false);
+        }
+    }
+
+    // 高亮处理方法
+    public void Highlight(bool flag)
+    {
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.material = flag && outlineMaterial != null ? outlineMaterial : originalMaterial;
+        }
+    }
+
+    // 用于在卡牌使用后清除高亮
+    public void ClearHighlight()
+    {
+        Highlight(false);
+    }
+
+
 }

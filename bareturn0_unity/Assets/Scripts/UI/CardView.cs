@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.EventSystems;
 
-public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler
+public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler, IPointerEnterHandler,IBeginDragHandler,IDragHandler,IEndDragHandler
 { 
     [Header("UI Components")]
     public Image cardFrame;
@@ -29,10 +29,11 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
 
     // 用于记录原始大小和位置
     private Vector3 originalScale;
+    // 记录卡牌的原始位置，用于拖拽失败时返回
     private Vector3 originalPosition;
+    private CanvasGroup canvasGroup;
     private RectTransform rectTransform;
-    
-    private Canvas canvas; // 用于计算拖拽偏移
+    private Canvas canvas; // 用于计算拖拽偏移（如果是UI Canvas）
 
 
 
@@ -83,12 +84,77 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
+        canvasGroup = GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+            canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
         originalScale = transform.localScale;
-        originalPosition = transform.position;
+        //originalPosition = transform.position;
+
+        // 找到父级Canvas（如果是嵌套Canvas，要找最上层用于正确计算拖拽偏移）
         canvas = GetComponentInParent<Canvas>();
 
     }
+
+    #region 拖拽接口实现
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        originalPosition = rectTransform.anchoredPosition;
+        // 让卡牌在拖拽时半透明并允许射线穿透
+        canvasGroup.alpha = 0.6f;
+        canvasGroup.blocksRaycasts = false;
+
+        // 开始拖拽时，设置标记
+        if (cardData.cardEffect.RequiresTarget())
+        {
+            BattleManager.Instance.isCardBeingDragged = true;
+        }
+        
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        // 在UI Canvas中拖拽，需要考虑Canvas的缩放
+        if (canvas != null)
+        {
+            rectTransform.anchoredPosition += eventData.delta / canvas.scaleFactor;
+        }
+        else
+        {
+            // 如果没有Canvas，可直接用世界坐标
+            rectTransform.position = Input.mousePosition;
+        }
+    }
+
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        // 恢复透明度和射线检测
+        canvasGroup.alpha = 1f;
+        canvasGroup.blocksRaycasts = true;
+
+        // 拖拽结束后，清除标记（不论是否成功使用卡牌）
+        BattleManager.Instance.isCardBeingDragged = false;
+
+        // 判断pointerEnter（鼠标指针结束时所指向的对象）是否为目标敌人
+        if (eventData.pointerEnter != null)
+        {
+            EnemyController enemy = eventData.pointerEnter.GetComponent<EnemyController>();
+            if (enemy != null)
+            {
+                //使用卡牌，如果使用卡牌失败，则恢复原位
+                bool success = BattleManager.Instance.UseCard(cardData, this, enemy);
+                if (!success)
+                {
+                    rectTransform.anchoredPosition = originalPosition;
+                }
+                return; // 成功使用后，不需要恢复卡牌位置
+            }
+        }
+
+        // 如果拖拽到的不是敌人，则返回原位置
+        rectTransform.anchoredPosition = originalPosition;
+    }
+    #endregion
 
     #region 鼠标悬停放大效果
     public void OnPointerEnter(PointerEventData eventData)
@@ -108,7 +174,11 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        BattleManager.Instance.UseCard(cardData, this);
+        if (cardData.cardEffect.RequiresTarget())
+        {
+            return;
+        }
+        BattleManager.Instance.UseCard(cardData, this, null);
         Debug.Log("Card clicked: " + cardData.cardName);
     }
 
