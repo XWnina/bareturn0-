@@ -31,8 +31,7 @@ public class DeckManager : MonoBehaviour
         // 按 A 键抽 1 张卡
         if (Input.GetKeyDown(KeyCode.A))
         {
-            DrawCard(1);
-            Debug.Log("Drew a card. Hand count: " + hand.Count);
+
         }
 
         // 按 D 键弃掉手牌[0]

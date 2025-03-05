@@ -18,3 +18,4 @@ MonoBehaviour:
   artwork: {fileID: 21300000, guid: a67d2e382d25d4a478f5846a9fe1cc4b, type: 3}
   quality: 2
   cardEffect: {fileID: 11400000, guid: e91fc8b465d901241b830b2f97ec45b5, type: 2}
+  targetingType: 1

@@ -16,4 +16,6 @@ MonoBehaviour:
   description: dealt 2 damage
   cost: 1
   artwork: {fileID: 21300000, guid: b7cd8b393f49f5647af5b90b6da4bca0, type: 3}
+  quality: 0
   cardEffect: {fileID: 11400000, guid: 8b67a467154b2d744ae75284b600a3c9, type: 2}
+  targetingType: 0

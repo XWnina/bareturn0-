@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eddb690bca9f9fb41bd5f14bc0e139e1, type: 3}
-  m_Name: WoodcutterData
+  m_Name: WolfData
   m_EditorClassIdentifier: 
-  enemyName: Woodcutter
-  maxHealth: 20
-  speed: 10
-  attackDamage: 5
-  enemyPrefab: {fileID: 649636296582216838, guid: fe132c434dd51a644a3807b9e1de4649, type: 3}
+  enemyName: Wolf
+  maxHealth: 10
+  speed: 15
+  attackDamage: 0
+  enemyPrefab: {fileID: 649636296582216838, guid: 05306c88008b95a41a6410d244a4bb1f, type: 3}

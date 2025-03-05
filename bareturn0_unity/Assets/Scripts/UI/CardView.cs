@@ -174,7 +174,7 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (cardData.cardEffect.RequiresTarget())
+        if (cardData.targetingType == TargetingType.Manual)
         {
             return;
         }
