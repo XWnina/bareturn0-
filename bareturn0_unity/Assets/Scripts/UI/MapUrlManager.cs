@@ -12,9 +12,11 @@ public class MapUrlManager : MonoBehaviour
     //private string username;
     private string saveName;
     public Button settingButton; // 添加 Setting 按钮
+    public Button townButton;
 
     void Start()
     {
+        townButton.onClick.AddListener(GoToTown);
         saveName = PlayerPrefs.GetString("currentSaveName", "");
         settingButton.onClick.AddListener(GoToSettings);
         if (!string.IsNullOrEmpty(saveName))
@@ -106,5 +108,9 @@ public class MapUrlManager : MonoBehaviour
         PlayerPrefs.SetString("PreviousScene", SceneManager.GetActiveScene().name);
         PlayerPrefs.Save(); // 确保数据持久化
         SceneManager.LoadScene("SettingScene");
+    }
+    void GoToTown()
+    {
+        SceneManager.LoadScene("Town");
     }
 }
