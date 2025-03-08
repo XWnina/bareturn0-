@@ -60,6 +60,47 @@ public class BattleManager : MonoBehaviour
         StartCoroutine(RoundLoop());
     }
 
+    private void Update()
+    {
+        // 其它现有逻辑
+
+        // 调试：按下 A 键时，让第一个敌人受到伤害
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (enemies.Count > 0 && enemies[0] != null)
+            {
+                enemies[0].TakeDamage(1); // 例如造成 1 点伤害
+                Debug.Log("Debug: Pressed A, first enemy takes 1 damage.");
+            }
+            else
+            {
+                Debug.LogWarning("No enemy available to take damage.");
+            }
+        }
+
+        // 调试：按下 S 键时，让玩家攻击第一个敌人并造成 1 点伤害
+        if (Input.GetKeyDown(KeyCode.S))
+        {
+            // 确保有敌人存在
+            if (enemies.Count > 0 && enemies[0] != null)
+            {
+                // 设置伤害为1点
+                lastAttackDamage = 3;
+                // 将第一个敌人作为选中的目标
+                selectedEnemy = enemies[0];
+                // 触发玩家的攻击动画（动画事件中会调用 TriggerEnemyHit()，对 selectedEnemy 造成伤害）
+                player.Attack();
+
+                Debug.Log("Pressed S: Player attacks first enemy for 1 damage.");
+            }
+            else
+            {
+                Debug.LogWarning("No enemy available to be attacked.");
+            }
+        }
+
+    }
+
     private void SetupBattle()
     {
         //初始化玩家和敌人血量
@@ -85,7 +126,7 @@ public class BattleManager : MonoBehaviour
 
         // 例如，这里我们为每个敌人生成一个位置（可根据实际需求修改）
         // 此处简单安排在一个横向排列的位置
-        float startX = 2;
+        float startX = 3;
         float offsetX = 2;
         Vector3 spawnPos = Vector3.zero;
 
@@ -262,11 +303,10 @@ public class BattleManager : MonoBehaviour
     IEnumerator EnemyActionPhase(EnemyController enemy)
     {
         Debug.Log(">>> Enemy Turn: {enemy.name} <<<");
-        // 简单示例：敌人动作
-        enemy.PerformAction();
 
-        // 等1秒模拟动画
-        yield return new WaitForSeconds(2f);
+        //敌人动作
+        yield return StartCoroutine(enemy.ExecuteTurn());
+
         Debug.Log("Enemy Turn End: {enemy.name}");
     }
 
@@ -336,9 +376,10 @@ public class BattleManager : MonoBehaviour
 
 
     //当玩家使用一张牌
-    public bool UseCard(CardData cardData, CardView cardView, EnemyController targetEnemy)
+    public bool UseCard(CardData cardData, CardView cardView, ICharacter targetCharacter)
     {
         Debug.Log("useCard");
+ 
         //0. 检查是否为玩家回合
         if (state != BattleState.PlayerAction)
         {
@@ -349,10 +390,6 @@ public class BattleManager : MonoBehaviour
         {
             Debug.Log("Not enough energy to use " + cardData.cardName);
             BattleUIManager.Instance.ShowEnergyWarning(); //Show Warning
-            if (targetEnemy != null)
-            {
-                targetEnemy.ClearHighlight();
-            }
             return false; // 中止，不执行后续
         }
         Debug.Log("Enough Energy");
@@ -360,15 +397,22 @@ public class BattleManager : MonoBehaviour
         // 2. 扣除能量
         player.currentEnergy -= cardData.cost;
 
-        if (targetEnemy != null)
+        // 3. 执行效果
+        if (cardData.targetingType == TargetingType.FirstEnemy)
         {
-            targetEnemy.ClearHighlight();
+            foreach (EnemyController enemy in enemies)
+            {
+                if (enemy != null && enemy.currentHealth > 0)
+                {
+                    targetCharacter = enemy;
+                    break;
+                }
+            }
         }
 
-        // 3. 执行效果
         if (cardData.cardEffect != null)
         {
-            cardData.cardEffect.ApplyEffect(this, cardData, targetEnemy);
+            cardData.cardEffect.ApplyEffect(this, cardData, player, targetCharacter);
         }
         // 4. 把卡从手牌移到弃牌堆
         deckManager.Discard(cardData);

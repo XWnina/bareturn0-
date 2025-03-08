@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4866601480160623474}
   - component: {fileID: 7132580439695342338}
   m_Layer: 5
-  m_Name: WoodcutterPrefab
+  m_Name: WoofPrefab
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -38,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.42, y: -0.95}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5400874997749336422
@@ -59,7 +59,6 @@ MonoBehaviour:
   attackDamage: 10
   currentArmor: 0
   spriteRenderer: {fileID: 7241535689762677544}
-  outlineMaterial: {fileID: 2100000, guid: 4be0f1b7a11d3504d87f4e59c657fadb, type: 2}
   hpUI: {fileID: 0}
   animatorController: {fileID: 1354544605362301238}
   enemyDeck:
@@ -103,8 +102,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -10.270857, y: -5.5235586}
-  m_Size: {x: 125.09704, y: 199.48315}
+  m_Offset: {x: 0.3069048, y: -17.3665}
+  m_Size: {x: 188.56303, y: 255.88156}
   m_Direction: 0
 --- !u!50 &8458856394531334817
 Rigidbody2D:
@@ -154,7 +153,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 1.0489707
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -320,7 +319,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -53, y: 44}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!212 &7241535689762677544
@@ -367,9 +366,9 @@ SpriteRenderer:
   m_SortingLayerID: 321754407
   m_SortingLayer: 1
   m_SortingOrder: 1
-  m_Sprite: {fileID: 5487567821104667819, guid: f7d4b895404174f45805c1cdfc784c1d, type: 3}
+  m_Sprite: {fileID: -458185587419916677, guid: 2da36af9d4ce58e4ca14f8aa7b7902b5, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 1
+  m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 0.48, y: 0.48}
@@ -388,7 +387,7 @@ Animator:
   m_GameObject: {fileID: 2402029399885119728}
   m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: 0b4a0101814bbde429f338f63718c322, type: 2}
+  m_Controller: {fileID: 9100000, guid: 57a0c4a1356318848be04b6dd34ffc66, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0

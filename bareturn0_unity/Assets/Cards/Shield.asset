@@ -16,4 +16,6 @@ MonoBehaviour:
   description: Gain 5 Shield
   cost: 2
   artwork: {fileID: 3488937396160108248, guid: 1b2acfce0ef6bb7498f3831b23188fb7, type: 3}
+  quality: 0
   cardEffect: {fileID: 11400000, guid: 075a70e69a5cd584da12c423fe248c0a, type: 2}
+  targetingType: 3

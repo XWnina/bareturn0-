@@ -8,7 +8,7 @@ public class DefendEffect : CardEffect
     public override bool RequiresTarget() { return false; }
 
 
-    public override void ApplyEffect(BattleManager battleManager, CardData cardData, EnemyController target = null)
+    public override void ApplyEffect(BattleManager battleManager, CardData cardData, ICharacter caster, ICharacter target = null)
     {
         // 给玩家增加护甲
         battleManager.player.GainArmor(armorGain);

@@ -16,4 +16,6 @@ MonoBehaviour:
   description: Draw 2 Card
   cost: 1
   artwork: {fileID: -4047989089806489235, guid: 478b1210d735ec8419824b6c00ff8292, type: 3}
+  quality: 0
   cardEffect: {fileID: 11400000, guid: cd9b7a88c4b5ace48a9d126029f1d8ef, type: 2}
+  targetingType: 1
