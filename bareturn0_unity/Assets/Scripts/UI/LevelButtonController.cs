@@ -14,6 +14,7 @@ public class LevelButtonManager : MonoBehaviour
         public Sprite passedSprite; // 通过时的图标
         public Sprite lockedSprite; // 未通过的图标
         public bool isPassed; // 是否通过
+        //public Button townButton;
     }
 
     public List<LevelData> levels; // 关卡列表
