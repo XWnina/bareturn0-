@@ -209,7 +209,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Alchemist_idle_0: -683525234326013033
+      Alchemist_idle_1: -6992869009944281095
+      Alchemist_idle_2: -5061528331137163054
+      Alchemist_idle_3: 2012999822328299896
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

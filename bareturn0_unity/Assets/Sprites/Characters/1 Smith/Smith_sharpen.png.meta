@@ -209,7 +209,11 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Smith_sharpen_0: 1388954331602670275
+      Smith_sharpen_1: 4738406761808499853
+      Smith_sharpen_2: -121048553986686369
+      Smith_sharpen_3: -5788988689424539466
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
