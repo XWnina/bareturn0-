@@ -211,9 +211,9 @@ MonoBehaviour:
     fontStyleModifier: 0
     renderMode: 4117
     includeFontFeatures: 0
-  m_SourceFontFile: {fileID: 0}
+  m_SourceFontFile: {fileID: 12800000, guid: baeec5a122f7db34b8b992392799d09e, type: 3}
   m_SourceFontFilePath: 
-  m_AtlasPopulationMode: 2
+  m_AtlasPopulationMode: 1
   InternalDynamicOS: 0
   m_GlyphTable:
   - m_Index: 2

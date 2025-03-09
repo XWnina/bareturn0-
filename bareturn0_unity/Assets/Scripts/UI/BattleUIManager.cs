@@ -18,6 +18,7 @@ public class BattleUIManager : MonoBehaviour
     public TextMeshProUGUI playerShieldText;
     public TextMeshProUGUI playerEnergyText;
     public TextMeshProUGUI roundText;
+    public Slider PlayerHealthBar;
 
     [Header("Warnings")]
     public TextMeshProUGUI energyWarningText;
@@ -32,6 +33,7 @@ public class BattleUIManager : MonoBehaviour
             energyWarningText.gameObject.SetActive(false); 
         }
     }
+
 
     // 显示“能量不足”提示
     public void ShowEnergyWarning()
@@ -81,22 +83,44 @@ public class BattleUIManager : MonoBehaviour
         SceneManager.LoadScene("draftMap");
     }
 
+    public void UpdatePlayerUIBar()   
+    {
+        PlayerHealthBar.maxValue = BattleManager.Instance.player.maxHealth;
+        PlayerHealthBar.value = BattleManager.Instance.player.currentHealth;
+
+        Image fillImage = PlayerHealthBar.fillRect.GetComponent<Image>();
+        if (BattleManager.Instance.player.currentArmor > 0)
+        {
+            // 灰蓝色（你可以根据需要调整RGB值）
+            fillImage.color = new Color(0.6f, 0.6f, 0.6f, 1f);
+        }
+        else
+        {
+            // 红色
+            fillImage.color = Color.red;
+        }
+
+    }
+
     private void Update()
     {
         // 检查 BattleManager 是否存在
         if (BattleManager.Instance != null)
         {
             // 更新玩家血量显示（当前血量/最大血量）
-            playerHealthText.text = $"HP: {BattleManager.Instance.player.currentHealth}/{BattleManager.Instance.player.maxHealth}";
+            playerHealthText.text = $"{BattleManager.Instance.player.currentHealth}/{BattleManager.Instance.player.maxHealth}";
 
             // 更新玩家护盾（护甲）显示
-            playerShieldText.text = $"Shield: {BattleManager.Instance.player.currentArmor}";
+            playerShieldText.text = $"{BattleManager.Instance.player.currentArmor}";
 
             // 更新玩家剩余能量显示
             playerEnergyText.text = $"Energy: {BattleManager.Instance.player.currentEnergy}";
 
             // 更新当前回合数显示
             roundText.text = $"Round: {BattleManager.Instance.CurrentRoundNumber}";
+
+            //跟新玩家血条，护盾条
+            UpdatePlayerUIBar();
         }
     }
 }

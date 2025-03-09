@@ -28,12 +28,6 @@ public class DeckManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // 按 A 键抽 1 张卡
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-
-        }
-
         // 按 D 键弃掉手牌[0]
         if (Input.GetKeyDown(KeyCode.D))
         {
