@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Smith_Sieve_0: -5369384712478316778
+      Smith_Sieve_1: 643277301232300737
+      Smith_Sieve_2: -8648305846869727005
+      Smith_Sieve_3: 2084401318588374637
+      Smith_Sieve_4: 5791309288273010764
+      Smith_Sieve_5: 3663199013084851784
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

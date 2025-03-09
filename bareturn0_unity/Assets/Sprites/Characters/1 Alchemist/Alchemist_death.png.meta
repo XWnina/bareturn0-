@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Alchemist_death_0: 1733358614683310040
+      Alchemist_death_1: -6710495443263735967
+      Alchemist_death_2: -2990108612277081415
+      Alchemist_death_3: -8882943476364830301
+      Alchemist_death_4: -6772754768520662227
+      Alchemist_death_5: -1571655092993228861
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

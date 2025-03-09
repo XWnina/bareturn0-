@@ -159,7 +159,9 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Alchemist_hurt_0: -1525345096928377261
+      Alchemist_hurt_1: -4299142766605282264
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

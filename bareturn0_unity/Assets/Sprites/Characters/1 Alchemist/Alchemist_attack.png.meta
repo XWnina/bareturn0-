@@ -259,7 +259,13 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Alchemist_attack_0: -6534771246762265268
+      Alchemist_attack_1: -4488312005673882231
+      Alchemist_attack_2: 2343179838922550255
+      Alchemist_attack_3: -6635293485750669379
+      Alchemist_attack_4: -5883572764235720076
+      Alchemist_attack_5: -2422426734700973449
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
