@@ -13,6 +13,8 @@ public class TownMapManager : MonoBehaviour
     public Button StoreButton;
     public TextMeshProUGUI close1Txt;
     public TextMeshProUGUI close2Txt;
+    public Image BlacksmithShopNPC;
+    public Image StoreNPC;
     private string _apiBaseUrl = "http://localhost:3000/savefiles";
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -22,6 +24,8 @@ public class TownMapManager : MonoBehaviour
         StoreButton.onClick.AddListener(GoToStore);
         close1Txt.gameObject.SetActive(false);
         close2Txt.gameObject.SetActive(false);
+        BlacksmithShopNPC.gameObject.SetActive(false);
+        StoreNPC.gameObject.SetActive(false);
         StartCoroutine(GetUserProgress());
     }
     void GoToMainMap ()
@@ -75,6 +79,8 @@ public class TownMapManager : MonoBehaviour
                     StoreButton.interactable = true;
                     close1Txt.gameObject.SetActive(false);
                     close2Txt.gameObject.SetActive(false);
+                    BlacksmithShopNPC.gameObject.SetActive(true);
+                    StoreNPC.gameObject.SetActive(true);
                 }
                 else
                 {
@@ -82,6 +88,8 @@ public class TownMapManager : MonoBehaviour
                     StoreButton.interactable = false;
                     close1Txt.gameObject.SetActive(true);
                     close2Txt.gameObject.SetActive(true);
+                    BlacksmithShopNPC.gameObject.SetActive(false);
+                    StoreNPC.gameObject.SetActive(false);
                 }
             }
             else
