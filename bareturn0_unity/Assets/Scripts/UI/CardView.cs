@@ -108,8 +108,9 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
         if (cardData.cardEffect.RequiresTarget())
         {
             BattleManager.Instance.isCardBeingDragged = true;
+            BattleManager.Instance.currentDraggingCardData = cardData;
         }
-        
+
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -134,6 +135,8 @@ public class CardView : MonoBehaviour, IPointerClickHandler, IPointerExitHandler
 
         // 拖拽结束后，清除标记（不论是否成功使用卡牌）
         BattleManager.Instance.isCardBeingDragged = false;
+        BattleManager.Instance.currentDraggingCardData = null;
+
 
         // 判断pointerEnter（鼠标指针结束时所指向的对象）是否为目标敌人
         if (eventData.pointerEnter != null)

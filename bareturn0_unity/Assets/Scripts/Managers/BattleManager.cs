@@ -22,14 +22,14 @@ public class BattleManager : MonoBehaviour
 
     public List<EnemyController> enemies = new List<EnemyController>();
     public LevelData levelData;
-    public GameObject enemyHPUIPrefab;
+    public GameObject enemyStatusUIPrefab;
 
     public Button endActionButton;  // “结束行动”按钮
 
 
     public BattleState state;
+    public CardData currentDraggingCardData; //记录当前正在拖拽的卡牌数据
 
-    
     public int lastAttackDamage;
     public EnemyController selectedEnemy;
     public bool isCardBeingDragged = false;
@@ -126,8 +126,8 @@ public class BattleManager : MonoBehaviour
 
         // 例如，这里我们为每个敌人生成一个位置（可根据实际需求修改）
         // 此处简单安排在一个横向排列的位置
-        float startX = 3;
-        float offsetX = 2;
+        float startX = 2;
+        float offsetX = 2.5f;
         Vector3 spawnPos = Vector3.zero;
 
         for (int i = 0; i < levelData.enemyDatas.Count; i++)
@@ -162,24 +162,28 @@ public class BattleManager : MonoBehaviour
             Debug.LogWarning("SpawnEnemy: The instantiated prefab does not have an EnemyController.");
         }
 
-        // 2. 实例化血量UI
-        if (enemyHPUIPrefab != null) // 在 EnemyData 或其他数据处存 HPUI预制体
+        // 2. 实例化敌人状态UI
+        if (enemyStatusUIPrefab != null && enemyController != null)
         {
-            // 这里计算血量UI想要出现的位置，比如敌人头顶 offset
-            Vector3 uiPos = spawnPos + new Vector3(0, 1f, 0); // 2f 视情况调整
+            // 计算血量UI位置（例如在敌人头顶偏移1.5个单位，根据实际情况调整）
+            Vector3 uiPos = spawnPos + new Vector3(0, 1.5f, 0);
 
-            GameObject hpUIObj = Instantiate(enemyHPUIPrefab, uiPos, Quaternion.identity);
+            // 将状态UI实例化，并设置其父对象为敌人的transform
+            GameObject statusUIObj = Instantiate(enemyStatusUIPrefab, uiPos, Quaternion.identity, enemyObj.transform); 
 
-            TMP_Text hpText = hpUIObj.GetComponent<TMP_Text>();
-            if (hpText != null && enemyController != null)
+            // 保存到敌人控制器中，便于后续更新
+            enemyController.statusUI = statusUIObj;
+
+            // 初始化状态UI
+            EnemyStatusUI statusUI = statusUIObj.GetComponent<EnemyStatusUI>();
+            if (statusUI != null)
             {
-                hpText.text = $"HP: {enemyController.currentHealth}/{enemyController.maxHealth}";
+                statusUI.UpdateStatus(enemyController.currentHealth, enemyController.maxHealth, 0);
             }
             else
             {
-                Debug.LogWarning("SpawnEnemy: enemyHPUIPrefab does not have a TMP_Text component.");
+                Debug.LogWarning("SpawnEnemy: EnemyStatusUI component not found on statusUIObj.");
             }
-            enemyController.hpUI = hpUIObj;
         }
 
     }
@@ -372,6 +376,32 @@ public class BattleManager : MonoBehaviour
         player.TakeDamage(lastAttackDamage); // 让玩家播放受击动画并扣血
     }
 
+    public ICharacter GetFirstAliveEnemy()
+    {
+        foreach (EnemyController enemy in enemies)
+        {
+            if (enemy != null && enemy.currentHealth > 0)
+                return enemy;
+        }
+        return null;
+    }
+
+    public EnemyController GetLowestHPEnemy()
+    {
+        EnemyController lowest = null;
+        foreach (EnemyController enemy in enemies)
+        {
+            if (enemy != null && enemy.currentHealth > 0)
+            {
+                if (lowest == null || enemy.currentHealth < lowest.currentHealth)
+                {
+                    lowest = enemy;
+                }
+            }
+        }
+        return lowest;
+    }
+
 
 
 
@@ -400,14 +430,7 @@ public class BattleManager : MonoBehaviour
         // 3. 执行效果
         if (cardData.targetingType == TargetingType.FirstEnemy)
         {
-            foreach (EnemyController enemy in enemies)
-            {
-                if (enemy != null && enemy.currentHealth > 0)
-                {
-                    targetCharacter = enemy;
-                    break;
-                }
-            }
+            targetCharacter = GetFirstAliveEnemy();
         }
 
         if (cardData.cardEffect != null)

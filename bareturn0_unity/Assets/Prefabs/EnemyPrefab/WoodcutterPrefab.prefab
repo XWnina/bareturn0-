@@ -38,7 +38,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2.42, y: -0.95}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &5400874997749336422
@@ -59,16 +59,15 @@ MonoBehaviour:
   attackDamage: 10
   currentArmor: 0
   spriteRenderer: {fileID: 7241535689762677544}
-  outlineMaterial: {fileID: 2100000, guid: 4be0f1b7a11d3504d87f4e59c657fadb, type: 2}
-  hpUI: {fileID: 0}
+  enlargeFactor: 1.1
+  statusUI: {fileID: 0}
   animatorController: {fileID: 1354544605362301238}
   enemyDeck:
-  - {fileID: 11400000, guid: 223ff3869e4b6424e839507c4acc20c7, type: 2}
+  - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
+  - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
   - {fileID: 11400000, guid: 36816c3f25a2408428b6bdaf1ba6dc9f, type: 2}
-  - {fileID: 11400000, guid: f02f2aefc499d42428a8da1da40dc9d7, type: 2}
-  - {fileID: 11400000, guid: 1aa932cc4a6aabd4ba26d653de60f664, type: 2}
   enemyHand: []
-  drawCount: 2
+  drawCount: 1
 --- !u!70 &8920047322979453000
 CapsuleCollider2D:
   m_ObjectHideFlags: 0

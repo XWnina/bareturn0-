@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using static UnityEngine.GraphicsBuffer;
 
-public class EnemyController : MonoBehaviour, ICharacter
+public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, IPointerExitHandler
 {
     public int currentHealth = 40;
     public int maxHealth = 40;
@@ -14,8 +14,12 @@ public class EnemyController : MonoBehaviour, ICharacter
     public int currentArmor = 0;
 
     public SpriteRenderer spriteRenderer;
-    private Material originalMaterial;
-    public GameObject hpUI;
+    private Vector3 originalScale;
+    public float enlargeFactor = 1.1f; // 放大10%
+    public GameObject statusUI;
+
+    private bool needEnlarge = false;
+    private bool needResetScale = false;
 
     [SerializeField] EnemyAnimator animatorController;
 
@@ -32,10 +36,8 @@ public class EnemyController : MonoBehaviour, ICharacter
     private void Awake()
     {
         currentHealth = maxHealth;
-        if (spriteRenderer != null)
-        {
-            originalMaterial = spriteRenderer.material;
-        }
+        // 保存初始的局部缩放
+        originalScale = transform.localScale;
     }
 
     public void Initialize(EnemyData data)
@@ -54,7 +56,9 @@ public class EnemyController : MonoBehaviour, ICharacter
 
     public void TakeDamage(int damage)
     {
-        currentHealth -= damage;
+        int effectiveDamage = Mathf.Max(damage - currentArmor, 0);
+        currentArmor = Mathf.Max(currentArmor - damage, 0);
+        currentHealth -= effectiveDamage;
         animatorController?.EnemyHurttAnimation();
         Debug.Log("Enemy takes " + damage + " damage. HP=" + currentHealth);
 
@@ -69,9 +73,34 @@ public class EnemyController : MonoBehaviour, ICharacter
             StartCoroutine(HandleDeath());
         }
 
-        // 更新血量UI
-        UpdateHPText();
+        // 更新状态UI
+        UpdateStatusUI();
     }
+
+    // 更新状态UI
+    public void UpdateStatusUI()
+    {
+        if (statusUI != null)
+        {
+            EnemyStatusUI statusUIComponent = statusUI.GetComponent<EnemyStatusUI>();
+            if (statusUIComponent != null)
+            {
+                statusUIComponent.UpdateStatus(currentHealth, maxHealth, currentArmor);
+            }
+        }
+    }
+    public void GainArmor(int amount)
+    {
+        currentArmor += amount;
+        Debug.Log($"{gameObject.name} now has {currentArmor} armor.");
+        UpdateStatusUI();
+    }
+
+    public void Heal(int amount)
+    {
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+    }
+
 
     private IEnumerator HandleDeath()
     {
@@ -81,23 +110,6 @@ public class EnemyController : MonoBehaviour, ICharacter
 
         Destroy(gameObject); // 移除敌人对象（或者可以替换成游戏胜利界面）
         BattleManager.Instance.CheckWinLose(); // 重新检查战斗胜负
-    }
-
-
-    public void UpdateHPText()
-    {
-        if (hpUI != null)
-        {
-            TMP_Text hpText = hpUI.GetComponent<TMP_Text>();
-            if (hpText != null)
-            {
-                hpText.text = $"HP: {currentHealth}/{maxHealth}";
-            }
-            else
-            {
-                Debug.LogWarning("UpdateHPText: TMP_Text component not found on hpUI.");
-            }
-        }
     }
 
     public IEnumerator ExecuteTurn()
@@ -125,7 +137,7 @@ public class EnemyController : MonoBehaviour, ICharacter
         ICharacter target = null;
         foreach (CardData card in enemyHand)
         {
-            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(1.3f);
 
             // 选择目标
             if (card.cardEffect != null)
@@ -143,6 +155,16 @@ public class EnemyController : MonoBehaviour, ICharacter
             // 调用卡牌效果，施法者为当前敌人，目标为上面选定的
             card.cardEffect.ApplyEffect(BattleManager.Instance, card, this, target);
             Debug.Log($"{gameObject.name} used card: {card.cardName}");
+
+            // 显示出牌卡牌名称，并在状态UI中淡出显示
+            if (statusUI != null)
+            {
+                EnemyStatusUI statusUIComponent = statusUI.GetComponent<EnemyStatusUI>();
+                if (statusUIComponent != null)
+                {
+                    statusUIComponent.ShowCardName(card.cardName);
+                }
+            }
         }
 
         // 4. 清空手牌，为下个回合做准备
@@ -151,15 +173,55 @@ public class EnemyController : MonoBehaviour, ICharacter
         yield break;
     }
 
-    public void GainArmor(int amount)
+
+
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        currentArmor += amount;
+        if (BattleManager.Instance != null && BattleManager.Instance.isCardBeingDragged)
+        {
+            // 检查当前拖拽卡牌的数据是否存在
+            CardData draggingCard = BattleManager.Instance.currentDraggingCardData;
+            if (draggingCard != null)
+            {
+                // 如果目标类型是 FirstEnemy，则只有第一个存活敌人放大
+                if (draggingCard.targetingType == TargetingType.FirstEnemy)
+                {
+                    ICharacter firstEnemy = BattleManager.Instance.GetFirstAliveEnemy();
+                    if (firstEnemy != null && firstEnemy is EnemyController enemyRef && enemyRef == this)
+                    {
+                        needEnlarge = true;
+                    }
+
+                }
+                else if (draggingCard.targetingType == TargetingType.Manual)
+                {
+                    // 没有特殊限制时，正常放大
+                    needEnlarge = true;
+                }
+            }
+        }
     }
 
-    public void Heal(int amount)
+    public void OnPointerExit(PointerEventData eventData)
     {
-        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        // 设置标记，在 LateUpdate 中处理
+        needResetScale = true;
+        needEnlarge = false;
     }
 
+
+    private void LateUpdate()
+    {
+        if (needEnlarge)
+        {
+            transform.localScale = originalScale * enlargeFactor;
+            needEnlarge = false;
+        }
+        if (needResetScale)
+        {
+            transform.localScale = originalScale;
+            needResetScale = false;
+        }
+    }
 
 }
