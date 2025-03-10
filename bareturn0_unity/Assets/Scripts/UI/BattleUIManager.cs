@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public class BattleUIManager : MonoBehaviour
 {
@@ -19,6 +20,11 @@ public class BattleUIManager : MonoBehaviour
     public TextMeshProUGUI playerEnergyText;
     public TextMeshProUGUI roundText;
     public Slider PlayerHealthBar;
+
+    [Header("Energy Segment Images (in order)")]
+    public List<Image> energySegments;
+    public Sprite litSegmentSprite;   // 亮起时的格子素材
+    public Sprite unlitSegmentSprite; // 未亮时的格子素材
 
     [Header("Warnings")]
     public TextMeshProUGUI energyWarningText;
@@ -100,6 +106,20 @@ public class BattleUIManager : MonoBehaviour
             fillImage.color = Color.red;
         }
 
+        for (int i = 0; i < energySegments.Count; i++)
+        {
+            if (i < BattleManager.Instance.player.currentEnergy)
+            {
+                // 亮起
+                energySegments[i].sprite = litSegmentSprite;
+            }
+            else
+            {
+                // 未亮
+                energySegments[i].sprite = unlitSegmentSprite;
+            }
+        }
+
     }
 
     private void Update()
@@ -114,7 +134,7 @@ public class BattleUIManager : MonoBehaviour
             playerShieldText.text = $"{BattleManager.Instance.player.currentArmor}";
 
             // 更新玩家剩余能量显示
-            playerEnergyText.text = $"Energy: {BattleManager.Instance.player.currentEnergy}";
+            playerEnergyText.text = $"{BattleManager.Instance.player.currentEnergy}";
 
             // 更新当前回合数显示
             roundText.text = $"Round: {BattleManager.Instance.CurrentRoundNumber}";
