@@ -4,6 +4,7 @@ public class PlayerController : MonoBehaviour, ICharacter
 {
     public int currentHealth = 50;
     public int maxHealth = 50;
+    public int maxEnergy = 10;
 
     // 能量
     public int initialEnergy = 3;    // 第1回合的初始能量
@@ -53,6 +54,7 @@ public class PlayerController : MonoBehaviour, ICharacter
     public void GainEnergy(int amount)
     {
         currentEnergy += amount;
+        currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
         animatorController?.PlayGainEnergyAnimation();
     }
 }
