@@ -120,9 +120,10 @@ public class MapUrlManager : MonoBehaviour
         string url = $"http://localhost:3000/savefiles/{saveName}/updateCoins";
         string authToken = PlayerPrefs.GetString("token", "");
 
+        // 发送 JSON 数据 { "coins": amount }
         string jsonBody = JsonUtility.ToJson(new CoinUpdateRequest(amount));
 
-        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        UnityWebRequest request = UnityWebRequest.Put(url, jsonBody);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
@@ -137,9 +138,10 @@ public class MapUrlManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError($"❌ 更新金币失败: {request.error}");
+            Debug.LogError($"❌ 更新金币失败: {request.error} - {request.downloadHandler.text}");
         }
     }
+
 
     void ShowRewardPanel(int level, int coins)
     {
