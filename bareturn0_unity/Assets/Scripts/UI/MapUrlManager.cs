@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using TMPro;
 public class MapUrlManager : MonoBehaviour
 {
     //private string apiBaseUrl = "http://localhost:3000/savefiles"; // Update API base URL
@@ -13,12 +14,17 @@ public class MapUrlManager : MonoBehaviour
     private string saveName;
     public Button settingButton; // 添加 Setting 按钮
     public Button townButton;
+    public GameObject rewardPanel; 
+    public TextMeshProUGUI coinsText;
+    public Button okButton;
 
     void Start()
     {
         townButton.onClick.AddListener(GoToTown);
         saveName = PlayerPrefs.GetString("currentSaveName", "");
         settingButton.onClick.AddListener(GoToSettings);
+        rewardPanel.SetActive(false);
+        okButton.onClick.AddListener(closeReward);
         if (!string.IsNullOrEmpty(saveName))
         {
             StartCoroutine(GetUserLevel());
@@ -27,6 +33,7 @@ public class MapUrlManager : MonoBehaviour
         {
             Debug.LogError("Username or SaveName is missing in PlayerPrefs!");
         }
+        CheckLevelAndReward(); 
     }
 
     IEnumerator GetUserLevel()
@@ -85,7 +92,67 @@ public class MapUrlManager : MonoBehaviour
         public int progress;
     }
 
+    [System.Serializable]
+    private class CoinUpdateRequest
+    {
+        public int coins;
+        public CoinUpdateRequest(int amount)
+        {
+            this.coins = amount;
+        }
+    }
 
+    void CheckLevelAndReward()
+    {
+        string previousScene = PlayerPrefs.GetString("PreviousScene", "");
+        Debug.Log($"上一个场景是: {previousScene}");
+
+        if (previousScene == "calcuTeaching")  // 确保是从 level2 进入的
+        {
+            Debug.Log("🎉 通过 level2，奖励 50 coins！");
+            StartCoroutine(UpdateCoins(50)); // 更新数据库
+            ShowRewardPanel(2, 50); // 弹出奖励界面
+        }
+    }
+
+    IEnumerator UpdateCoins(int amount)
+    {
+        string url = $"http://localhost:3000/savefiles/{saveName}/updateCoins";
+        string authToken = PlayerPrefs.GetString("token", "");
+
+        string jsonBody = JsonUtility.ToJson(new CoinUpdateRequest(amount));
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"✅ 成功更新金币：+{amount}");
+        }
+        else
+        {
+            Debug.LogError($"❌ 更新金币失败: {request.error}");
+        }
+    }
+
+    void ShowRewardPanel(int level, int coins)
+    {
+        if (rewardPanel != null && coinsText != null)
+        {
+            rewardPanel.SetActive(true);
+            coinsText.text = $"Congratulations! You have already passed level {level}. You got {coins} coins!";
+        }
+        else
+        {
+            Debug.LogError("❌ Reward Panel 或 Coinstxt 未绑定！");
+        }
+    }
 
     // Helper class to deserialize JSON arrays
     public static class JsonHelper
@@ -112,5 +179,9 @@ public class MapUrlManager : MonoBehaviour
     void GoToTown()
     {
         SceneManager.LoadScene("Town");
+    }
+    void closeReward()
+    {
+        rewardPanel.SetActive(false);
     }
 }
