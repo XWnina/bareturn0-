@@ -17,5 +17,5 @@ MonoBehaviour:
   cost: 0
   artwork: {fileID: 0}
   quality: 0
-  cardEffect: {fileID: 0}
-  targetingType: 0
+  cardEffect: {fileID: 11400000, guid: 8b67a467154b2d744ae75284b600a3c9, type: 2}
+  targetingType: 3
