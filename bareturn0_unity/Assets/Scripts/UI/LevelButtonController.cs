@@ -43,7 +43,7 @@ public class LevelButtonManager : MonoBehaviour
     // 点击某个关卡按钮时
     private void OnClickLevelButton(int levelIndex)
     {
-        if (levelIndex > currentLevelIndex)
+        if (levelIndex > currentLevelIndex + 1)
         {
             Debug.Log($"Level {levelIndex + 1} is locked.");
             return;
@@ -76,9 +76,16 @@ public class LevelButtonManager : MonoBehaviour
 
         if (i == currentLevelIndex) // The current level (where the indicator should be)
         {
-            youAreHereIndicator.transform.position = level.levelButton.transform.position;
-            youAreHereIndicator.SetActive(true);
-        }
+                Vector3 buttonPos = level.levelButton.transform.position;
+
+                // 这里假设向上偏移 50 个单位
+                Vector3 offset = new Vector3(0, 1f, 0);
+
+                // 将指示器放置到按钮上方
+                youAreHereIndicator.transform.position = buttonPos + offset;
+
+                youAreHereIndicator.SetActive(true);
+            }
         else if (i > currentLevelIndex) // Locked levels
         {
             level.icon.sprite = level.lockedSprite;
