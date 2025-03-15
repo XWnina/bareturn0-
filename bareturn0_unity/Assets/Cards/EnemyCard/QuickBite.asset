@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af4d6d6adf0810d4583376e695fb712a, type: 3}
-  m_Name: Protect
+  m_Name: QuickBite
   m_EditorClassIdentifier: 
-  cardName: Protect
-  description: protect lowest hp ally
+  cardName: Quick Bite
+  description: 
   cost: 0
-  artwork: {fileID: 3488937396160108248, guid: 1b2acfce0ef6bb7498f3831b23188fb7, type: 3}
+  artwork: {fileID: 0}
   quality: 0
-  cardEffect: {fileID: 11400000, guid: 8007921bc13dc6f4d8d1d66af4c186bd, type: 2}
-  targetingType: 2
+  cardEffect: {fileID: 0}
+  targetingType: 0

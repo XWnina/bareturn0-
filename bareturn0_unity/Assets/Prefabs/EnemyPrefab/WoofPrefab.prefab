@@ -58,16 +58,15 @@ MonoBehaviour:
   speed: 8
   attackDamage: 10
   currentArmor: 0
-  enemyCardPrefab: {fileID: 6075968857336475471, guid: 6a89a29eba8d2f74c868b937768df65c, type: 3}
   spriteRenderer: {fileID: 7241535689762677544}
   enlargeFactor: 1.1
   statusUI: {fileID: 0}
   animatorController: {fileID: 1354544605362301238}
   enemyDeck:
-  - {fileID: 11400000, guid: 223ff3869e4b6424e839507c4acc20c7, type: 2}
-  - {fileID: 11400000, guid: 36816c3f25a2408428b6bdaf1ba6dc9f, type: 2}
-  - {fileID: 11400000, guid: f02f2aefc499d42428a8da1da40dc9d7, type: 2}
-  - {fileID: 11400000, guid: 1aa932cc4a6aabd4ba26d653de60f664, type: 2}
+  - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
+  - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
+  - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
+  - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
   enemyHand: []
   drawCount: 2
 --- !u!70 &8920047322979453000
