@@ -1,30 +1,64 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;   
+
 
 public class LevelButtonManager : MonoBehaviour
 {
     public static LevelButtonManager Instance;
+    public static LevelData currentLevelData;
 
     [System.Serializable]
-    public class LevelData
+    public class LevelButtonData
     {
         public Button levelButton; // 关卡按钮
         public Image icon; // 关卡图标
         public Sprite passedSprite; // 通过时的图标
         public Sprite lockedSprite; // 未通过的图标
         public bool isPassed; // 是否通过
-        //public Button townButton;
+
+        public LevelData levelDataAsset; //关卡数据
     }
 
-    public List<LevelData> levels; // 关卡列表
+    public List<LevelButtonData> levels; // 关卡列表
     public int currentLevelIndex = 0; // 当前关卡索引
     public GameObject youAreHereIndicator; // “You Are Here” 指示器
 
     private void Awake()
     {
         Instance = this;
-        //UpdateLevelUI();
+    }
+
+    private void Start()
+    {
+        // 给每个关卡按钮添加点击事件
+        for (int i = 0; i < levels.Count; i++)
+        {
+            int index = i; // 必须在循环中用局部变量
+            levels[i].levelButton.onClick.AddListener(() => OnClickLevelButton(index));
+        }
+    }
+
+    // 点击某个关卡按钮时
+    private void OnClickLevelButton(int levelIndex)
+    {
+        if (levelIndex > currentLevelIndex)
+        {
+            Debug.Log($"Level {levelIndex + 1} is locked.");
+            return;
+        }
+
+        if (levels[levelIndex].levelDataAsset != null)
+        {
+            currentLevelData = levels[levelIndex].levelDataAsset;
+            // 切换场景
+            SceneManager.LoadScene("BattleScenes");
+        }
+        else
+        {
+            Debug.LogWarning($"No levelDataAsset assigned for level {levelIndex}."); //TODO
+        }
     }
     public void UpdateLevelUI()
 {
@@ -33,7 +67,7 @@ public class LevelButtonManager : MonoBehaviour
 
     for (int i = 0; i < levels.Count; i++)
     {
-        LevelData level = levels[i];
+        LevelButtonData level = levels[i];
 
         if (i < currentLevelIndex) // Levels that have been completed
         {
