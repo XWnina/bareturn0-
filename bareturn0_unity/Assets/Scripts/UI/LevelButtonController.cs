@@ -78,7 +78,7 @@ public class LevelButtonManager : MonoBehaviour
         {
                 Vector3 buttonPos = level.levelButton.transform.position;
 
-                // 这里假设向上偏移 50 个单位
+                // 这里假设向上偏移 1 个单位
                 Vector3 offset = new Vector3(0, 1f, 0);
 
                 // 将指示器放置到按钮上方
