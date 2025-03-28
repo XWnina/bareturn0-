@@ -33,7 +33,8 @@ public class MapUrlManager : MonoBehaviour
         {
             Debug.LogError("Username or SaveName is missing in PlayerPrefs!");
         }
-        CheckLevelAndReward(); 
+        //CheckLevelAndReward(); 
+        StartCoroutine(CheckLevelAndReward());
     }
 
     IEnumerator GetUserLevel()
@@ -102,12 +103,16 @@ public class MapUrlManager : MonoBehaviour
         }
     }
 
-    void CheckLevelAndReward()
-    {
+    IEnumerator CheckLevelAndReward()
+    {   
+        yield return StartCoroutine(GetUserLevel());
         string previousScene = PlayerPrefs.GetString("PreviousScene", "");
+        //int curProcess = GetUserLevel();
+        
+        int curProcess = CurrentLevel;
         Debug.Log($"上一个场景是: {previousScene}");
 
-        if (previousScene == "calcuTeaching")  // 确保是从 level2 进入的
+        if (previousScene == "calcuTeaching" && curProcess == 2)  // 确保是从 level2 进入的
         {
             Debug.Log("🎉 通过 level2，奖励 50 coins！");
             StartCoroutine(UpdateCoins(50)); // 更新数据库
