@@ -20,8 +20,9 @@ const SaveFileSchema = new mongoose.Schema(
         achievedDate: { type: Date, default: null },
       },
     ], // Reference to the Achievement model
-    maxHealth: { type: Number, default: 20 },
-    speed: { type: Number, default: 1 }
+
+    maxHealth: { type: Number, default: 20 }, // Default max health is 20
+    speed: { type: Number, default: 1 } // Default speed is 1
   },
   { timestamps: true }
 );
