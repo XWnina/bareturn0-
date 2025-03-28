@@ -7,10 +7,14 @@ const SaveFileSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     }, // Reference to the User model
+
     saveName: { type: String, required: true },
-    playerName: { type: String, default: "|" }, // Default player name is "|"
+    playerName: { type: String, default: "|" },
     progress: { type: Number, default: 0 },
     coins: { type: Number, default: 0 },
+    maxHealth: { type: Number, default: 20 },
+    speed: { type: Number, default: 1 },
+
     unlockedAchievements: [
       {
         achievementId: {
@@ -20,15 +24,25 @@ const SaveFileSchema = new mongoose.Schema(
         achievedDate: { type: Date, default: null },
       },
     ], // Reference to the Achievement model
-    
+
     selectedDeck: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CardDeck",
-      default: null
-    },  // Reference to the CardDeck model
+      default: null,
+    },
 
-    maxHealth: { type: Number, default: 20 }, // Default max health is 20
-    speed: { type: Number, default: 1 } // Default speed is 1
+    cardCollection: {
+      name: { type: String, default: "Card Collection" },
+      cards: {
+        type: [
+          {
+            cardName: String,
+            count: Number,
+          },
+        ],
+        default: [],
+      },
+    },
   },
   { timestamps: true }
 );
