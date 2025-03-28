@@ -37,6 +37,10 @@ public class LevelButtonManager : MonoBehaviour
         {
             int index = i; // 必须在循环中用局部变量
             levels[i].levelButton.onClick.AddListener(() => OnClickLevelButton(index));
+            //if (index == 3)
+            //{
+            //    levels[i].levelButton.onClick.AddListener(() => SceneManager.LoadScene("calcuTeaching"));
+            //}
         }
     }
 
@@ -58,6 +62,11 @@ public class LevelButtonManager : MonoBehaviour
         else
         {
             Debug.LogWarning($"No levelDataAsset assigned for level {levelIndex}."); //TODO
+
+            if ((levelIndex + 1) == 3)
+            {
+                SceneManager.LoadScene("calcuTeaching");
+            }
         }
     }
     public void UpdateLevelUI()
