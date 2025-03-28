@@ -10,7 +10,10 @@ const router = express.Router();
 router.post("/create", authMiddleware, async (req, res) => {
   try {
     const { saveFileId, name } = req.body;
-    const saveFile = await SaveFile.findOne({ _id: saveFileId, userId: req.user.id });
+    const saveFile = await SaveFile.findOne({
+      _id: saveFileId,
+      userId: req.user.id,
+    });
     if (!saveFile) {
       const errorResponse = { error: "Save file not found or unauthorized" };
       logRequestResponse(req, res, errorResponse);
@@ -40,7 +43,10 @@ router.post("/:deckId/addCard", authMiddleware, async (req, res) => {
       return res.status(404).json(errorResponse);
     }
 
-    const saveFile = await SaveFile.findOne({ _id: deck.saveFileId, userId: req.user.id });
+    const saveFile = await SaveFile.findOne({
+      _id: deck.saveFileId,
+      userId: req.user.id,
+    });
     if (!saveFile) {
       const errorResponse = { error: "Save file not found or unauthorized" };
       logRequestResponse(req, res, errorResponse);
@@ -54,19 +60,21 @@ router.post("/:deckId/addCard", authMiddleware, async (req, res) => {
       return res.status(400).json(errorResponse);
     }
 
-    const collectionCard = saveFile.cardCollection.cards.find(c => c.cardName === cardName);
+    const collectionCard = saveFile.cardCollection.cards.find(
+      (c) => c.cardName === cardName
+    );
     if (!collectionCard) {
       const errorResponse = { error: "Card not found in collection" };
       logRequestResponse(req, res, errorResponse);
       return res.status(400).json(errorResponse);
     }
 
-    const existingDeckCard = deck.cards.find(c => c.cardName === cardName);
+    const existingDeckCard = deck.cards.find((c) => c.cardName === cardName);
     const currentInDeck = existingDeckCard ? existingDeckCard.count : 0;
 
     if (currentInDeck + count > collectionCard.count) {
       const errorResponse = {
-        error: `You only have ${collectionCard.count} '${cardName}' in your collection`
+        error: `You only have ${collectionCard.count} '${cardName}' in your collection`,
       };
       logRequestResponse(req, res, errorResponse);
       return res.status(400).json(errorResponse);
@@ -91,7 +99,10 @@ router.post("/:deckId/addCard", authMiddleware, async (req, res) => {
 // Get all decks for a save file
 router.get("/save/:saveFileId", authMiddleware, async (req, res) => {
   try {
-    const saveFile = await SaveFile.findOne({ _id: req.params.saveFileId, userId: req.user.id });
+    const saveFile = await SaveFile.findOne({
+      _id: req.params.saveFileId,
+      userId: req.user.id,
+    });
     if (!saveFile) {
       const errorResponse = { error: "Save file not found" };
       logRequestResponse(req, res, errorResponse);
@@ -118,14 +129,20 @@ router.get("/:deckId", authMiddleware, async (req, res) => {
       return res.status(404).json(errorResponse);
     }
 
-    const saveFile = await SaveFile.findOne({ _id: deck.saveFileId, userId: req.user.id });
+    const saveFile = await SaveFile.findOne({
+      _id: deck.saveFileId,
+      userId: req.user.id,
+    });
     if (!saveFile) {
       const errorResponse = { error: "Unauthorized" };
       logRequestResponse(req, res, errorResponse);
       return res.status(403).json(errorResponse);
     }
 
-    const cardNameCountPairs = deck.cards.map(card => [card.cardName, card.count]);
+    const cardNameCountPairs = deck.cards.map((card) => [
+      card.cardName,
+      card.count,
+    ]);
     const response = { deck, cardNameCountPairs };
     logRequestResponse(req, res, response);
     res.json(response);
@@ -171,7 +188,10 @@ router.delete("/:deckId", authMiddleware, async (req, res) => {
       return res.status(404).json(errorResponse);
     }
 
-    const saveFile = await SaveFile.findOne({ _id: deck.saveFileId, userId: req.user.id });
+    const saveFile = await SaveFile.findOne({
+      _id: deck.saveFileId,
+      userId: req.user.id,
+    });
     if (!saveFile) {
       const errorResponse = { error: "Save file not found" };
       logRequestResponse(req, res, errorResponse);
@@ -187,5 +207,40 @@ router.delete("/:deckId", authMiddleware, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+router.get(
+  "/findByName/:saveFileId/:deckName",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const { saveFileId, deckName } = req.params;
+
+      // Check if this save file belongs to the logged-in user
+      const saveFile = await SaveFile.findOne({
+        _id: saveFileId,
+        userId: req.user.id,
+      });
+      if (!saveFile) {
+        const errorResponse = { error: "Save file not found or unauthorized" };
+        logRequestResponse(req, res, errorResponse);
+        return res.status(404).json(errorResponse);
+      }
+
+      const deck = await CardDeck.findOne({ saveFileId, name: deckName });
+      if (!deck) {
+        const errorResponse = { error: "Deck not found" };
+        logRequestResponse(req, res, errorResponse);
+        return res.status(404).json(errorResponse);
+      }
+
+      const response = { deckId: deck._id, deck };
+      logRequestResponse(req, res, response);
+      res.json(response);
+    } catch (err) {
+      logRequestResponse(req, res, { error: err.message });
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
 
 module.exports = router;
