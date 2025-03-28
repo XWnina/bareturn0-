@@ -112,7 +112,7 @@ public class MapUrlManager : MonoBehaviour
         int curProcess = CurrentLevel;
         Debug.Log($"上一个场景是: {previousScene}");
 
-        if (previousScene == "calcuTeaching" && curProcess == 2)  // 确保是从 level2 进入的
+        if (previousScene == "BattleScenes" && curProcess == 2)  // 确保是从 level2 进入的
         {
             Debug.Log("🎉 通过 level2，奖励 50 coins！");
             StartCoroutine(UpdateCoins(50)); // 更新数据库

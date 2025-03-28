@@ -1,6 +1,7 @@
 const express = require("express");
 const SaveFile = require("../models/SaveFile");
 const Achievement = require("../models/Achievement");
+const CardDeck = require("../models/CardDeck");
 const authMiddleware = require("../middlewares/authMiddleware");
 const { logRequestResponse } = require("../utils/logger");
 const User = require("../models/User");
@@ -10,7 +11,7 @@ const router = express.Router();
 // Create a new save file
 router.post("/", authMiddleware, async (req, res) => {
   try {
-    const { saveName, progress, coins } = req.body;
+    const { saveName } = req.body;
 
     const existingSave = await SaveFile.findOne({
       userId: req.user.id,
@@ -25,12 +26,34 @@ router.post("/", authMiddleware, async (req, res) => {
       return res.status(400).json(errorResponse);
     }
 
+    // Set default values for the card collection
+    const initialCardPool = [
+      { cardName: "HeavyAttack", count: 2 },
+      { cardName: "QuickRecharge", count: 2 },
+      { cardName: "Shield", count: 2 },
+      { cardName: "Slash", count: 2 },
+      { cardName: "SmallShield", count: 2 },
+    ];
+
     const newSave = new SaveFile({
       saveName,
-      progress,
-      coins,
+      cardCollection: {
+        name: "Card Collection",
+        cards: initialCardPool,
+      },
       userId: req.user.id,
     });
+
+    // Create CardDeck copy of cardCollection and link it as selectedDeck
+    const collectionDeck = new CardDeck({
+      saveFileId: newSave._id,
+      name: "Card Collection",
+      cards: initialCardPool,
+    });
+
+    await collectionDeck.save();
+
+    newSave.selectedDeck = collectionDeck._id;
 
     await newSave.save();
     const saveFileCount = await SaveFile.countDocuments({
@@ -380,6 +403,100 @@ router.put("/:saveName/updateSpeed", authMiddleware, async (req, res) => {
     const successResponse = { message: "speed updated successfully", save };
     logRequestResponse(req, res, successResponse);
     res.json(successResponse);
+  } catch (err) {
+    logRequestResponse(req, res, { error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Update selected deck for a save file
+router.put(
+  "/:saveName/updateSelectedDeck",
+  authMiddleware,
+  async (req, res) => {
+    try {
+      const { deckId } = req.body;
+
+      const saveFile = await SaveFile.findOne({
+        userId: req.user.id,
+        saveName: req.params.saveName,
+      });
+      if (!saveFile) {
+        const errorResponse = { error: "Save file not found" };
+        logRequestResponse(req, res, errorResponse);
+        return res.status(404).json(errorResponse);
+      }
+
+      const deck = await CardDeck.findOne({
+        _id: deckId,
+        saveFileId: saveFile._id,
+      });
+      if (!deck) {
+        const errorResponse = {
+          error: "Deck not found or does not belong to this save file",
+        };
+        logRequestResponse(req, res, errorResponse);
+        return res.status(404).json(errorResponse);
+      }
+
+      saveFile.selectedDeck = deckId;
+      await saveFile.save();
+
+      const response = { message: "Selected deck updated", saveFile };
+      logRequestResponse(req, res, response);
+      res.json(response);
+    } catch (err) {
+      logRequestResponse(req, res, { error: err.message });
+      res.status(500).json({ error: err.message });
+    }
+  }
+);
+
+// Get selected deck content for a save file
+router.get("/:saveName/selectedDeck", authMiddleware, async (req, res) => {
+  try {
+    const saveFile = await SaveFile.findOne({
+      userId: req.user.id,
+      saveName: req.params.saveName,
+    });
+    if (!saveFile) {
+      const errorResponse = { error: "Save file not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    const selectedDeck = await CardDeck.findById(saveFile.selectedDeck);
+    if (!selectedDeck) {
+      const errorResponse = { error: "Selected deck not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    const response = { selectedDeck };
+    logRequestResponse(req, res, response);
+    res.json(response);
+  } catch (err) {
+    logRequestResponse(req, res, { error: err.message });
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get card collection content for a save file
+router.get("/:saveName/cardCollection", authMiddleware, async (req, res) => {
+  try {
+    const saveFile = await SaveFile.findOne({
+      userId: req.user.id,
+      saveName: req.params.saveName,
+    });
+    if (!saveFile) {
+      const errorResponse = { error: "Save file not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    const response = { cardCollection: saveFile.cardCollection };
+    logRequestResponse(req, res, response);
+    res.json(response);
   } catch (err) {
     logRequestResponse(req, res, { error: err.message });
     res.status(500).json({ error: err.message });
