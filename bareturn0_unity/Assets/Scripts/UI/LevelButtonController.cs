@@ -47,7 +47,7 @@ public class LevelButtonManager : MonoBehaviour
     // 点击某个关卡按钮时
     private void OnClickLevelButton(int levelIndex)
     {
-        if (levelIndex > currentLevelIndex + 1)
+        if (levelIndex > currentLevelIndex)
         {
             Debug.Log($"Level {levelIndex + 1} is locked.");
             return;
