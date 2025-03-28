@@ -17,6 +17,7 @@ app.use("/savefiles", require("./routes/saveFileRoutes")); // Save file routes
 //app.use("/progress", require("./routes/progressRoutes")); // 更新的进度查询 API
 
 app.use("/achievements", require("./routes/achievementRoutes")); // Achievement routes
+app.use("/carddecks", require("./routes/cardDeckRoutes")); // Card deck routes
 
 // Backend API Testing
 app.get("/", (req, res) => {
