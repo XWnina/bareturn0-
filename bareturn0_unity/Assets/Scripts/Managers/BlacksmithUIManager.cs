@@ -14,6 +14,8 @@ public class BlacksmithUIManager : MonoBehaviour
     public Button EhBackButton;
 
     public TextMeshProUGUI messageText;
+
+    public EnhancementManager enhancementManager;
     void Start()
     {
         createPanel.SetActive(false);
@@ -40,7 +42,7 @@ public class BlacksmithUIManager : MonoBehaviour
         messageText.text = "What do you want to create?";
 
         // 这里你还可以写其它逻辑，例如初始化制作界面的数据
-        Debug.Log("进入制作界面");
+       // Debug.Log("进入制作界面");
     }
 
 
@@ -54,10 +56,11 @@ public class BlacksmithUIManager : MonoBehaviour
         createButton.gameObject.SetActive(false);
         upgradeButton.gameObject.SetActive(false);
 
+        enhancementManager.SetEnhancement();
         messageText.text = "chooce the card that you want to enhance";
 
         // 这里你还可以写其它逻辑，例如显示可升级的卡牌列表
-        Debug.Log("进入强化界面");
+        //Debug.Log("进入强化界面");
     }
 
     public void OnReturnButtonClicked()
