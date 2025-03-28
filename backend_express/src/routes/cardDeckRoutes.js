@@ -1,4 +1,3 @@
-// routes/cardDeckRoutes.js
 const express = require("express");
 const CardDeck = require("../models/CardDeck");
 const SaveFile = require("../models/SaveFile");
@@ -43,14 +42,41 @@ router.post("/:deckId/addCard", authMiddleware, async (req, res) => {
 
     const saveFile = await SaveFile.findOne({ _id: deck.saveFileId, userId: req.user.id });
     if (!saveFile) {
-      const errorResponse = { error: "Unauthorized" };
+      const errorResponse = { error: "Save file not found or unauthorized" };
       logRequestResponse(req, res, errorResponse);
       return res.status(403).json(errorResponse);
     }
 
-    const existing = deck.cards.find(c => c.cardName === cardName);
-    if (existing) existing.count += count;
-    else deck.cards.push({ cardName, count });
+    const totalCards = deck.cards.reduce((sum, c) => sum + c.count, 0);
+    if (totalCards + count > 30) {
+      const errorResponse = { error: "Deck cannot exceed 30 cards" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(400).json(errorResponse);
+    }
+
+    const collectionCard = saveFile.cardCollection.cards.find(c => c.cardName === cardName);
+    if (!collectionCard) {
+      const errorResponse = { error: "Card not found in collection" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(400).json(errorResponse);
+    }
+
+    const existingDeckCard = deck.cards.find(c => c.cardName === cardName);
+    const currentInDeck = existingDeckCard ? existingDeckCard.count : 0;
+
+    if (currentInDeck + count > collectionCard.count) {
+      const errorResponse = {
+        error: `You only have ${collectionCard.count} '${cardName}' in your collection`
+      };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(400).json(errorResponse);
+    }
+
+    if (existingDeckCard) {
+      existingDeckCard.count += count;
+    } else {
+      deck.cards.push({ cardName, count });
+    }
 
     await deck.save();
     const response = { message: "Card added", deck };
