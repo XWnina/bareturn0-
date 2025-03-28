@@ -20,6 +20,12 @@ const SaveFileSchema = new mongoose.Schema(
         achievedDate: { type: Date, default: null },
       },
     ], // Reference to the Achievement model
+    
+    selectedDeck: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "CardDeck",
+      default: null
+    },  // Reference to the CardDeck model
 
     maxHealth: { type: Number, default: 20 }, // Default max health is 20
     speed: { type: Number, default: 1 } // Default speed is 1
