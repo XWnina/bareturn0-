@@ -121,6 +121,11 @@ namespace CalcuTeaching
 
         private void Start()
         {
+            string token = PlayerPrefs.GetString("token", "");
+            string saveName = PlayerPrefs.GetString("currentSaveName", "");
+
+            Debug.Log($"🔑 当前Token为: {token}");
+            Debug.Log($"📂 当前存档名为: {saveName}");
             npcDialog.SetActive(true);
             playerDialog.SetActive(false);
             teachingPanel.SetActive(false);

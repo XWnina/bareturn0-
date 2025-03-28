@@ -477,7 +477,12 @@ private string CleanVariableExpression(string expression)
         // 设置全局变量
         PlayerPrefs.SetString("PreviousScene", "calcuTeaching");
         PlayerPrefs.Save(); // ✅ 推荐保存
-        StartCoroutine(UpdateProgress(2));  // 你可以根据当前关卡传入对应数字
+       // ✅ 立即读取并打印验证
+        string testValue = PlayerPrefs.GetString("PreviousScene", "NotFound");
+        Debug.Log("✅ PreviousScene 存储值为: " + testValue);
+        
+        
+        StartCoroutine(UpdateProgress(3));  // 你可以根据当前关卡传入对应数字
         
         // 跳转到 draftMap 场景（延迟一两秒更自然）
         Invoke(nameof(LoadDraftMapScene), 3f); // 3秒后跳转
@@ -486,6 +491,7 @@ private string CleanVariableExpression(string expression)
     {
         string token = PlayerPrefs.GetString("token", "");
         string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        Debug.Log($"📂 当前存档名为: {saveName}");
 
         if (string.IsNullOrEmpty(token))
         {
