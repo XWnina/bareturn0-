@@ -33,7 +33,6 @@ public class DeckManager : MonoBehaviour
     {
         playerInfoLoader.LoadPlayerDeck("selectedDeck", () =>
         {
-            // 在回调中再调用 InitialBattleDeck
             playerInfoLoader.InitialBattleDeck();
         });
         SetupInitialDeck();
