@@ -4,15 +4,13 @@ public class PlayerController : MonoBehaviour, ICharacter
 {
     public int currentHealth = 50;
     public int maxHealth = 50;
-    public int maxEnergy = 10;
+    public int speed = 10;
 
     // 能量
     public int initialEnergy = 3;    // 第1回合的初始能量
     public int energyGainPerRound = 1; // 每回合额外获得的能量(或也可固定给 maxEnergy)
     public int currentEnergy;
-
-    // 速度
-    public int speed = 10;
+    public int maxEnergy = 10;
 
     //护甲
     public int currentArmor = 0;

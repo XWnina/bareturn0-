@@ -12,8 +12,8 @@ public class DeckManager : MonoBehaviour
 
     public CardUIManager cardUIManager;
 
-    // 用于测试或初始化用的卡牌数据列表
-    // 可以在Inspector里手动拖拽一堆CardData进来，作为初始牌库
+ 
+    // 牌库
     public List<CardData> initialDeck = new List<CardData>();
     void Start()
     {

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af4d6d6adf0810d4583376e695fb712a, type: 3}
-  m_Name: Energize
+  m_Name: QuickRecharge
   m_EditorClassIdentifier: 
-  cardName: Energize
+  cardName: QuickRecharge
   description: Gain 1 Energy
   cost: 0
   artwork: {fileID: 21300000, guid: a67d2e382d25d4a478f5846a9fe1cc4b, type: 3}

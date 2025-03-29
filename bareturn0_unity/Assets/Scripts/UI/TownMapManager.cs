@@ -73,7 +73,7 @@ public class TownMapManager : MonoBehaviour
                 int userProgress = progressData.progress;
                 Debug.Log($"[TownMapManager] ✅ Progress fetched: {userProgress}");
 
-                if (userProgress >= 2)
+                if (userProgress >= 3)
                 {
                     BlacksmithShopButton.interactable = true;
                     StoreButton.interactable = true;
