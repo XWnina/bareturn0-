@@ -36,6 +36,7 @@ public class DefendEffect : CardEffect
             if (shieldTarget != null)
             {
                 shieldTarget.GainArmor(armorGain);
+                caster.Cast();
                 Debug.Log($"{shieldTarget.name} gains {armorGain} armor.");
             }
             else

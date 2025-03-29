@@ -6,4 +6,6 @@ public interface ICharacter
     void Heal(int amount);
 
     void GainArmor(int amount);
+
+    void Cast();
 }
