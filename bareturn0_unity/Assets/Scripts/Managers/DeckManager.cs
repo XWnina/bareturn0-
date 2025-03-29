@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class DeckManager : MonoBehaviour
 {
+    public static DeckManager Instance;
     public List<CardData> drawPile = new List<CardData>();    // 抽牌堆
     public List<CardData> hand = new List<CardData>();        // 玩家手牌
     public List<CardData> discardPile = new List<CardData>(); // 弃牌堆
@@ -11,13 +12,31 @@ public class DeckManager : MonoBehaviour
 
 
     public CardUIManager cardUIManager;
-
+    public PlayerInfoLoader playerInfoLoader;
  
     // 牌库
     public List<CardData> initialDeck = new List<CardData>();
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     void Start()
     {
-        //SetupInitialDeck();
+        playerInfoLoader.LoadPlayerDeck("selectedDeck", () =>
+        {
+            // 在回调中再调用 InitialBattleDeck
+            playerInfoLoader.InitialBattleDeck();
+        });
+        SetupInitialDeck();
 
         if (cardUIManager == null)
         {
