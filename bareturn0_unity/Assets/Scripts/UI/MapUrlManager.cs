@@ -111,7 +111,7 @@ public class MapUrlManager : MonoBehaviour
         
         int curProcess = CurrentLevel;
         Debug.Log($"上一个场景是: {previousScene}");
-
+        //previousScene == "BattleScenes"
         if (previousScene == "BattleScenes" && curProcess == 2)  // 确保是从 level2 进入的
         {
             Debug.Log("🎉 通过 level2，奖励 50 coins！");
@@ -153,7 +153,7 @@ public class MapUrlManager : MonoBehaviour
         if (rewardPanel != null && coinsText != null)
         {
             rewardPanel.SetActive(true);
-            coinsText.text = $"Congratulations! You have already passed level {level}. You got {coins} coins!";
+            coinsText.text = $"Congratulations! You have already passed (battle) level {level}. You got {coins} coins!";
         }
         else
         {
@@ -189,6 +189,8 @@ public class MapUrlManager : MonoBehaviour
     }
     void closeReward()
     {
+        //okButton.interactable = true;
+        Debug.Log("✅ Okay clicked!");
         rewardPanel.SetActive(false);
     }
 }
