@@ -42,3 +42,9 @@ public class SpeedDTO
 {
     public int speed;
 }
+
+[Serializable]
+public class CardCollectionDTO
+{
+    public DeckDTO cardCollection;
+}

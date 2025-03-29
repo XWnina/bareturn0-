@@ -28,9 +28,9 @@ public class PlayerInfoLoader : MonoBehaviour
         string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
 
         string url = "";
-        if (deckName.ToLower() == "selecteddeck")
+        if (deckName.ToLower() == "selecteddeck" || deckName == "cardCollection")
         {
-            url = $"http://localhost:3000/savefiles/{saveFileId}/selectedDeck";
+            url = $"http://localhost:3000/savefiles/{saveFileId}/{deckName}";
         }
         else
         {
@@ -53,13 +53,22 @@ public class PlayerInfoLoader : MonoBehaviour
             Debug.Log("后端返回卡组数据: " + json);
 
             DeckDTO deck = null;
-            if (deckName.ToLower() == "selecteddeck")
+            if (deckName == "selectedDeck")
             {
                 // 解析为 SelectedDeckDTO
                 SelectedDeckDTO selectedDTO = JsonUtility.FromJson<SelectedDeckDTO>(json);
                 if (selectedDTO != null && selectedDTO.selectedDeck != null)
                 {
                     deck = selectedDTO.selectedDeck;
+                }
+            }
+            else if (deckName.ToLower() == "cardcollection")
+            {
+                // 解析为 CardCollectionDTO
+                CardCollectionDTO collectionDTO = JsonUtility.FromJson<CardCollectionDTO>(json);
+                if (collectionDTO != null && collectionDTO.cardCollection != null)
+                {
+                    deck = collectionDTO.cardCollection;
                 }
             }
             else
@@ -193,5 +202,10 @@ public class PlayerInfoLoader : MonoBehaviour
     {
         PlayerController.instance.maxHealth = maxHealth;
         PlayerController.instance.speed = speed;
+    }
+
+    public void InitalenhanceDeck()
+    {
+        EnhancementManager.Instance.playerCards = cardList;
     }
 }

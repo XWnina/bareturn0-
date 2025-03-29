@@ -3,11 +3,12 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 public class EnhancementManager : MonoBehaviour
 {
+    public static EnhancementManager Instance;
     [Header("References to UI Elements")]
-    private List<CardData> playerCards = new List<CardData>(); // 这里存玩家所有卡
+    public List<CardData> playerCards = new List<CardData>(); // 这里存玩家所有卡
 
-    [Header("Test Cards")]
-    public List<CardData> testPlayerCards;
+    //[Header("Test Cards")]
+    //public List<CardData> testPlayerCards;
 
     public Transform scrollViewContent; // Inspector里把CardListScrollView/Viewport/Content拖进来
     public GameObject cardThumbnailPrefab; // Inspector里拖进“卡牌缩略图预制体”
@@ -22,13 +23,31 @@ public class EnhancementManager : MonoBehaviour
     private CardData leftUpgradeCard;
     private CardData rightUpgradeCard;
 
+    public PlayerInfoLoader playerInfoLoader;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public void SetEnhancement()
     {
         // 1. 获取玩家卡牌列表
-        playerCards = GetPlayerAllCards();
+        playerInfoLoader.LoadPlayerDeck("cardCollection", () =>
+        {
+            playerInfoLoader.InitalenhanceDeck();
+            // 2. 生成 UI 列表
+            PopulateScrollView();
+        });
 
-        // 2. 生成 UI 列表
-        PopulateScrollView();
+        
 
 
         selectedCardPlaceholder.SetSymbol("?");
@@ -37,12 +56,6 @@ public class EnhancementManager : MonoBehaviour
         selectedCardPlaceholder.allowHoverEffect = false;
     }
 
-    // 获取玩家所有卡
-    private List<CardData> GetPlayerAllCards()
-    {
-        // TODO: 替换成你自己的获取方式
-        return new List<CardData>();
-    }
 
     // 生成卡牌列表
     private void PopulateScrollView()
@@ -54,9 +67,9 @@ public class EnhancementManager : MonoBehaviour
         }
 
         // 遍历添加的测试卡牌
-        for (int i = 0; i < testPlayerCards.Count; i++)
+        for (int i = 0; i < playerCards.Count; i++)
         {
-            CardData cardData = testPlayerCards[i];
+            CardData cardData = playerCards[i];
 
             // 实例化缩略图Prefab
             GameObject thumbObj = Instantiate(cardThumbnailPrefab, scrollViewContent);
@@ -83,7 +96,7 @@ public class EnhancementManager : MonoBehaviour
     private void OnThumbnailClicked(int cardIndex)
     {
         Debug.Log("选中卡牌");
-        currentSelectedCard = testPlayerCards[cardIndex];
+        currentSelectedCard = playerCards[cardIndex];
 
         // 显示选中的卡牌
         selectedCardPlaceholder.RemoveSymbol();
