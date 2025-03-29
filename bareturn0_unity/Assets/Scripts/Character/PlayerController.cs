@@ -2,8 +2,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour, ICharacter
 {
+    public static PlayerController instance;
     public int currentHealth = 50;
-    public int maxHealth = 50;
+    public int maxHealth = 30;
     public int speed = 10;
 
     // ÄÜÁ¿
@@ -19,6 +20,17 @@ public class PlayerController : MonoBehaviour, ICharacter
 
 
 
+    void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
 
     public void Attack()
     {

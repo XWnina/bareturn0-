@@ -20,6 +20,7 @@ public class BattleManager : MonoBehaviour
 
     public DeckManager deckManager;        // 管理抽牌、弃牌
     public PlayerController player;        // 玩家控制脚本，包含当前能量、血量等
+    public PlayerInfoLoader playerInfoLoader;
 
     public List<EnemyController> enemies = new List<EnemyController>();
     public LevelData levelData;
@@ -58,8 +59,14 @@ public class BattleManager : MonoBehaviour
     private void Start()
     {
         levelData = LevelButtonManager.currentLevelData;
-        SetupBattle();
-        StartCoroutine(RoundLoop());
+        playerInfoLoader.LoadPlayerStats(() =>
+        {
+            playerInfoLoader.InitialPlayerStats();
+            SetupBattle();
+            StartCoroutine(RoundLoop());
+        });
+        
+        
     }
 
     private void Update()

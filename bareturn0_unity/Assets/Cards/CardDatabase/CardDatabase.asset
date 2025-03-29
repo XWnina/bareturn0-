@@ -12,4 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 60f5ec1bae3d52d4d985e30065582041, type: 3}
   m_Name: CardDatabase
   m_EditorClassIdentifier: 
-  allCards: []
+  allCards:
+  - {fileID: 11400000, guid: 3d8e04aa90fea9c409553e4f8b7189ff, type: 2}
+  - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}
+  - {fileID: 11400000, guid: 64abc73a6252d0f4aa9abeb209334663, type: 2}
+  - {fileID: 11400000, guid: 760ce11bd2c1480439b5c3d27198f810, type: 2}
+  - {fileID: 11400000, guid: 38f9639a0940a174cbbd0e11b5d08945, type: 2}
+  - {fileID: 11400000, guid: 223ff3869e4b6424e839507c4acc20c7, type: 2}
+  - {fileID: 11400000, guid: 9922edd6f43ea8b4e82791622121588f, type: 2}
