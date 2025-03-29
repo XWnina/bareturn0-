@@ -565,6 +565,7 @@ namespace CalcuTeaching
 
             string url = $"http://localhost:3000/savefiles/{saveName}/updateProgress";
             string jsonData = JsonUtility.ToJson(new ProgressWrapper(progress));
+            Debug.Log("📤 发送的 JSON 数据：" + jsonData);
 
             using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
             {
@@ -590,8 +591,10 @@ namespace CalcuTeaching
         [Serializable]
         private class ProgressWrapper
         {
+            public int progress;
             public ProgressWrapper(int p)
             {
+                this.progress = p;
             }
         }
 
