@@ -38,6 +38,11 @@ public class PlayerController : MonoBehaviour, ICharacter
 
     }
 
+    public void Cast()
+    {
+        animatorController?.CastingAnimation();
+    }
+
     public void TakeDamage(int damage)
     {
         int effectiveDamage = Mathf.Max(damage - currentArmor, 0);

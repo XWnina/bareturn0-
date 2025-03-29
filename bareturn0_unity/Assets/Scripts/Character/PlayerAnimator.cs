@@ -59,6 +59,14 @@ public class PlayerAnimator : MonoBehaviour
         }
     }
 
+    public void CastingAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Cast"); // 触发引导动画
+        }
+    }
+
     public void TriggerHit()
     {
 

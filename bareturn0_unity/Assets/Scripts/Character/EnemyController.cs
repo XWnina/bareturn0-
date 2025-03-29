@@ -54,6 +54,11 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         animatorController?.EnemyAttackAnimation();
     }
 
+    public void Cast()
+    {
+        animatorController?.CastingAnimation();
+    }
+
     public void TakeDamage(int damage)
     {
         int effectiveDamage = Mathf.Max(damage - currentArmor, 0);

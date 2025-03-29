@@ -66,7 +66,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
   - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
   - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
-  - {fileID: 11400000, guid: cc96a404ae912f24e8e22b094500479b, type: 2}
+  - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
+  - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
   enemyHand: []
   drawCount: 2
 --- !u!70 &8920047322979453000

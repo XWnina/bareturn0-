@@ -43,6 +43,14 @@ public class EnemyAnimator : MonoBehaviour
         }
     }
 
+    public void CastingAnimation()
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger("Cast"); // 触发引导动画
+        }
+    }
+
     public void TriggerPlayerHit()
     {
         BattleManager.Instance.TriggerPlayerHit(); // 让 `BattleManager` 控制玩家受击
