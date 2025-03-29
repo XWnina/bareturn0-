@@ -153,7 +153,7 @@ public class MapUrlManager : MonoBehaviour
         if (rewardPanel != null && coinsText != null)
         {
             rewardPanel.SetActive(true);
-            coinsText.text = $"Congratulations! You have already passed level {level}. You got {coins} coins!";
+            coinsText.text = $"Congratulations! You have already passed (battle) level {level}. You got {coins} coins!";
         }
         else
         {
