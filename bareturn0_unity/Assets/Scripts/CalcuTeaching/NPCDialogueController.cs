@@ -187,8 +187,8 @@ namespace CalcuTeaching
 
         private void Update()
         {
-            // 按下 E 键推进对话逻辑
-            if (Input.GetKeyDown(KeyCode.E))
+            // 按下 Enter 键推进对话逻辑
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 if (_playingDoubleIntro)
                 {
@@ -260,9 +260,8 @@ namespace CalcuTeaching
                 teachingPanel.SetActive(true);
                 questionText.text = "Declare an int variable and assign it a value. For example: int apple = 3;";
             }
-
-            // ❌ 不再处理回车提交，避免阻止用户换行
         }
+
 
 
         public void StartDoubleTeachingDialogue(int questionIndex)
