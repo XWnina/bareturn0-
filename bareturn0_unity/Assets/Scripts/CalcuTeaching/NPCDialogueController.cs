@@ -3,7 +3,7 @@ using TMPro;
 
 namespace CalcuTeaching
 {
-    public class NPCDialogueController : MonoBehaviour
+    public class NpcDialogueController : MonoBehaviour
     {
         public GameObject npcDialog;
         public GameObject playerDialog;
@@ -19,8 +19,8 @@ namespace CalcuTeaching
         private bool _waitingForInput;
         private bool _waitingForSecondInput;
         private string[] _currentIntroLines;
-        private int _currentLineIndex = 0;
-        private bool _isPlayingIntro = false;
+        private int _currentLineIndex;
+        private bool _isPlayingIntro;
         private string _currentQuestionText;
 
 
@@ -48,8 +48,8 @@ namespace CalcuTeaching
             "Now try using the double type. Assign a decimal value. (e.g. double price = 3.14;)"
         };
 
-        private int _doubleLineIndex = 0;
-        private bool _playingDoubleIntro = false;
+        private int _doubleLineIndex;
+        private bool _playingDoubleIntro;
 
         private readonly string[] _floatIntroLines = new string[]
         {
@@ -59,8 +59,8 @@ namespace CalcuTeaching
             "Try declaring a float variable and assigning it a value like 2.5f."
         };
 
-        private int _floatLineIndex = 0;
-        private bool _playingFloatIntro = false;
+        private int _floatLineIndex;
+        private bool _playingFloatIntro;
 
         private readonly string[] _additionIntroLines = new string[]
         {
@@ -70,8 +70,8 @@ namespace CalcuTeaching
             "Now it's your turn! Try declaring a variable and assigning it a sum."
         };
 
-        private int _addLineIndex = 0;
-        private bool _playingAddIntro = false;
+        private int _addLineIndex;
+        private bool _playingAddIntro;
 
         private readonly string[] _subtractionIntroLines = new string[]
         {
@@ -81,8 +81,8 @@ namespace CalcuTeaching
             "Give it a try! Declare a variable and assign it a subtraction result."
         };
 
-        private int _subLineIndex = 0;
-        private bool _playingSubIntro = false;
+        private int _subLineIndex;
+        private bool _playingSubIntro;
 
         private readonly string[] _multiplicationIntroLines = new string[]
         {
@@ -92,8 +92,8 @@ namespace CalcuTeaching
             "Try writing a multiplication statement on your own!"
         };
 
-        private int _mulLineIndex = 0;
-        private bool _playingMulIntro = false;
+        private int _mulLineIndex;
+        private bool _playingMulIntro;
 
         private readonly string[] _divisionIntroLines = new string[]
         {
@@ -103,8 +103,8 @@ namespace CalcuTeaching
             "Now give it a go — write a division statement!"
         };
 
-        private int _divLineIndex = 0;
-        private bool _playingDivIntro = false;
+        private int _divLineIndex;
+        private bool _playingDivIntro;
 
         private readonly string[] _modIntroLines = new string[]
         {
@@ -187,8 +187,8 @@ namespace CalcuTeaching
 
         private void Update()
         {
-            // 按下 E 键推进对话逻辑
-            if (Input.GetKeyDown(KeyCode.E))
+            // 按下 Enter 键推进对话逻辑
+            if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))
             {
                 if (_playingDoubleIntro)
                 {
@@ -260,9 +260,8 @@ namespace CalcuTeaching
                 teachingPanel.SetActive(true);
                 questionText.text = "Declare an int variable and assign it a value. For example: int apple = 3;";
             }
-
-            // ❌ 不再处理回车提交，避免阻止用户换行
         }
+
 
 
         public void StartDoubleTeachingDialogue(int questionIndex)
@@ -457,8 +456,8 @@ namespace CalcuTeaching
                 "For example: int a = 10; a++;",
                 "Try writing a line of code that increments a variable."
             };
-            string questionText = "If you have: int a = 10;Try writing a line of code that increments a variable.";
-            StartTeachingDialogue(incIntroLines, questionText);
+            string npcQuestionText = "If you have: int a = 10;Try writing a line of code that increments a variable.";
+            StartTeachingDialogue(incIntroLines, npcQuestionText);
         }
         public void StartDecrementTeachingDialogue()
         {
@@ -468,8 +467,8 @@ namespace CalcuTeaching
                 "If you have: int a = 10; a--; ",
                 "Write a line of code that uses the decrement operator."
             };
-            string questionText = "If you have: int a = 10; Write a line of code that uses the decrement operator.";
-            StartTeachingDialogue(decIntroLines, questionText);
+            string npcQuestionText = "If you have: int a = 10; Write a line of code that uses the decrement operator.";
+            StartTeachingDialogue(decIntroLines, npcQuestionText);
         }
         private readonly string[] _mixedIntroLines = new string[]
         {
@@ -485,11 +484,11 @@ namespace CalcuTeaching
                 "Write a combined expression using variables and +. (e.g. int apple = 3; int pear = 4; int sum = apple + pear;)");
         }
 
-        public void StartTeachingDialogue(string[] introLines, string questionText)
+        public void StartTeachingDialogue(string[] introLines, string npcQuestionText)
         {
             _currentIntroLines = introLines;
             _currentLineIndex = 0;
-            _currentQuestionText = questionText;
+            _currentQuestionText = npcQuestionText;
             _isPlayingIntro = true;
             ShowNextTeachingLine();
         }
