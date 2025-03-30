@@ -65,7 +65,7 @@ MonoBehaviour:
   enemyDeck:
   - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
   - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
-  - {fileID: 11400000, guid: 36816c3f25a2408428b6bdaf1ba6dc9f, type: 2}
+  - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}
   enemyHand: []
   drawCount: 1
 --- !u!70 &8920047322979453000

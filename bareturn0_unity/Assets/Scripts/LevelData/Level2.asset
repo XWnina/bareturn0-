@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Level2
   m_EditorClassIdentifier: 
   enemyDatas:
+  - {fileID: 11400000, guid: e27e51cba8fdd9e4883a6d1a24b99c84, type: 2}
   - {fileID: 11400000, guid: 9c315e05a3c4c2642bc71ab7957003e6, type: 2}
+  processNum: 2
