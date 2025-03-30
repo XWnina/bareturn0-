@@ -78,6 +78,10 @@ public class BattleUIManager : MonoBehaviour
         resultText.text = isVictory ? "YOU WIN!!!" : "YOU LOSS...";
         resultText.color = isVictory ? Color.green : Color.red;
 
+        if (isVictory)
+        {
+            BattleManager.Instance.sendProgress();
+        }
         // ¼àÌý·µ»Ø²Ëµ¥°´Å¥
         returnButton.onClick.RemoveAllListeners();
         returnButton.onClick.AddListener(ReturnToMap);

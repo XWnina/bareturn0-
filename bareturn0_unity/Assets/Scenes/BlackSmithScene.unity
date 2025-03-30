@@ -3391,7 +3391,7 @@ MonoBehaviour:
   EhBackButton: {fileID: 1292134646}
   messageText: {fileID: 282711483}
   enhancementManager: {fileID: 254805595}
-  BackToTownButton: {fileID: 2050025489}
+  backToTownButton: {fileID: 2050025489}
 --- !u!4 &1848262942
 Transform:
   m_ObjectHideFlags: 0

@@ -1,7 +1,9 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Networking;
 using UnityEngine.UI;
 using static LevelButtonManager;
 
@@ -18,19 +20,19 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
-    public DeckManager deckManager;        // ¹ÜÀí³éÅÆ¡¢ÆúÅÆ
-    public PlayerController player;        // Íæ¼Ò¿ØÖÆ½Å±¾£¬°üº¬µ±Ç°ÄÜÁ¿¡¢ÑªÁ¿µÈ
+    public DeckManager deckManager;        // ç®¡ç†æŠ½ç‰Œã€å¼ƒç‰Œ
+    public PlayerController player;        // ç©å®¶æ§åˆ¶è„šæœ¬ï¼ŒåŒ…å«å½“å‰èƒ½é‡ã€è¡€é‡ç­‰
     public PlayerInfoLoader playerInfoLoader;
 
     public List<EnemyController> enemies = new List<EnemyController>();
     public LevelData levelData;
     public GameObject enemyStatusUIPrefab;
 
-    public Button endActionButton;  // ¡°½áÊøĞĞ¶¯¡±°´Å¥
+    public Button endActionButton;  // â€œç»“æŸè¡ŒåŠ¨â€æŒ‰é’®
 
 
     public BattleState state;
-    public CardData currentDraggingCardData; //¼ÇÂ¼µ±Ç°ÕıÔÚÍÏ×§µÄ¿¨ÅÆÊı¾İ
+    public CardData currentDraggingCardData; //è®°å½•å½“å‰æ­£åœ¨æ‹–æ‹½çš„å¡ç‰Œæ•°æ®
 
     public int lastAttackDamage;
     public EnemyController selectedEnemy;
@@ -42,11 +44,11 @@ public class BattleManager : MonoBehaviour
         get { return roundNumber; }
     }
 
-    // ÓÃÓÚ¹¹½¨»ØºÏË³ĞòµÄÄÚ²¿Àà
+    // ç”¨äºæ„å»ºå›åˆé¡ºåºçš„å†…éƒ¨ç±»
     private class TurnOrderEntry
     {
         public bool isPlayer;
-        public EnemyController enemy; // Èç¹û isPlayer Îª false£¬Ôò enemy ²»Îª null
+        public EnemyController enemy; // å¦‚æœ isPlayer ä¸º falseï¼Œåˆ™ enemy ä¸ä¸º null
         public int speed;
     }
 
@@ -71,14 +73,14 @@ public class BattleManager : MonoBehaviour
 
     private void Update()
     {
-        // ÆäËüÏÖÓĞÂß¼­
+        // å…¶å®ƒç°æœ‰é€»è¾‘
 
-        // µ÷ÊÔ£º°´ÏÂ A ¼üÊ±£¬ÈÃµÚÒ»¸öµĞÈËÊÜµ½ÉËº¦
+        // è°ƒè¯•ï¼šæŒ‰ä¸‹ A é”®æ—¶ï¼Œè®©ç¬¬ä¸€ä¸ªæ•Œäººå—åˆ°ä¼¤å®³
         if (Input.GetKeyDown(KeyCode.A))
         {
             if (enemies.Count > 0 && enemies[0] != null)
             {
-                enemies[0].TakeDamage(1); // ÀıÈçÔì³É 1 µãÉËº¦
+                enemies[0].TakeDamage(1); // ä¾‹å¦‚é€ æˆ 1 ç‚¹ä¼¤å®³
                 Debug.Log("Debug: Pressed A, first enemy takes 1 damage.");
             }
             else
@@ -87,17 +89,17 @@ public class BattleManager : MonoBehaviour
             }
         }
 
-        // µ÷ÊÔ£º°´ÏÂ S ¼üÊ±£¬ÈÃÍæ¼Ò¹¥»÷µÚÒ»¸öµĞÈË²¢Ôì³É 1 µãÉËº¦
+        // è°ƒè¯•ï¼šæŒ‰ä¸‹ S é”®æ—¶ï¼Œè®©ç©å®¶æ”»å‡»ç¬¬ä¸€ä¸ªæ•Œäººå¹¶é€ æˆ 1 ç‚¹ä¼¤å®³
         if (Input.GetKeyDown(KeyCode.S))
         {
-            // È·±£ÓĞµĞÈË´æÔÚ
+            // ç¡®ä¿æœ‰æ•Œäººå­˜åœ¨
             if (enemies.Count > 0 && enemies[0] != null)
             {
-                // ÉèÖÃÉËº¦Îª1µã
+                // è®¾ç½®ä¼¤å®³ä¸º1ç‚¹
                 lastAttackDamage = 3;
-                // ½«µÚÒ»¸öµĞÈË×÷ÎªÑ¡ÖĞµÄÄ¿±ê
+                // å°†ç¬¬ä¸€ä¸ªæ•Œäººä½œä¸ºé€‰ä¸­çš„ç›®æ ‡
                 selectedEnemy = enemies[0];
-                // ´¥·¢Íæ¼ÒµÄ¹¥»÷¶¯»­£¨¶¯»­ÊÂ¼şÖĞ»áµ÷ÓÃ TriggerEnemyHit()£¬¶Ô selectedEnemy Ôì³ÉÉËº¦£©
+                // è§¦å‘ç©å®¶çš„æ”»å‡»åŠ¨ç”»ï¼ˆåŠ¨ç”»äº‹ä»¶ä¸­ä¼šè°ƒç”¨ TriggerEnemyHit()ï¼Œå¯¹ selectedEnemy é€ æˆä¼¤å®³ï¼‰
                 player.Attack();
 
                 Debug.Log("Pressed S: Player attacks first enemy for 1 damage.");
@@ -112,19 +114,19 @@ public class BattleManager : MonoBehaviour
 
     private void SetupBattle()
     {
-        //³õÊ¼»¯Íæ¼ÒºÍµĞÈËÑªÁ¿
+        //åˆå§‹åŒ–ç©å®¶å’Œæ•Œäººè¡€é‡
         player.currentHealth = player.maxHealth;
 
-        // Éú³É¹Ø¿¨ÖĞµÄËùÓĞµĞÈË
+        // ç”Ÿæˆå…³å¡ä¸­çš„æ‰€æœ‰æ•Œäºº
         SpawnEnemies();
 
-        //³õÊ¼»¯³éÅÆ¶Ñ
+        //åˆå§‹åŒ–æŠ½ç‰Œå †
         deckManager.SetupInitialDeck();
 
         state = BattleState.RoundStart;
     }
 
-    // ¸ù¾İ LevelData ÖĞ´æ´¢µÄµĞÈËÊı¾İÖğ¸öÉú³ÉµĞÈË
+    // æ ¹æ® LevelData ä¸­å­˜å‚¨çš„æ•Œäººæ•°æ®é€ä¸ªç”Ÿæˆæ•Œäºº
     public void SpawnEnemies()
     {
         if (levelData == null)
@@ -133,8 +135,8 @@ public class BattleManager : MonoBehaviour
             return;
         }
 
-        // ÀıÈç£¬ÕâÀïÎÒÃÇÎªÃ¿¸öµĞÈËÉú³ÉÒ»¸öÎ»ÖÃ£¨¿É¸ù¾İÊµ¼ÊĞèÇóĞŞ¸Ä£©
-        // ´Ë´¦¼òµ¥°²ÅÅÔÚÒ»¸öºáÏòÅÅÁĞµÄÎ»ÖÃ
+        // ä¾‹å¦‚ï¼Œè¿™é‡Œæˆ‘ä»¬ä¸ºæ¯ä¸ªæ•Œäººç”Ÿæˆä¸€ä¸ªä½ç½®ï¼ˆå¯æ ¹æ®å®é™…éœ€æ±‚ä¿®æ”¹ï¼‰
+        // æ­¤å¤„ç®€å•å®‰æ’åœ¨ä¸€ä¸ªæ¨ªå‘æ’åˆ—çš„ä½ç½®
         float startX = 2;
         float offsetX = 2.5f;
         Vector3 spawnPos = Vector3.zero;
@@ -143,16 +145,16 @@ public class BattleManager : MonoBehaviour
         {
             EnemyData enemyData = levelData.enemyDatas[i];
 
-            // ¸ù¾İË÷Òı¼ÆËãÉú³ÉÎ»ÖÃ£¬¿ÉÒÔÌæ»»Îª¸ü¸´ÔÓµÄËã·¨
+            // æ ¹æ®ç´¢å¼•è®¡ç®—ç”Ÿæˆä½ç½®ï¼Œå¯ä»¥æ›¿æ¢ä¸ºæ›´å¤æ‚çš„ç®—æ³•
             spawnPos = new Vector3(startX + offsetX * i, 0, 0);
             SpawnEnemy(enemyData, spawnPos);
         }
     }
 
-    // ¸ù¾İµ¥¸ö EnemyData ÊµÀı»¯µĞÈËÔ¤ÖÆÌå²¢³õÊ¼»¯ÊôĞÔ
+    // æ ¹æ®å•ä¸ª EnemyData å®ä¾‹åŒ–æ•Œäººé¢„åˆ¶ä½“å¹¶åˆå§‹åŒ–å±æ€§
     public void SpawnEnemy(EnemyData enemyData, Vector3 spawnPos)
     {
-        // 1. ÊµÀı»¯µĞÈË
+        // 1. å®ä¾‹åŒ–æ•Œäºº
         if (enemyData == null || enemyData.enemyPrefab == null)
         {
             Debug.LogError("SpawnEnemy: Invalid EnemyData or prefab is null.");
@@ -171,19 +173,19 @@ public class BattleManager : MonoBehaviour
             Debug.LogWarning("SpawnEnemy: The instantiated prefab does not have an EnemyController.");
         }
 
-        // 2. ÊµÀı»¯µĞÈË×´Ì¬UI
+        // 2. å®ä¾‹åŒ–æ•ŒäººçŠ¶æ€UI
         if (enemyStatusUIPrefab != null && enemyController != null)
         {
-            // ¼ÆËãÑªÁ¿UIÎ»ÖÃ£¨ÀıÈçÔÚµĞÈËÍ·¶¥Æ«ÒÆ1.5¸öµ¥Î»£¬¸ù¾İÊµ¼ÊÇé¿öµ÷Õû£©
+            // è®¡ç®—è¡€é‡UIä½ç½®ï¼ˆä¾‹å¦‚åœ¨æ•Œäººå¤´é¡¶åç§»1.5ä¸ªå•ä½ï¼Œæ ¹æ®å®é™…æƒ…å†µè°ƒæ•´ï¼‰
             Vector3 uiPos = spawnPos + new Vector3(0, 1.5f, 0);
 
-            // ½«×´Ì¬UIÊµÀı»¯£¬²¢ÉèÖÃÆä¸¸¶ÔÏóÎªµĞÈËµÄtransform
+            // å°†çŠ¶æ€UIå®ä¾‹åŒ–ï¼Œå¹¶è®¾ç½®å…¶çˆ¶å¯¹è±¡ä¸ºæ•Œäººçš„transform
             GameObject statusUIObj = Instantiate(enemyStatusUIPrefab, uiPos, Quaternion.identity, enemyObj.transform); 
 
-            // ±£´æµ½µĞÈË¿ØÖÆÆ÷ÖĞ£¬±ãÓÚºóĞø¸üĞÂ
+            // ä¿å­˜åˆ°æ•Œäººæ§åˆ¶å™¨ä¸­ï¼Œä¾¿äºåç»­æ›´æ–°
             enemyController.statusUI = statusUIObj;
 
-            // ³õÊ¼»¯×´Ì¬UI
+            // åˆå§‹åŒ–çŠ¶æ€UI
             EnemyStatusUI statusUI = statusUIObj.GetComponent<EnemyStatusUI>();
             if (statusUI != null)
             {
@@ -197,7 +199,7 @@ public class BattleManager : MonoBehaviour
 
     }
 
-    // ºËĞÄ£º»ØºÏÑ­»·
+    // æ ¸å¿ƒï¼šå›åˆå¾ªç¯
     IEnumerator RoundLoop()
     {
         int result = 0;
@@ -206,25 +208,25 @@ public class BattleManager : MonoBehaviour
             roundNumber++;
             Debug.Log("---- Round " + roundNumber + " Start ----");
 
-            //1. ¸³ÓèÍæ¼ÒÄÜÁ¿
+            //1. èµ‹äºˆç©å®¶èƒ½é‡
             if (roundNumber == 1)
             {
-                // µÚÒ»»ØºÏ¸øinitialEnergy
+                // ç¬¬ä¸€å›åˆç»™initialEnergy
                 player.currentEnergy = player.initialEnergy;
             }
             else
             {
-                // Ö®ºóµÄ»ØºÏ¸øenergyGainPerRound
+                // ä¹‹åçš„å›åˆç»™energyGainPerRound
                 player.currentEnergy += player.energyGainPerRound;
             }
             Debug.Log($"Player's energy = {player.currentEnergy}");
 
 
-            // 2. ¹¹½¨»ØºÏË³ĞòÁĞ±í£º°üÀ¨Íæ¼ÒºÍËùÓĞ´æ»îµÄµĞÈË
+            // 2. æ„å»ºå›åˆé¡ºåºåˆ—è¡¨ï¼šåŒ…æ‹¬ç©å®¶å’Œæ‰€æœ‰å­˜æ´»çš„æ•Œäºº
             List<TurnOrderEntry> turnOrder = new List<TurnOrderEntry>();
-            // Ìí¼ÓÍæ¼Ò
+            // æ·»åŠ ç©å®¶
             turnOrder.Add(new TurnOrderEntry { isPlayer = true, enemy = null, speed = player.speed });
-            // Ìí¼ÓµĞÈË£¨Ö»Ìí¼Ó´æ»îµÄµĞÈË£©
+            // æ·»åŠ æ•Œäººï¼ˆåªæ·»åŠ å­˜æ´»çš„æ•Œäººï¼‰
             foreach (var enemy in enemies)
             {
                 if (enemy.currentHealth > 0)
@@ -232,10 +234,10 @@ public class BattleManager : MonoBehaviour
                     turnOrder.Add(new TurnOrderEntry { isPlayer = false, enemy = enemy, speed = enemy.speed });
                 }
             }
-            // ¸ù¾İËÙ¶È´Ó¸ßµ½µÍÅÅĞò
+            // æ ¹æ®é€Ÿåº¦ä»é«˜åˆ°ä½æ’åº
             turnOrder.Sort((a, b) => b.speed.CompareTo(a.speed));
 
-            // 3. °´Ë³ĞòÖ´ĞĞ¸÷¸ö²ÎÓëÕßµÄ»ØºÏ
+            // 3. æŒ‰é¡ºåºæ‰§è¡Œå„ä¸ªå‚ä¸è€…çš„å›åˆ
             foreach (var entry in turnOrder)
             {
                 if (entry.isPlayer)
@@ -257,10 +259,10 @@ public class BattleManager : MonoBehaviour
 
 
 
-            // 5. »ØºÏ½áÊø
+            // 5. å›åˆç»“æŸ
             state = BattleState.RoundEnd;
             yield return EndRound();
-            // ¼ì²éÊ¤¸º
+            // æ£€æŸ¥èƒœè´Ÿ
             result = CheckWinLose();
             if (result != 0)
             {
@@ -279,63 +281,66 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    // Íæ¼ÒĞĞ¶¯½×¶Î
+    // ç©å®¶è¡ŒåŠ¨é˜¶æ®µ
     IEnumerator PlayerActionPhase()
     {
         Debug.Log(">>> Player Turn <<<");
         bool isPlayerDone = false;
 
-        //³éÅÆ
+        //æŠ½ç‰Œ
         deckManager.DrawCard(5);
-        // ´ò¿ª°´Å¥
+        // æ‰“å¼€æŒ‰é’®
         endActionButton.gameObject.SetActive(true);
-        // ÏÈÇå³ı¾ÉµÄ¼àÌı£¬ÒÔ·À²ĞÁô
+        // å…ˆæ¸…é™¤æ—§çš„ç›‘å¬ï¼Œä»¥é˜²æ®‹ç•™
         endActionButton.onClick.RemoveAllListeners();
-        // Ìí¼ÓĞÂµÄ¼àÌıÊÂ¼ş
+        // æ·»åŠ æ–°çš„ç›‘å¬äº‹ä»¶
         endActionButton.onClick.AddListener(() =>
         {
             isPlayerDone = true;
         });
 
-        // µÈ´ıÍæ¼Òµã»÷¡°½áÊøĞĞ¶¯¡±°´Å¥
+        // ç­‰å¾…ç©å®¶ç‚¹å‡»â€œç»“æŸè¡ŒåŠ¨â€æŒ‰é’®
         while (!isPlayerDone && player.currentHealth > 0 && !AllEnemiesDefeated())
         {
             yield return null;
         }
 
-        // Òş²Ø°´Å¥
+        // éšè—æŒ‰é’®
         endActionButton.gameObject.SetActive(false);
         Debug.Log("Player Turn End");
 
-        // Íæ¼Ò»ØºÏ½áÊøÊ±£¬ÆúµôËùÓĞÊÖÅÆ
+        // ç©å®¶å›åˆç»“æŸæ—¶ï¼Œå¼ƒæ‰æ‰€æœ‰æ‰‹ç‰Œ
         deckManager.DiscardAllHand();
 
     }
 
-    // µĞÈËĞĞ¶¯½×¶Î
+    // æ•Œäººè¡ŒåŠ¨é˜¶æ®µ
     IEnumerator EnemyActionPhase(EnemyController enemy)
     {
         Debug.Log(">>> Enemy Turn: {enemy.name} <<<");
 
-        //µĞÈË¶¯×÷
+        //æ•ŒäººåŠ¨ä½œ
         yield return StartCoroutine(enemy.ExecuteTurn());
 
         Debug.Log("Enemy Turn End: {enemy.name}");
     }
 
-    // »ØºÏ½áÊø£¬ÆúÅÆµÈ
+    // å›åˆç»“æŸï¼Œå¼ƒç‰Œç­‰
     IEnumerator EndRound()
     {
         Debug.Log(">>> Round End:");
         //deckManager.DiscardAllHand();
 
-        // TODOÕâÀï¿ÉÒÔ×öÒ»Ğ©buff¼ÆÊ±»ò¶¾ÉË½áËã
+        // TODOè¿™é‡Œå¯ä»¥åšä¸€äº›buffè®¡æ—¶æˆ–æ¯’ä¼¤ç»“ç®—
 
         yield return null;
         Debug.Log("Round End done");
     }
 
-    //¼ì²éÊ¤¸º
+
+
+
+    //æ£€æŸ¥èƒœè´Ÿ
     public int CheckWinLose()
     {
         if (player.currentHealth <= 0)
@@ -382,7 +387,7 @@ public class BattleManager : MonoBehaviour
 
     public void TriggerPlayerHit()
     {
-        player.TakeDamage(lastAttackDamage); // ÈÃÍæ¼Ò²¥·ÅÊÜ»÷¶¯»­²¢¿ÛÑª
+        player.TakeDamage(lastAttackDamage); // è®©ç©å®¶æ’­æ”¾å—å‡»åŠ¨ç”»å¹¶æ‰£è¡€
     }
 
     public ICharacter GetFirstAliveEnemy()
@@ -414,29 +419,29 @@ public class BattleManager : MonoBehaviour
 
 
 
-    //µ±Íæ¼ÒÊ¹ÓÃÒ»ÕÅÅÆ
+    //å½“ç©å®¶ä½¿ç”¨ä¸€å¼ ç‰Œ
     public bool UseCard(CardData cardData, CardView cardView, ICharacter targetCharacter)
     {
         Debug.Log("useCard");
  
-        //0. ¼ì²éÊÇ·ñÎªÍæ¼Ò»ØºÏ
+        //0. æ£€æŸ¥æ˜¯å¦ä¸ºç©å®¶å›åˆ
         if (state != BattleState.PlayerAction)
         {
             return false;
         }
-        // 1. ¼ì²éÄÜÁ¿
+        // 1. æ£€æŸ¥èƒ½é‡
         if (player.currentEnergy < cardData.cost)
         {
             Debug.Log("Not enough energy to use " + cardData.cardName);
             BattleUIManager.Instance.ShowEnergyWarning(); //Show Warning
-            return false; // ÖĞÖ¹£¬²»Ö´ĞĞºóĞø
+            return false; // ä¸­æ­¢ï¼Œä¸æ‰§è¡Œåç»­
         }
         Debug.Log("Enough Energy");
 
-        // 2. ¿Û³ıÄÜÁ¿
+        // 2. æ‰£é™¤èƒ½é‡
         player.currentEnergy -= cardData.cost;
 
-        // 3. Ö´ĞĞĞ§¹û
+        // 3. æ‰§è¡Œæ•ˆæœ
         if (cardData.targetingType == TargetingType.FirstEnemy)
         {
             targetCharacter = GetFirstAliveEnemy();
@@ -446,11 +451,64 @@ public class BattleManager : MonoBehaviour
         {
             cardData.cardEffect.ApplyEffect(this, cardData, player, targetCharacter);
         }
-        // 4. °Ñ¿¨´ÓÊÖÅÆÒÆµ½ÆúÅÆ¶Ñ
+        // 4. æŠŠå¡ä»æ‰‹ç‰Œç§»åˆ°å¼ƒç‰Œå †
         deckManager.Discard(cardData);
 
-        // 5.Destroy¿¨ÅÆUI
+        // 5.Destroyå¡ç‰ŒUI
         Destroy(cardView.gameObject);
         return true;
+    }
+
+    public void sendProgress()
+    {
+        StartCoroutine(UpdateProgress());
+    }
+    private IEnumerator UpdateProgress()
+    {
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        int progress = levelData.processNum;
+        string token = PlayerPrefs.GetString("token", "");
+
+        if (string.IsNullOrEmpty(token))
+        {
+            Debug.LogError("âŒ No Token Found! Player is not authenticated.");
+            yield break;
+        }
+
+        if (string.IsNullOrEmpty(saveName))
+        {
+            Debug.LogError("âŒ No SaveName Found! Cannot update progress.");
+            yield break;
+        }
+
+        string url = $"http://localhost:3000/savefiles/{saveName}/updateProgress";
+        string jsonData = JsonUtility.ToJson(new ProgressData(progress));
+
+        using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
+        {
+            request.method = "PUT";
+            request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Authorization", "Bearer " + token);
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log("Progress updated successfully: " + request.downloadHandler.text);
+            }
+            else
+            {
+                Debug.LogError("Failed to update progress: " + request.error);
+            }
+        }
+    }
+
+    [System.Serializable]
+    private class ProgressData
+    {
+        public int progress;
+        public ProgressData(int progressNum) { progress = progressNum; }
     }
 }
