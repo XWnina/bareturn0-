@@ -13,11 +13,10 @@ app.use(express.json());
 // Routes
 app.use("/users", require("./routes/userRoutes")); // User routes
 app.use("/savefiles", require("./routes/saveFileRoutes")); // Save file routes
-
-//app.use("/progress", require("./routes/progressRoutes")); // 更新的进度查询 API
-
 app.use("/achievements", require("./routes/achievementRoutes")); // Achievement routes
 app.use("/carddecks", require("./routes/cardDeckRoutes")); // Card deck routes
+app.use("/selectedDeckAndCardCollection", require("./routes/selectedDeckAndCardCollectionRoutes")); // Selected deck and card collection routes
+app.use("/talents", require("./routes/talentRoutes")); // Talent routes
 
 // Backend API Testing
 app.get("/", (req, res) => {
