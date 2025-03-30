@@ -4,6 +4,7 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using static LevelButtonManager;
 
@@ -503,6 +504,10 @@ public class BattleManager : MonoBehaviour
                 Debug.LogError("Failed to update progress: " + request.error);
             }
         }
+
+        string currentScene = SceneManager.GetActiveScene().name;
+        PlayerPrefs.SetString("PreviousScene", currentScene);
+        PlayerPrefs.Save();
     }
 
     [System.Serializable]
