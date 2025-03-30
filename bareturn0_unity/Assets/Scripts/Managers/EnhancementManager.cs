@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 public class EnhancementManager : MonoBehaviour
 {
     public static EnhancementManager Instance;
     [Header("References to UI Elements")]
     public List<CardData> playerCards = new List<CardData>();
     public int coins;
+    public TextMeshProUGUI coinsText;
 
     //[Header("Test Cards")]
     //public List<CardData> testPlayerCards;
@@ -47,15 +49,21 @@ public class EnhancementManager : MonoBehaviour
             PopulateScrollView();
         });
 
-        playerInfoLoader.LoadPlayerCoins(() =>
-        {
-            coins = playerInfoLoader.coins;
-        });
+        UpdatePlayerCoin();
 
         selectedCardPlaceholder.SetSymbol("?");
         upgradePlaceholder1.SetSymbol("?");
         upgradePlaceholder2.SetSymbol("?");
         selectedCardPlaceholder.allowHoverEffect = false;
+    }
+
+    public void UpdatePlayerCoin()
+    {
+        playerInfoLoader.LoadPlayerCoins(() =>
+        {
+            coins = playerInfoLoader.coins;
+            coinsText.text = coins.ToString();
+        });
     }
 
 
