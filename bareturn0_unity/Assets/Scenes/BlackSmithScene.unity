@@ -483,11 +483,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8f51e17ce15e4042a525d079f28d2ce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerCards: []
+  coins: 0
   scrollViewContent: {fileID: 194702898}
   cardThumbnailPrefab: {fileID: 6075968857336475471, guid: 15db0eecab43dd041bf26274a3dacd9e, type: 3}
   selectedCardPlaceholder: {fileID: 1445725907}
-  upgradeLeftPlaceholder: {fileID: 230490654}
-  upgradeRightPlaceholder: {fileID: 921976885}
+  upgradePlaceholder1: {fileID: 230490654}
+  upgradePlaceholder2: {fileID: 921976885}
   playerInfoLoader: {fileID: 1212981462}
 --- !u!1 &282711481
 GameObject:
@@ -783,7 +785,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 926358925}
   m_Direction: 2
   m_Value: 0.999998
-  m_Size: 0.95
+  m_Size: 0.9500001
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -2344,6 +2346,7 @@ MonoBehaviour:
   cardList: []
   maxHealth: 0
   speed: 0
+  coins: 0
 --- !u!4 &1212981463
 Transform:
   m_ObjectHideFlags: 0

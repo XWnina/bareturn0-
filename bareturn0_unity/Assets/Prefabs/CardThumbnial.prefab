@@ -758,6 +758,7 @@ MonoBehaviour:
   descriptionText: {fileID: 4861247896043852898}
   symbol: {fileID: 3796257597051560161}
   button: {fileID: 6425999045978508139}
+  allowHoverEffect: 1
   commonFrame: {fileID: -7079157041648960146, guid: 82f595e0e55e57c46b6d0400dd2ea161, type: 3}
   rareFrame: {fileID: -2306392289679015388, guid: 82f595e0e55e57c46b6d0400dd2ea161, type: 3}
   epicFrame: {fileID: -8926568374755111265, guid: 82f595e0e55e57c46b6d0400dd2ea161, type: 3}
@@ -1143,9 +1144,9 @@ MonoBehaviour:
   m_fontSize: 20
   m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 0
+  m_fontSizeMax: 20
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
