@@ -28332,28 +28332,22 @@ MonoBehaviour:
     levelDataAsset: {fileID: 0}
   - levelButton: {fileID: 683794638}
     icon: {fileID: 614408902}
-    passedSprite: {fileID: 21300000, guid: d8e082b0f57624b4b98dc8cb691f7ccf, type: 3}
+    passedSprite: {fileID: 6916123040440849322, guid: fea0bd2cb590d294d85a16e0bd9b00de, type: 3}
     lockedSprite: {fileID: 1724916109989659838, guid: 1b8ddb045e99ab04693029950cb79849, type: 3}
     isPassed: 0
     levelDataAsset: {fileID: 11400000, guid: 3f047fc7d6b01d446881e40e4a6ef550, type: 2}
   - levelButton: {fileID: 159880847}
-    icon: {fileID: 614408902}
+    icon: {fileID: 531790881}
     passedSprite: {fileID: 21300000, guid: d8e082b0f57624b4b98dc8cb691f7ccf, type: 3}
     lockedSprite: {fileID: 1724916109989659838, guid: 1b8ddb045e99ab04693029950cb79849, type: 3}
     isPassed: 0
     levelDataAsset: {fileID: 0}
   - levelButton: {fileID: 566923601}
-    icon: {fileID: 614408902}
+    icon: {fileID: 1063603860}
     passedSprite: {fileID: 21300000, guid: d8e082b0f57624b4b98dc8cb691f7ccf, type: 3}
     lockedSprite: {fileID: 1724916109989659838, guid: 1b8ddb045e99ab04693029950cb79849, type: 3}
     isPassed: 0
-    levelDataAsset: {fileID: 0}
-  - levelButton: {fileID: 683794638}
-    icon: {fileID: 614408902}
-    passedSprite: {fileID: 21300000, guid: d8e082b0f57624b4b98dc8cb691f7ccf, type: 3}
-    lockedSprite: {fileID: 1724916109989659838, guid: 1b8ddb045e99ab04693029950cb79849, type: 3}
-    isPassed: 0
-    levelDataAsset: {fileID: 0}
+    levelDataAsset: {fileID: 11400000, guid: 52381d89d5639554daa288b3b3b5765b, type: 2}
   currentLevelIndex: 4
   youAreHereIndicator: {fileID: 973070777}
 --- !u!4 &1079956513
