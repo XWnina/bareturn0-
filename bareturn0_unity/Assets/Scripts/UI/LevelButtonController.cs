@@ -72,24 +72,24 @@ public class LevelButtonManager : MonoBehaviour
     public void UpdateLevelUI()
 {
     currentLevelIndex = MapUrlManager.CurrentLevel;
-    Debug.Log($"LevelButtonController: Updating Level UI: Current Level = {currentLevelIndex}");
+   // Debug.Log($"LevelButtonController: Updating Level UI: Current Level = {currentLevelIndex}");
 
     for (int i = 0; i < levels.Count; i++)
     {
-        Debug.Log($"Levels.count {levels.Count}, i {i}");
+        //Debug.Log($"Levels.count {levels.Count}, i {i}");
         LevelButtonData level = levels[i];
 
         if (i < currentLevelIndex) // Levels that have been completed
         {
-            Debug.Log($"button {i} color change, currentLevelIndex is {currentLevelIndex}");
+            //Debug.Log($"button {i} color change, currentLevelIndex is {currentLevelIndex}");
             level.icon.sprite = level.passedSprite;
-            if(level.icon.sprite == level.passedSprite){
-                Debug.Log($"change successful!");
-            }
+            // if(level.icon.sprite == level.passedSprite){
+            //     Debug.Log($"change successful!");
+            // }
         }
         else if (i == currentLevelIndex) // The current level (where the indicator should be)
         {       
-                Debug.Log($"currentLevelIndex is {currentLevelIndex}");
+                //Debug.Log($"currentLevelIndex is {currentLevelIndex}");
                 Vector3 buttonPos = level.levelButton.transform.position;
 
                 // 这里假设向上偏移 1 个单位
