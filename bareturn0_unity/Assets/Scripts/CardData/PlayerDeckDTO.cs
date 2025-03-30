@@ -48,3 +48,9 @@ public class CardCollectionDTO
 {
     public DeckDTO cardCollection;
 }
+
+[Serializable]
+public class CoinsDTO
+{
+    public int coins;
+}

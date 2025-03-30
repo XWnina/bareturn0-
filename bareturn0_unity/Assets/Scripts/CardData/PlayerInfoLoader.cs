@@ -14,9 +14,10 @@ public class PlayerInfoLoader : MonoBehaviour
     public List<CardData> cardList = new List<CardData>();
     public int maxHealth;
     public int speed;
+    public int coins;
 
 
-    // 根据 deckName 加载玩家的卡组数据
+    #region 加载玩家的卡组数据
     public void LoadPlayerDeck(string deckName, System.Action onLoaded)
     {
    
@@ -118,7 +119,10 @@ public class PlayerInfoLoader : MonoBehaviour
 
         return result;
     }
+    #endregion
 
+
+    #region 加载玩家数据
     public void LoadPlayerStats(System.Action onStatsLoaded)
     {
         StartCoroutine(GetPlayerStatsRequest(onStatsLoaded));
@@ -189,8 +193,47 @@ public class PlayerInfoLoader : MonoBehaviour
             }
         }
     }
+    #endregion
 
-    // 将生成的卡牌赋值给 DeckManager 并初始化抽牌堆
+
+    #region 加载玩家金币
+    public void LoadPlayerCoins(System.Action onCoinsLoaded)
+    {
+        StartCoroutine(LoadCoinsRequest(onCoinsLoaded));
+    }
+
+    private IEnumerator LoadCoinsRequest(System.Action onCoinsLoaded)
+    {
+        string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/savefiles/{saveFileId}/coins";
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        string authToken = PlayerPrefs.GetString("token", "");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("加载金币失败: " + request.error);
+        }
+        else
+        {
+            string json = request.downloadHandler.text;
+            Debug.Log("后端返回金币数据: " + json);
+
+            CoinsDTO dto = JsonUtility.FromJson<CoinsDTO>(json);
+            if (dto != null)
+            {
+                coins = dto.coins;
+                Debug.Log($"玩家金币 = {dto.coins}");
+            }
+        }
+        onCoinsLoaded?.Invoke();
+    }
+    #endregion
+
+
+
     public void InitialBattleDeck()
     {
         DeckManager.Instance.initialDeck = cardList;
@@ -202,10 +245,5 @@ public class PlayerInfoLoader : MonoBehaviour
     {
         PlayerController.instance.maxHealth = maxHealth;
         PlayerController.instance.speed = speed;
-    }
-
-    public void InitalenhanceDeck()
-    {
-        EnhancementManager.Instance.playerCards = cardList;
     }
 }

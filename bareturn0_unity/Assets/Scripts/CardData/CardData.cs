@@ -29,4 +29,7 @@ public class CardData : ScriptableObject
     public CardEffect cardEffect;
 
     public TargetingType targetingType;
+
+    [Header("Éý¼¶Ñ¡Ïî")]
+    public CardData[] upgradeOptions = new CardData[2];
 }
