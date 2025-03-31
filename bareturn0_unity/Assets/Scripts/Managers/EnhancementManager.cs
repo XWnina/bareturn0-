@@ -76,7 +76,7 @@ public class EnhancementManager : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        // 遍历添加的测试卡牌
+        // 遍历卡牌
         for (int i = 0; i < playerCards.Count; i++)
         {
             CardData cardData = playerCards[i];
@@ -107,7 +107,6 @@ public class EnhancementManager : MonoBehaviour
     {
         Debug.Log("选中卡牌");
         currentSelectedCard = playerCards[cardIndex];
-
         // 显示选中的卡牌
         selectedCardPlaceholder.RemoveSymbol();
         selectedCardPlaceholder.SetCardThumbnail(currentSelectedCard);
@@ -184,27 +183,39 @@ public class EnhancementManager : MonoBehaviour
         {
             playerCards.Remove(currentSelectedCard);
         }
-        // 同时调用后端接口移除旧卡
-        //playerInfoLoader.RemoveCardFromCollection(currentSelectedCard);
 
-        // 2. 添加升级后的卡牌到本地集合
-        playerCards.Add(upgradeCard1);
-        // 同时调用后端接口添加升级后的卡牌
-        //playerInfoLoader.AddCardToCollection(upgradeCard1);
+        // 2. 调用后端接口移除旧卡
+        playerInfoLoader.RemoveCardFromCollection(currentSelectedCard.cardName, 1, () =>
+        {
+            Debug.Log("后端成功移除旧卡：" + currentSelectedCard.cardName);
 
-        // 3. 更新 ScrollView 显示
-        PopulateScrollView();
+            // 3. 将升级后的卡牌加入本地集合
+            playerCards.Add(upgradeCard1);
 
-        Debug.Log("左侧升级选择成功，卡牌已升级为 " + upgradeCard1.cardName);
+            // 4. 调用后端接口添加升级后的卡牌
+            playerInfoLoader.AddCardToCollection(upgradeCard1.cardName, 1, () =>
+            {
+                Debug.Log("后端成功添加升级卡：" + upgradeCard1.cardName);
 
-        // 4. 初始化
-        selectedCardPlaceholder.SetSymbol("?");
-        upgradePlaceholder1.SetSymbol("?");
-        upgradePlaceholder2.SetSymbol("?");
-        upgradeCard1 = null;
-        upgradeCard2 = null;
+                // 5. 刷新 ScrollView 显示
+                PopulateScrollView();
 
-        
+                // 6. 更新选中区域显示为升级后的卡牌
+                currentSelectedCard = upgradeCard1;
+                selectedCardPlaceholder.SetCardThumbnail(currentSelectedCard);
+
+                Debug.Log("左侧升级选择成功，卡牌已升级为 " + currentSelectedCard.cardName);
+
+                // 7. 清理升级选项显示及相关变量
+                selectedCardPlaceholder.SetSymbol("?");
+                upgradePlaceholder1.SetSymbol("?");
+                upgradePlaceholder2.SetSymbol("?");
+                upgradeCard1 = null;
+                upgradeCard2 = null;
+            });
+        });
+
+
     }
 
     // 当玩家点击右边升级选项时的回调
@@ -223,25 +234,36 @@ public class EnhancementManager : MonoBehaviour
         {
             playerCards.Remove(currentSelectedCard);
         }
-        // 调用后端接口移除旧卡
-        //playerInfoLoader.RemoveCardFromCollection(currentSelectedCard);
+        // 2. 调用后端接口移除旧卡
+        playerInfoLoader.RemoveCardFromCollection(currentSelectedCard.cardName, 1, () =>
+        {
+            Debug.Log("后端成功移除旧卡：" + currentSelectedCard.cardName);
 
-        // 2. 添加升级后的卡牌到本地集合
-        playerCards.Add(upgradeCard2);
-        // 调用后端接口添加升级后的卡牌
-        //playerInfoLoader.AddCardToCollection(upgradeCard2);
+            // 3. 将升级后的卡牌加入本地集合
+            playerCards.Add(upgradeCard2);
 
-        // 3. 更新 ScrollView 显示
-        PopulateScrollView();
+            // 4. 调用后端接口添加升级后的卡
+            playerInfoLoader.AddCardToCollection(upgradeCard2.cardName, 1, () =>
+            {
+                Debug.Log("后端成功添加升级卡：" + upgradeCard2.cardName);
 
-        Debug.Log("右侧升级选择成功，卡牌已升级为 " + upgradeCard2.cardName);
+                // 5. 更新 ScrollView 显示
+                PopulateScrollView();
 
-        // 4. 初始化
-        selectedCardPlaceholder.SetSymbol("?");
-        upgradePlaceholder1.SetSymbol("?");
-        upgradePlaceholder2.SetSymbol("?");
-        upgradeCard1 = null;
-        upgradeCard2 = null;
+                // 6. 更新选中区域显示为升级后的卡牌
+                currentSelectedCard = upgradeCard2;
+                selectedCardPlaceholder.SetCardThumbnail(currentSelectedCard);
+
+                Debug.Log("右侧升级选择成功，卡牌已升级为 " + currentSelectedCard.cardName);
+
+                // 7. 清理升级选项显示及相关变量
+                selectedCardPlaceholder.SetSymbol("?");
+                upgradePlaceholder1.SetSymbol("?");
+                upgradePlaceholder2.SetSymbol("?");
+                upgradeCard1 = null;
+                upgradeCard2 = null;
+            });
+        });
     }
 
 }

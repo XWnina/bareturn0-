@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Text;
+using UnityEngine.Networking;
 
 [Serializable]
 public class DeckDTO
@@ -53,4 +55,16 @@ public class CardCollectionDTO
 public class CoinsDTO
 {
     public int coins;
+}
+
+[System.Serializable]
+public class CardOperationDTO
+{
+    public string cardName;
+    public int count;
+    public CardOperationDTO(string cardName, int count)
+    {
+        this.cardName = cardName;
+        this.count = count;
+    }
 }

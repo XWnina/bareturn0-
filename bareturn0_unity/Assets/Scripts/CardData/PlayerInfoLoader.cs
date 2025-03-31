@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -233,6 +234,80 @@ public class PlayerInfoLoader : MonoBehaviour
     #endregion
 
 
+    #region Add Card To Collection
+    public void AddCardToCollection(string cardName, int count, System.Action onAdded)
+    {
+        StartCoroutine(AddCardToCollectionRequest(cardName, count, onAdded));
+    }
+    public IEnumerator AddCardToCollectionRequest(string cardName, int count, System.Action onAdded)
+    {
+        string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/savefiles/{saveFileId}/addCardToCollection";
+        string authToken = PlayerPrefs.GetString("token", "");
+
+        CardOperationDTO payload = new CardOperationDTO(cardName, count);
+        string jsonBody = JsonUtility.ToJson(payload);
+
+        
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"³É¹¦Ìí¼Ó¿¨ÅÆµ½¼¯ºÏ: {request.downloadHandler.text}");
+        }
+        else
+        {
+            Debug.LogError($"Ìí¼Ó¿¨ÅÆÊ§°Ü: {request.error} - {request.downloadHandler.text}");
+        }
+        onAdded?.Invoke();
+    }
+    #endregion
+
+    #region Remove Card From Collection
+    public void RemoveCardFromCollection(string cardName, int count, System.Action onRemoved)
+    {
+        StartCoroutine(RemoveCardFromCollectionRequest(cardName, count, onRemoved));
+    }
+
+    public IEnumerator RemoveCardFromCollectionRequest(string cardName, int count, System.Action onRemoved)
+    {
+        string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/savefiles/{saveFileId}/removeCardFromCollection";
+
+        string authToken = PlayerPrefs.GetString("token", "");
+        CardOperationDTO payload = new CardOperationDTO(cardName, count);
+        string jsonBody = JsonUtility.ToJson(payload);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"³É¹¦ÒÆ³ý¿¨ÅÆ: {request.downloadHandler.text}");
+        }
+        else
+        {
+            Debug.LogError($"ÒÆ³ý¿¨ÅÆÊ§°Ü: {request.error} - {request.downloadHandler.text}");
+        }
+        onRemoved?.Invoke();
+    }
+    #endregion
 
     public void InitialBattleDeck()
     {
