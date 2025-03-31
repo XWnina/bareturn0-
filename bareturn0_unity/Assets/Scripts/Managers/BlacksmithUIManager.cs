@@ -17,6 +17,7 @@ public class BlacksmithUIManager : MonoBehaviour
     public TextMeshProUGUI messageText;
 
     public EnhancementManager enhancementManager;
+    public CreateCardManage createCardManage;
 
     public Button backToTownButton;
     void Start()
@@ -43,6 +44,8 @@ public class BlacksmithUIManager : MonoBehaviour
         createButton.gameObject.SetActive(false);
         upgradeButton.gameObject.SetActive(false);
         backToTownButton.gameObject.SetActive(false);
+
+        createCardManage.SetCreation();
 
         messageText.text = "What do you want to create?";
 
