@@ -5,6 +5,7 @@ require("dotenv").config();
 const User = require("../models/User");
 const SaveFile = require("../models/SaveFile");
 const Achievement = require("../models/Achievement");
+const CardDeck = require("../models/CardDeck");
 
 async function cleanupDatabase() {
     try {
@@ -16,6 +17,7 @@ async function cleanupDatabase() {
         await User.deleteMany({});
         await SaveFile.deleteMany({});
         await Achievement.deleteMany({});
+        await CardDeck.deleteMany({});
         console.log("🗑️ Cleared all records from Users, SaveFiles, and Achievements!");
 
         // Close the connection

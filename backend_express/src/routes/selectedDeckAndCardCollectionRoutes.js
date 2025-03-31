@@ -72,7 +72,7 @@ router.post("/:saveName/addCardToCollection", authMiddleware, async (req, res) =
   }
 });
 
-// Remove card from cardCollection
+// Remove card from cardCollection and update all decks accordingly
 router.post("/:saveName/removeCardFromCollection", authMiddleware, async (req, res) => {
   try {
     const { cardName, count } = req.body;
@@ -91,13 +91,38 @@ router.post("/:saveName/removeCardFromCollection", authMiddleware, async (req, r
       return res.status(400).json(errorResponse);
     }
 
+    // Reduce or remove the card from the collection
     card.count -= count;
     if (card.count === 0) {
       saveFile.cardCollection.cards = saveFile.cardCollection.cards.filter(c => c.cardName !== cardName);
     }
 
     await saveFile.save();
-    const response = { message: "Card removed from collection", cardCollection: saveFile.cardCollection };
+
+    // Now update all decks to match the new max count
+    const maxAllowed = card.count; // Could be 0 now
+    const decks = await CardDeck.find({ saveFileId: saveFile._id });
+
+    for (const deck of decks) {
+      const deckCard = deck.cards.find(c => c.cardName === cardName);
+      if (deckCard) {
+        if (maxAllowed === 0) {
+          // Remove the card completely from the deck
+          deck.cards = deck.cards.filter(c => c.cardName !== cardName);
+        } else if (deckCard.count > maxAllowed) {
+          // Reduce to match the collection's new max count
+          deckCard.count = maxAllowed;
+        }
+
+        await deck.save();
+      }
+    }
+
+    const response = {
+      message: "Card removed from collection and decks updated",
+      cardCollection: saveFile.cardCollection,
+    };
+
     logRequestResponse(req, res, response);
     res.json(response);
   } catch (err) {
@@ -105,5 +130,6 @@ router.post("/:saveName/removeCardFromCollection", authMiddleware, async (req, r
     res.status(500).json({ error: err.message });
   }
 });
+
 
 module.exports = router;
