@@ -16,7 +16,7 @@ app.use("/savefiles", require("./routes/saveFileRoutes")); // Save file routes
 app.use("/achievements", require("./routes/achievementRoutes")); // Achievement routes
 app.use("/carddecks", require("./routes/cardDeckRoutes")); // Card deck routes
 app.use("/selectedDeckAndCardCollection", require("./routes/selectedDeckAndCardCollectionRoutes")); // Selected deck and card collection routes
-app.use("/talents", require("./routes/talentRoutes")); // Talent routes
+app.use("/materials", require("./routes/materialRoutes")); // Material routes
 
 // Backend API Testing
 app.get("/", (req, res) => {

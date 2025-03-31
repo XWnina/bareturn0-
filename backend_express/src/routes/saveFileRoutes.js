@@ -33,7 +33,14 @@ router.post("/", authMiddleware, async (req, res) => {
       { cardName: "Shield", count: 2 },
       { cardName: "Slash", count: 2 },
       { cardName: "SmallShield", count: 2 },
-      { cardName: "Blank", count: 2 },
+    ];
+    
+     // Set default values for the materials
+     const initialMaterials = [
+      { name: "if", count: 1 },
+      { name: "while", count: 1 },
+      { name: "math", count: 1 },
+      { name: "BlankCard", count: 1 },
     ];
 
     const newSave = new SaveFile({
@@ -42,6 +49,7 @@ router.post("/", authMiddleware, async (req, res) => {
         name: "Card Collection",
         cards: initialCardPool,
       },
+      materials: initialMaterials,
       userId: req.user.id,
     });
 
@@ -100,6 +108,7 @@ router.post("/", authMiddleware, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 // Delete a save file
 router.delete("/:saveName", authMiddleware, async (req, res) => {
   try {
