@@ -242,7 +242,7 @@ public class PlayerInfoLoader : MonoBehaviour
     public IEnumerator AddCardToCollectionRequest(string cardName, int count, System.Action onAdded)
     {
         string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
-        string url = $"http://localhost:3000/savefiles/{saveFileId}/addCardToCollection";
+        string url = $"http://localhost:3000/selectedDeckAndCardCollection/{saveFileId}/addCardToCollection";
         string authToken = PlayerPrefs.GetString("token", "");
 
         CardOperationDTO payload = new CardOperationDTO(cardName, count);
@@ -282,7 +282,7 @@ public class PlayerInfoLoader : MonoBehaviour
     public IEnumerator RemoveCardFromCollectionRequest(string cardName, int count, System.Action onRemoved)
     {
         string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
-        string url = $"http://localhost:3000/savefiles/{saveFileId}/removeCardFromCollection";
+        string url = $"http://localhost:3000/selectedDeckAndCardCollection/{saveFileId}/removeCardFromCollection";
 
         string authToken = PlayerPrefs.GetString("token", "");
         CardOperationDTO payload = new CardOperationDTO(cardName, count);
