@@ -44,12 +44,15 @@ const SaveFileSchema = new mongoose.Schema(
       },
     },
 
-    talents: [
-      {
-        talentName: { type: String, required: true },
-        count: { type: Number, required: true, default: 0 },
-      }
-    ],
+    materials: {
+      type: [
+        {
+          name: { type: String, required: true },
+          count: { type: Number, required: true },
+        },
+      ],
+    },
+    
   },
   { timestamps: true }
 );
