@@ -12,6 +12,12 @@ public class InventoryManager : MonoBehaviour
     public List<CardData> playerCards = new List<CardData>();
 
     public PlayerInfoLoader playerInfoLoader;
+    public GameObject scrollPrefab;
+    public GameObject materialPanel;
+    public List<string> playerScroll = new List<string>();
+
+    public int blankcardNum;
+
 
     void Start()
     {
@@ -39,4 +45,22 @@ public class InventoryManager : MonoBehaviour
 
         }
     }
+
+    public void PopulateScrollView()
+    {
+        foreach (Transform child in materialPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+        for (int i = 0; i < playerScroll.Count; i++)
+        {
+            string scrollName = playerScroll[i];
+
+            GameObject scrollObject = Instantiate(scrollPrefab, materialPanel.transform);
+            ScrollUI scrollUI = scrollObject.GetComponent<ScrollUI>();
+
+            scrollUI.setScroll(scrollName);
+        }
+    }
+
 }
