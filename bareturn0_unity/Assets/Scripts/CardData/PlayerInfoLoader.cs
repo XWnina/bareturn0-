@@ -234,6 +234,43 @@ public class PlayerInfoLoader : MonoBehaviour
     #endregion
 
 
+    #region 更新玩家金币
+    public void UpdatePlayerCoin(int amount, System.Action onCoinUpdated)
+    {
+        StartCoroutine(UpdateCoins(amount, onCoinUpdated));
+    }
+
+    IEnumerator UpdateCoins(int amount, System.Action onCoinUpdated)
+    {
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/savefiles/{saveName}/updateCoins";
+        string authToken = PlayerPrefs.GetString("token", "");
+
+        // 发送 JSON 数据 { "coins": amount }
+        string jsonBody = JsonUtility.ToJson(new CoinUpdate(amount));
+
+        UnityWebRequest request = UnityWebRequest.Put(url, jsonBody);
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"成功更新金币：+{amount}");
+        }
+        else
+        {
+            Debug.LogError($"更新金币失败: {request.error} - {request.downloadHandler.text}");
+        }
+        onCoinUpdated?.Invoke();
+    }
+    #endregion
+
+
     #region Add Card To Collection
     public void AddCardToCollection(string cardName, int count, System.Action onAdded)
     {
@@ -272,6 +309,7 @@ public class PlayerInfoLoader : MonoBehaviour
         onAdded?.Invoke();
     }
     #endregion
+
 
     #region Remove Card From Collection
     public void RemoveCardFromCollection(string cardName, int count, System.Action onRemoved)
