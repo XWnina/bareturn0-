@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: af4d6d6adf0810d4583376e695fb712a, type: 3}
-  m_Name: Slash
+  m_Name: PowerSlash
   m_EditorClassIdentifier: 
-  cardName: Slash
-  description: dealt 2 damage to chosen target
+  cardName: PowerSlash
+  description: Slash the chosen enemy, dealing 3 damage.
   cost: 1
   artwork: {fileID: 21300000, guid: b7cd8b393f49f5647af5b90b6da4bca0, type: 3}
-  quality: 0
-  cardEffect: {fileID: 11400000, guid: 8b67a467154b2d744ae75284b600a3c9, type: 2}
+  quality: 1
+  cardEffect: {fileID: 11400000, guid: c9e6aff28d4fb444b9440556f505a3f7, type: 2}
   targetingType: 0
   upgradeOptions:
-  - {fileID: 11400000, guid: f803c71819b09e54387c59229f6a2139, type: 2}
-  - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}
+  - {fileID: 0}
+  - {fileID: 0}

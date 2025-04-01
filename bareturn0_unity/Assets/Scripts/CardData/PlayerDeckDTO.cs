@@ -68,3 +68,13 @@ public class CardOperationDTO
         this.count = count;
     }
 }
+
+[System.Serializable]
+public class CoinUpdate
+{
+    public int coins;
+    public CoinUpdate(int amount)
+    {
+        this.coins = amount;
+    }
+}

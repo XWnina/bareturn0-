@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using System.Collections;
 public class EnhancementManager : MonoBehaviour
 {
     public static EnhancementManager Instance;
@@ -20,6 +21,8 @@ public class EnhancementManager : MonoBehaviour
     public CardThumbnailUI selectedCardPlaceholder;
     public CardThumbnailUI upgradePlaceholder1;
     public CardThumbnailUI upgradePlaceholder2;
+    public TextMeshProUGUI warningText;
+    public TextMeshProUGUI costText;
 
     private CardData currentSelectedCard;
     private CardData upgradeCard1;
@@ -51,6 +54,7 @@ public class EnhancementManager : MonoBehaviour
 
         UpdatePlayerCoin();
 
+        costText.text = "?";
         selectedCardPlaceholder.SetSymbol("?");
         upgradePlaceholder1.SetSymbol("?");
         upgradePlaceholder2.SetSymbol("?");
@@ -110,6 +114,8 @@ public class EnhancementManager : MonoBehaviour
         // 显示选中的卡牌
         selectedCardPlaceholder.RemoveSymbol();
         selectedCardPlaceholder.SetCardThumbnail(currentSelectedCard);
+        int cost = FindCost(currentSelectedCard);
+        costText.text = cost.ToString();
 
         // 刷新下方升级选项
         RefreshUpgradeOptions();
@@ -177,48 +183,65 @@ public class EnhancementManager : MonoBehaviour
         }
 
         // 升级逻辑：将当前卡牌替换为升级后的卡牌 upgradeCard1
+        CardData upgradeCard = upgradeCard1;
+
+
+        // 0. 计算需要扣除的金币
+        int requiredCoins = FindCost(currentSelectedCard);
+        if (coins < requiredCoins)
+        {
+            DisplayWarning("No Enough Coins");
+            return;
+        }
+        Debug.Log("当前卡牌" + currentSelectedCard.cardName);
+        // 清理升级选项显示及相关变量
+        selectedCardPlaceholder.SetSymbol("?");
+        upgradePlaceholder1.SetSymbol("?");
+        upgradePlaceholder2.SetSymbol("?");
+        costText.text = "?";
+        upgradeCard1 = null;
+        upgradeCard2 = null;
+        Debug.Log("当前卡牌" + currentSelectedCard.cardName);
+
 
         // 1. 从本地卡牌集合中移除当前卡牌
         if (playerCards.Contains(currentSelectedCard))
         {
             playerCards.Remove(currentSelectedCard);
         }
+        Debug.Log("当前卡牌" + currentSelectedCard.cardName);
 
         // 2. 调用后端接口移除旧卡
         playerInfoLoader.RemoveCardFromCollection(currentSelectedCard.cardName, 1, () =>
         {
-            Debug.Log("后端成功移除旧卡：" + currentSelectedCard.cardName);
+            Debug.Log("后端成功移除旧卡");
 
             // 3. 将升级后的卡牌加入本地集合
-            playerCards.Add(upgradeCard1);
+            playerCards.Add(upgradeCard);
 
             // 4. 调用后端接口添加升级后的卡牌
-            playerInfoLoader.AddCardToCollection(upgradeCard1.cardName, 1, () =>
+            playerInfoLoader.AddCardToCollection(upgradeCard.cardName, 1, () =>
             {
-                Debug.Log("后端成功添加升级卡：" + upgradeCard1.cardName);
-
+                Debug.Log("后端成功添加升级卡：" + upgradeCard.cardName);
+                // 从后端移除玩家金币
+                // 本地扣除金币并更新显示
+                coins = Mathf.Max(coins - requiredCoins, 0);
+                coinsText.text = coins.ToString();
+                playerInfoLoader.UpdatePlayerCoin(coins, () =>
+                {
+                    Debug.Log("后端金币更新成功！");
+                });
                 // 5. 刷新 ScrollView 显示
                 PopulateScrollView();
 
-                // 6. 更新选中区域显示为升级后的卡牌
-                currentSelectedCard = upgradeCard1;
-                selectedCardPlaceholder.SetCardThumbnail(currentSelectedCard);
-
-                Debug.Log("左侧升级选择成功，卡牌已升级为 " + currentSelectedCard.cardName);
-
-                // 7. 清理升级选项显示及相关变量
-                selectedCardPlaceholder.SetSymbol("?");
-                upgradePlaceholder1.SetSymbol("?");
-                upgradePlaceholder2.SetSymbol("?");
-                upgradeCard1 = null;
-                upgradeCard2 = null;
+                Debug.Log("左侧升级选择成功");
             });
         });
 
 
+        currentSelectedCard = null;
     }
 
-    // 当玩家点击右边升级选项时的回调
     public void OnSecondUpgradeSelected()
     {
         if (currentSelectedCard == null || upgradeCard2 == null)
@@ -228,42 +251,110 @@ public class EnhancementManager : MonoBehaviour
         }
 
         // 升级逻辑：将当前卡牌替换为升级后的卡牌 upgradeCard2
+        CardData upgradeCard = upgradeCard2;
+
+
+        // 0. 计算需要扣除的金币
+        int requiredCoins = FindCost(currentSelectedCard);
+        if (coins < requiredCoins)
+        {
+            DisplayWarning("No Enough Coins");
+            return;
+        }
+        Debug.Log("当前卡牌" + currentSelectedCard.cardName);
+        // 清理升级选项显示及相关变量
+        selectedCardPlaceholder.SetSymbol("?");
+        upgradePlaceholder1.SetSymbol("?");
+        upgradePlaceholder2.SetSymbol("?");
+        costText.text = "?";
+        upgradeCard1 = null;
+        upgradeCard2 = null;
+        Debug.Log("当前卡牌" + currentSelectedCard.cardName);
+
 
         // 1. 从本地卡牌集合中移除当前卡牌
         if (playerCards.Contains(currentSelectedCard))
         {
             playerCards.Remove(currentSelectedCard);
         }
+        Debug.Log("当前卡牌" + currentSelectedCard.cardName);
+
         // 2. 调用后端接口移除旧卡
         playerInfoLoader.RemoveCardFromCollection(currentSelectedCard.cardName, 1, () =>
         {
-            Debug.Log("后端成功移除旧卡：" + currentSelectedCard.cardName);
+            Debug.Log("后端成功移除旧卡");
 
             // 3. 将升级后的卡牌加入本地集合
-            playerCards.Add(upgradeCard2);
+            playerCards.Add(upgradeCard);
 
-            // 4. 调用后端接口添加升级后的卡
-            playerInfoLoader.AddCardToCollection(upgradeCard2.cardName, 1, () =>
+            // 4. 调用后端接口添加升级后的卡牌
+            playerInfoLoader.AddCardToCollection(upgradeCard.cardName, 1, () =>
             {
-                Debug.Log("后端成功添加升级卡：" + upgradeCard2.cardName);
-
-                // 5. 更新 ScrollView 显示
+                Debug.Log("后端成功添加升级卡：" + upgradeCard.cardName);
+                // 从后端移除玩家金币
+                // 本地扣除金币并更新显示
+                coins = Mathf.Max(coins - requiredCoins, 0);
+                coinsText.text = coins.ToString();
+                playerInfoLoader.UpdatePlayerCoin(coins, () =>
+                {
+                    Debug.Log("后端金币更新成功！");
+                });
+                // 5. 刷新 ScrollView 显示
                 PopulateScrollView();
 
-                // 6. 更新选中区域显示为升级后的卡牌
-                currentSelectedCard = upgradeCard2;
-                selectedCardPlaceholder.SetCardThumbnail(currentSelectedCard);
-
-                Debug.Log("右侧升级选择成功，卡牌已升级为 " + currentSelectedCard.cardName);
-
-                // 7. 清理升级选项显示及相关变量
-                selectedCardPlaceholder.SetSymbol("?");
-                upgradePlaceholder1.SetSymbol("?");
-                upgradePlaceholder2.SetSymbol("?");
-                upgradeCard1 = null;
-                upgradeCard2 = null;
+                Debug.Log("左侧升级选择成功");
             });
         });
+        currentSelectedCard = null;
     }
 
+
+    private void DisplayWarning(string message)
+    {
+        warningText.text = message;
+        warningText.gameObject.SetActive(true);
+
+        // 启动淡出协程
+        StartCoroutine(FadeOutWarning());
+    }
+
+    private IEnumerator FadeOutWarning()
+    {
+        warningText.alpha = 1; // 立即变为可见
+
+        yield return new WaitForSeconds(0.5f); // 停留 0.5 秒
+
+        // 渐渐淡出
+        float fadeDuration = 0.5f;
+        float elapsedTime = 0;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            warningText.alpha = Mathf.Lerp(1, 0, elapsedTime / fadeDuration);
+            yield return null;
+        }
+
+        warningText.gameObject.SetActive(false); // 完全消失后隐藏
+    }
+
+    public int FindCost(CardData currentCard)
+    {
+        int cost = 0;
+        switch (currentCard.quality)
+        {
+            case CardQuality.Common:
+                cost = 50;
+                break;
+            case CardQuality.Rare:
+                cost = 100;
+                break;
+            case CardQuality.Epic:
+                cost = 200;
+                break;
+            default:
+                cost = 0;
+                break;
+        }
+        return cost;
+    }
 }
