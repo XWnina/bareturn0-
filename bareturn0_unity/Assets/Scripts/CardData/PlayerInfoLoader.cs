@@ -13,6 +13,7 @@ public class PlayerInfoLoader : MonoBehaviour
 
     // 用于存储加载后转换好的数据
     public List<CardData> cardList = new List<CardData>();
+    public List<string> materials = new List<string>();
     public int maxHealth;
     public int speed;
     public int coins;
@@ -344,6 +345,133 @@ public class PlayerInfoLoader : MonoBehaviour
             Debug.LogError($"移除卡牌失败: {request.error} - {request.downloadHandler.text}");
         }
         onRemoved?.Invoke();
+    }
+    #endregion
+
+
+    #region 更新材料
+    public void UpdateMaterial(string materialName, int newCount, System.Action onUpdated)
+    {
+        StartCoroutine(UpdateMaterialRequest(materialName, newCount, onUpdated));
+    }
+
+    private IEnumerator UpdateMaterialRequest(string materialName, int newCount, System.Action onUpdated)
+    {
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/materials/update/{saveName}/{materialName}";
+        string authToken = PlayerPrefs.GetString("token", "");
+
+        MaterialUpdateDTO dto = new MaterialUpdateDTO(newCount);
+        string jsonBody = JsonUtility.ToJson(dto);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+        UnityWebRequest request = UnityWebRequest.Put(url, jsonBody);
+
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"成功更新材料: {request.downloadHandler.text}");
+        }
+        else
+        {
+            Debug.LogError($"更新材料失败: {request.error} - {request.downloadHandler.text}");
+        }
+        onUpdated?.Invoke();
+    }
+    #endregion
+
+
+    #region 获取所有材料
+    public void GetAllMaterials(System.Action onMaterialsLoaded)
+    {
+        StartCoroutine(GetAllMaterialsRequest(onMaterialsLoaded));
+    }
+
+    private IEnumerator GetAllMaterialsRequest(System.Action onMaterialsLoaded)
+    {
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/materials/all/{saveName}";
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        string authToken = PlayerPrefs.GetString("token", "");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("获取所有材料失败: " + request.error);
+        }
+        else
+        {
+            string json = request.downloadHandler.text;
+            Debug.Log("后端返回所有材料数据: " + json);
+
+            MaterialsResponseDTO responseDTO = JsonUtility.FromJson<MaterialsResponseDTO>(json);
+            if (responseDTO != null && responseDTO.materials != null)
+            {
+                materials.Clear();
+                foreach (var mat in responseDTO.materials)
+                {
+                    for (int i = 0; i < mat.count; i++)
+                    {
+                        materials.Add(mat.name);
+                    }
+                }
+                Debug.Log("材料列表更新完成。");
+            }
+            else
+            {
+                Debug.LogWarning("解析所有材料数据失败或数据为空。");
+            }
+        }
+        onMaterialsLoaded?.Invoke();
+    }
+    #endregion
+
+
+    #region 获取单个材料数量
+    public void GetMaterialCount(string materialName, System.Action<int> onCountLoaded)
+    {
+        StartCoroutine(GetMaterialCountRequest(materialName, onCountLoaded));
+    }
+
+    private IEnumerator GetMaterialCountRequest(string materialName, System.Action<int> onCountLoaded)
+    {
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/materials/count/{saveName}/{materialName}";
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        string authToken = PlayerPrefs.GetString("token", "");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("获取材料数量失败: " + request.error);
+            onCountLoaded?.Invoke(-1);
+        }
+        else
+        {
+            string json = request.downloadHandler.text;
+            Debug.Log("后端返回材料数量数据: " + json);
+
+            MaterialCountDTO dto = JsonUtility.FromJson<MaterialCountDTO>(json);
+            if (dto != null)
+            {
+                onCountLoaded?.Invoke(dto.count);
+            }
+            else
+            {
+                Debug.LogWarning("解析材料数量数据失败。");
+                onCountLoaded?.Invoke(-1);
+            }
+        }
     }
     #endregion
 

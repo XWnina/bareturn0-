@@ -5,6 +5,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class CreateCardManage : MonoBehaviour
 {
     [Header("References to UI Elements")]
@@ -47,10 +48,9 @@ public class CreateCardManage : MonoBehaviour
     {
         createdCardPlaceholder.SetSymbol("?");
         selectedScrollPlaceholder.gameObject.SetActive(false);
-        PopulateScrollView();
-        coinsText.text = coins.ToString();
-        blankCardNumText.text = "(" + blankcardNum.ToString() + "/1)";
-
+        
+        UpdatePlayerCoin();
+        
         selectedScrollPlaceholder.allowHoverEffect = false;
         blankCardPlaceholder.allowHoverEffect = false;
         createdCardPlaceholder.allowHoverEffect = false;
@@ -61,6 +61,44 @@ public class CreateCardManage : MonoBehaviour
         removeScrollButton.onClick.AddListener(OnRemoveScrollClicked);
         createButton.onClick.AddListener(OnCreateButtonClicked);
         confirmButton.onClick.AddListener(OnConfirmButtonClicked);
+
+        UpdateMaterials();
+    }
+
+    public void UpdateMaterials()
+    {
+        playerInfoLoader.GetAllMaterials(() =>
+        {
+            // 清空本地 scroll 列表和重置空白卡牌数量
+            playerScroll.Clear();
+            blankcardNum = 0;
+
+            foreach (string material in playerInfoLoader.materials)
+            {
+                // 这里假设空白卡牌的名称中包含 "blank"（不区分大小写）
+                if (material.ToLower().Contains("blank"))
+                {
+                    blankcardNum++;
+                }
+                else
+                {
+                    // 其它视为 scroll
+                    playerScroll.Add(material);
+                }
+            }
+
+            blankCardNumText.text = "(" + blankcardNum.ToString() + "/1)";
+            PopulateScrollView();
+        });
+    }
+
+    public void UpdatePlayerCoin()
+    {
+        playerInfoLoader.LoadPlayerCoins(() =>
+        {
+            coins = playerInfoLoader.coins;
+            coinsText.text = coins.ToString();
+        });
     }
 
     public void PopulateScrollView()
@@ -110,6 +148,22 @@ public class CreateCardManage : MonoBehaviour
 
     public void OnCreateButtonClicked()
     {
+        // 如果按钮已经在冷却中则直接返回
+        if (!createButton.interactable)
+            return;
+
+        // 禁用按钮，启动冷却协程
+        createButton.interactable = false;
+        StartCoroutine(ResetCreateButtonCooldown());
+
+        // 检查金币是否足够
+        if (coins < 100)
+        {
+            DisplayWarning("Insufficient coins");
+            Debug.Log("No Enough Coins!!");
+            return;
+        }
+
         // 检查空白卡牌是否足够
         if (blankcardNum <= 0)
         {
@@ -126,8 +180,7 @@ public class CreateCardManage : MonoBehaviour
             // 没有选择特定 scroll，随机获得 normalCards 中的一张
             if (normalCards.Count > 0)
             {
-                int randomIndex = Random.Range(0, normalCards.Count);
-                newCard = normalCards[randomIndex];
+                newCard = ChooseCardByQuality(normalCards);
             }
             else
             {
@@ -142,8 +195,7 @@ public class CreateCardManage : MonoBehaviour
             {
                 if (ifCards.Count > 0)
                 {
-                    int randomIndex = Random.Range(0, ifCards.Count);
-                    newCard = ifCards[randomIndex];
+                    newCard = ChooseCardByQuality(ifCards);
                 }
                 else
                 {
@@ -154,8 +206,7 @@ public class CreateCardManage : MonoBehaviour
             {
                 if (whileCards.Count > 0)
                 {
-                    int randomIndex = Random.Range(0, whileCards.Count);
-                    newCard = whileCards[randomIndex];
+                    newCard = ChooseCardByQuality(whileCards);
                 }
                 else
                 {
@@ -166,8 +217,7 @@ public class CreateCardManage : MonoBehaviour
             {
                 if (mathCards.Count > 0)
                 {
-                    int randomIndex = Random.Range(0, mathCards.Count);
-                    newCard = mathCards[randomIndex];
+                    newCard = ChooseCardByQuality(mathCards);
                 }
                 else
                 {
@@ -179,8 +229,7 @@ public class CreateCardManage : MonoBehaviour
                 // 如果 currentSelectedScrollName 的值不匹配预设类型，则默认从 normalCards 获取
                 if (normalCards.Count > 0)
                 {
-                    int randomIndex = Random.Range(0, normalCards.Count);
-                    newCard = normalCards[randomIndex];
+                    newCard = ChooseCardByQuality(normalCards);
                 }
                 else
                 {
@@ -189,35 +238,67 @@ public class CreateCardManage : MonoBehaviour
             }
         }
 
+        //制作成功
         if (newCard != null)
         {
+            // 扣除 100 金币，并更新显示和后端
+            coins -= 100;
+            coinsText.text = coins.ToString();
+            playerInfoLoader.UpdatePlayerCoin(coins, () =>
+            {
+                Debug.Log("后端金币更新成功，扣除了 100 金币");
+            });
+
+            blankcardNum--;
+            // 更新后端空白卡牌数量
+            playerInfoLoader.UpdateMaterial("BlankCard", blankcardNum, () =>
+            {
+                Debug.Log("后端更新空白卡牌数量为：" + blankcardNum);
+                //更新显示
+                blankCardNumText.text = "(" + blankcardNum.ToString() + "/1)";
+            });
+
             // 制作成功，保存新卡牌
             createdCard = newCard;
             resultPanel.SetActive(true);
             createdCardPlaceholder.RemoveSymbol();
             createdCardPlaceholder.SetCardThumbnail(createdCard);
+            // 添加制作成功的卡牌到后端玩家集合中
+            playerInfoLoader.AddCardToCollection(createdCard.cardName, 1, () =>
+            {
+                //Debug.Log("成功制作卡牌：" + createdCard.cardName);
+            });
             
-            createdCardPlaceholder.SetCardThumbnail(createdCard);
-            Debug.Log("成功制作卡牌：" + createdCard.cardName);
 
-            // 扣除一张空白卡牌，并更新显示
-            blankcardNum--;
-            blankCardNumText.text = "(" + blankcardNum.ToString() + "/1)";
-
-            // 如果使用了 scroll（currentSelectedScrollName 不为空），则移除该 scroll
+            // 如果使用了 scroll，则消耗该 scroll并更新后端数据
             if (!string.IsNullOrEmpty(currentSelectedScrollName))
             {
-                // 从玩家拥有的 scroll 列表中移除（这里默认移除第一个匹配项）
+                // 先存储当前选中的 scroll 名称到临时变量
+                string usedScroll = currentSelectedScrollName;
+
+                // 计算剩余该 scroll 的数量
+                int newScrollCount = CountScroll(usedScroll);
+                Debug.Log("usedScroll:" + usedScroll + "num:" + newScrollCount);
+                // 更新后端 scroll 数量
+                playerInfoLoader.UpdateMaterial(usedScroll, newScrollCount, () =>
+                {
+                    Debug.Log("后端更新 scroll " + usedScroll + " 数量为：" + newScrollCount);
+                   
+                });
+                // 从玩家拥有的 scroll 列表中移除
+                Debug.Log("准备从玩家拥有的 scroll 列表中移除");
                 if (playerScroll.Contains(currentSelectedScrollName))
                 {
                     playerScroll.Remove(currentSelectedScrollName);
+                    Debug.Log("从玩家拥有的 scroll 列表中移除");
                 }
+                // 刷新滚动列表
+                PopulateScrollView();
+
                 // 重置当前选中的 scroll，并隐藏相关 UI
                 currentSelectedScrollName = null;
                 selectedScrollPlaceholder.gameObject.SetActive(false);
                 removeScrollButton.gameObject.SetActive(false);
-                // 刷新滚动列表（使移除的 scroll 不再显示）
-                PopulateScrollView();
             }
         }
         else
@@ -232,11 +313,27 @@ public class CreateCardManage : MonoBehaviour
         removeScrollButton.gameObject.SetActive(false);
     }
 
+    private IEnumerator ResetCreateButtonCooldown()
+    {
+        yield return new WaitForSeconds(1f); // 冷却 1 秒
+        createButton.interactable = true;
+    }
+
+    private int CountScroll(string scrollName)
+    {
+        int count = 0;
+        foreach (string s in playerScroll)
+        {
+            if (s.Equals(scrollName, System.StringComparison.OrdinalIgnoreCase))
+                count++;
+        }
+        return count - 1;
+    }
+
     public void OnConfirmButtonClicked()
     {
         resultPanel.SetActive(false);
     }
-
 
     private void DisplayWarning(string message)
     {
@@ -264,5 +361,36 @@ public class CreateCardManage : MonoBehaviour
         }
 
         warningText.gameObject.SetActive(false); // 完全消失后隐藏
+    }
+
+    private CardData ChooseCardByQuality(List<CardData> cardList)
+    {
+        // 生成0到1之间的随机数
+        float r = Random.value;
+        CardQuality desiredQuality;
+
+        // 根据权重选择目标品质
+        if (r < 0.7f)
+            desiredQuality = CardQuality.Common;
+        else if (r < 0.95f)
+            desiredQuality = CardQuality.Rare;
+        else
+            desiredQuality = CardQuality.Epic;
+
+        // 过滤出符合目标品质的卡牌
+        List<CardData> filtered = cardList.FindAll(card => card.quality == desiredQuality);
+
+        if (filtered.Count > 0)
+        {
+            int randomIndex = Random.Range(0, filtered.Count);
+            return filtered[randomIndex];
+        }
+        else
+        {
+            // 如果目标品质的卡牌不存在，则从整个列表均匀随机抽一张
+            Debug.LogWarning($"列表中没有 {desiredQuality} 牌，使用均匀随机抽取作为备选");
+            int randomIndex = Random.Range(0, cardList.Count);
+            return cardList[randomIndex];
+        }
     }
 }

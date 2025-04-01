@@ -24,7 +24,7 @@ public class ScrollUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void setScroll(string name)
     {
         nameText.text = name;
-        Debug.Log(name);
+        //Debug.Log(name);
 
         if (name.ToLower() == "math")
         {
