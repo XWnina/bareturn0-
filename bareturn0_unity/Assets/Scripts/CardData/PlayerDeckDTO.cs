@@ -78,3 +78,32 @@ public class CoinUpdate
         this.coins = amount;
     }
 }
+
+[System.Serializable]
+public class MaterialUpdateDTO
+{
+    public int count;
+    public MaterialUpdateDTO(int count)
+    {
+        this.count = count;
+    }
+}
+
+[System.Serializable]
+public class MaterialDTO
+{
+    public string name;
+    public int count;
+}
+
+[System.Serializable]
+public class MaterialsResponseDTO
+{
+    public List<MaterialDTO> materials;
+}
+
+[System.Serializable]
+public class MaterialCountDTO
+{
+    public int count;
+}

@@ -785,14 +785,14 @@ MonoBehaviour:
   resultPanel: {fileID: 1483253610}
   confirmButton: {fileID: 2095151620}
   normalCards:
-  - {fileID: 11400000, guid: 38f9639a0940a174cbbd0e11b5d08945, type: 2}
+  - {fileID: 11400000, guid: a645ad1a2653d404b88eefafd29aa4c9, type: 2}
   - {fileID: 11400000, guid: 223ff3869e4b6424e839507c4acc20c7, type: 2}
-  - {fileID: 11400000, guid: 9922edd6f43ea8b4e82791622121588f, type: 2}
   - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}
-  ifCards:
-  - {fileID: 11400000, guid: 760ce11bd2c1480439b5c3d27198f810, type: 2}
+  ifCards: []
   whileCards: []
-  mathCards: []
+  mathCards:
+  - {fileID: 11400000, guid: 64abc73a6252d0f4aa9abeb209334663, type: 2}
+  - {fileID: 11400000, guid: 760ce11bd2c1480439b5c3d27198f810, type: 2}
   warningText: {fileID: 485324757}
   selectedScrollPlaceholder: {fileID: 777616764}
   blankCardPlaceholder: {fileID: 1873341093}
@@ -4433,6 +4433,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardDatabase: {fileID: 11400000, guid: c643ec059d5c6fa47b26552475be8af0, type: 2}
   cardList: []
+  materials: []
   maxHealth: 0
   speed: 0
   coins: 0
@@ -6757,7 +6758,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 300
+  m_text: 100
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 4254f6b6079add54f92f3b5c761931c2, type: 2}
   m_sharedMaterial: {fileID: -3309186978010668473, guid: 4254f6b6079add54f92f3b5c761931c2, type: 2}
