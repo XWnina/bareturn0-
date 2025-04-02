@@ -33,7 +33,12 @@ public class InventoryManager : MonoBehaviour
 
     // Card Deck
     public DeckInfoLoader deckInfoLoader;
-    public GameObject deckButtonPrefab;
+    public GameObject DeckButtonPrefab;
+
+    // Deck Panel
+    public GameObject DeckPanel;
+    public TextMeshProUGUI DeckPanelTitle;
+
 
 
     void Start()
@@ -48,6 +53,7 @@ public class InventoryManager : MonoBehaviour
 
         MaterialPanel.SetActive(false);
         MaterialBackground.SetActive(false);
+        DeckPanel.SetActive(false);
 
         ExitButton.onClick.AddListener(() =>
         {
@@ -162,14 +168,16 @@ public class InventoryManager : MonoBehaviour
 
             foreach (var deck in deckList)
             {
-                GameObject buttonObj = Instantiate(deckButtonPrefab, CardDeck.transform);
+                GameObject buttonObj = Instantiate(DeckButtonPrefab, CardDeck.transform);
                 buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = deck.name;
 
                 string deckName = deck.name;
                 buttonObj.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
                 {
                     Debug.Log("你点击了卡组：" + deckName);
-                    // 可以调用 LoadPlayerDeck(deckName) 来加载这个卡组内容
+
+                    DeckPanel.SetActive(true); // 显示面板
+                    DeckPanelTitle.text = deckName; // 设置标题
                 });
             }
         });
