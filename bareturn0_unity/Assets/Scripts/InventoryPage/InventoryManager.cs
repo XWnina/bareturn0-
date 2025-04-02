@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -15,8 +16,16 @@ public class InventoryManager : MonoBehaviour
     public GameObject scrollPrefab;
     public GameObject materialPanel;
     public List<string> playerScroll = new List<string>();
+    public TextMeshProUGUI BlankNumText;
+
+
+
+    public Button MaterialsButton;
 
     public int blankcardNum;
+    public int ifNum;
+    public int whileNum;
+    public int mathNum;
 
 
     void Start()
@@ -26,6 +35,9 @@ public class InventoryManager : MonoBehaviour
             playerCards = playerInfoLoader.cardList;
             populateCollection();
         });
+
+        materialPanel.SetActive(false);
+        MaterialsButton.onClick.AddListener(materialsbuttonclicked);
     }
 
     public void populateCollection()
@@ -50,17 +62,70 @@ public class InventoryManager : MonoBehaviour
     {
         foreach (Transform child in materialPanel.transform)
         {
-            Destroy(child.gameObject);
+            if (child.gameObject.name != "CardThumbnial")
+            {
+                Destroy(child.gameObject);
+            }
+            // Destroy(child.gameObject);
         }
         for (int i = 0; i < playerScroll.Count; i++)
         {
             string scrollName = playerScroll[i];
 
             GameObject scrollObject = Instantiate(scrollPrefab, materialPanel.transform);
-            ScrollUI scrollUI = scrollObject.GetComponent<ScrollUI>();
+            TalentUI scrollUI = scrollObject.GetComponent<TalentUI>();
+            if (scrollName == "if" && ifNum != 0)
+            {
+                scrollUI.setScroll(scrollName, ifNum);
+            }
+            else if (scrollName == "while" && whileNum != 0)
+            {
+                scrollUI.setScroll(scrollName, whileNum);
+            }
+            else if (scrollName == "math" && mathNum != 0)
+            {
+                scrollUI.setScroll(scrollName, mathNum);
+            }
 
-            scrollUI.setScroll(scrollName);
         }
     }
+    public void materialsbuttonclicked()
+    {
+        materialPanel.SetActive(true);
+        playerInfoLoader.GetAllMaterials(() =>
+      {
+          playerScroll.Clear();
+          blankcardNum = 0;
 
+          foreach (string material in playerInfoLoader.materials)
+          {
+              if (material.ToLower().Contains("blank"))
+              {
+                  blankcardNum++;
+              }
+              else if (material.ToLower().Contains("math"))
+              {
+                  mathNum++;
+                  playerScroll.Add(material);
+
+              }
+              else if (material.ToLower().Contains("if"))
+              {
+                  ifNum++;
+                  playerScroll.Add(material);
+
+              }
+              else if (material.ToLower().Contains("while"))
+              {
+                  whileNum++;
+                  playerScroll.Add(material);
+
+              }
+
+          }
+          BlankNumText.text = blankcardNum.ToString();
+          PopulateScrollView();
+      });
+
+    }
 }
