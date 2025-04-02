@@ -9,18 +9,18 @@ namespace CalcuProblemPage
 {
     public class CodeEvaluator
     {
-        private Dictionary<string, double> _variables = new();
+        private readonly Dictionary<string, double> _variables = new();
 
-        public bool TryEvaluate(string code, out double result)
+        public bool TryEvaluate(string code, out double result, out CodeErrorType errorType)
         {
             Debug.Log("=== 开始解析用户代码 ===");
             Debug.Log(code);
 
             _variables.Clear();
             result = 0;
+            errorType = CodeErrorType.None;
 
             string[] lines = code.Split(new[] { '\n', ';' }, StringSplitOptions.RemoveEmptyEntries);
-            string lastLine = null;
             string lastVar = null;
             string lastExpression = null;
 
@@ -31,54 +31,76 @@ namespace CalcuProblemPage
 
                 Debug.Log("解析行: " + line);
 
+                // 判断是否是声明语句
                 bool isDeclaration = line.StartsWith("int ") || line.StartsWith("double ");
                 string codeLine = isDeclaration ? line.Substring(line.IndexOf(' ') + 1).Trim() : line;
 
+                // 拆分变量与表达式
                 string[] parts = codeLine.Split('=');
                 if (parts.Length != 2)
                 {
                     Debug.LogError("无效格式: " + line);
+                    errorType = CodeErrorType.SyntaxError;
                     return false;
                 }
 
                 string varName = parts[0].Trim();
                 string expression = parts[1].Trim();
 
-                lastLine = line;
-                lastVar = varName;
-                lastExpression = expression;
-
-                if (!TryEvaluateExpression(expression, out double value))
+                // 检查变量是否已声明（如果不是新声明）
+                if (!isDeclaration && !_variables.ContainsKey(varName))
                 {
-                    Debug.LogError("无法求值表达式: " + expression);
+                    Debug.LogError($"变量 [{varName}] 未声明就赋值: {line}");
+                    errorType = CodeErrorType.UndeclaredVariable;
                     return false;
                 }
 
-                if (isDeclaration && line.StartsWith("int "))
+                // 检查表达式中的所有变量是否都已声明
+                if (!ExpressionContainsOnlyKnownVariables(expression))
                 {
-                    value = Math.Floor(value); // int 转换
+                    Debug.LogError($"表达式包含未声明变量: {expression}");
+                    errorType = CodeErrorType.UndeclaredVariable;
+                    return false;
+                }
+
+                // 尝试计算表达式
+                if (!TryEvaluateExpression(expression, out double value))
+                {
+                    Debug.LogError("无法求值表达式: " + expression);
+                    errorType = CodeErrorType.SyntaxError;
+                    return false;
+                }
+
+                // 如果是 int 声明则向下取整
+                if (line.StartsWith("int "))
+                {
+                    value = Math.Floor(value);
                 }
 
                 _variables[varName] = value;
                 Debug.Log($"变量 [{varName}] = {value}");
+
+                lastVar = varName;
+                lastExpression = expression;
             }
 
-            // ❌ 不允许最后一行是单纯的字面量（不是表达式）
-            if (!string.IsNullOrEmpty(lastExpression))
+            // 检查最后一行是否是硬编码常数
+            if (!string.IsNullOrEmpty(lastExpression) &&
+                Regex.IsMatch(lastExpression, @"^\d+(\.\d+)?$"))
             {
-                if (Regex.IsMatch(lastExpression, @"^\d+(\.\d+)?$"))
-                {
-                    Debug.LogError($"❌ 最后一行不能是硬编码常数: {lastExpression}");
-                    return false;
-                }
+                Debug.LogError($"❌ 最后一行不能是硬编码常数: {lastExpression}");
+                errorType = CodeErrorType.HardcodedConstant;
+                return false;
             }
 
+            // 返回结果
             if (!string.IsNullOrEmpty(lastVar) && _variables.ContainsKey(lastVar))
             {
                 result = _variables[lastVar];
                 return true;
             }
 
+            errorType = CodeErrorType.SyntaxError;
             return false;
         }
 
@@ -88,7 +110,8 @@ namespace CalcuProblemPage
             {
                 foreach (var pair in _variables)
                 {
-                    expr = Regex.Replace(expr, $@"\b{Regex.Escape(pair.Key)}\b", pair.Value.ToString(CultureInfo.InvariantCulture));
+                    expr = Regex.Replace(expr, $@"\b{Regex.Escape(pair.Key)}\b",
+                        pair.Value.ToString(CultureInfo.InvariantCulture));
                 }
 
                 Debug.Log("最终表达式: " + expr);
@@ -105,6 +128,21 @@ namespace CalcuProblemPage
                 result = 0;
                 return false;
             }
+        }
+
+        private bool ExpressionContainsOnlyKnownVariables(string expression)
+        {
+            MatchCollection matches = Regex.Matches(expression, @"[a-zA-Z_]\w*");
+
+            foreach (Match match in matches)
+            {
+                if (!_variables.ContainsKey(match.Value))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

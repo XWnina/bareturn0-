@@ -5,24 +5,42 @@ using TMPro;
 
 namespace CalcuProblemPage
 {
+    public enum CodeErrorType
+    {
+        None,
+        SyntaxError,
+        UndeclaredVariable,
+        HardcodedConstant
+    }
+
     public class AnswerChecker : MonoBehaviour
     {
         [Header("References")]
         public QuestionManager questionManager;
         public CalcuDialogManager dialogManager;
-        public GameManager gameManager; // 如果你想答对就继续下一题
+        public GameManager gameManager;
         public GameObject teachingPanel;
         public TMP_InputField inputField;
+
+        [Header("Error UI")]
+        public GameObject errorPanel;
+        public TMP_Text errorText;
 
         [Header("Settings")]
         public float tolerance = 0.01f;
 
-        private CodeEvaluator evaluator = new();
+        private readonly CodeEvaluator _evaluator = new();
+        private bool _isShowingErrorPanel;
 
-        /// <summary>
-        /// Called when the player submits their answer.
-        /// </summary>
-        private bool awaitingRetry = false;
+        void Update()
+        {
+            if (_isShowingErrorPanel && Input.GetKeyDown(KeyCode.Return))
+            {
+                errorPanel.SetActive(false);
+                teachingPanel.SetActive(true);
+                _isShowingErrorPanel = false;
+            }
+        }
 
         public void CheckAnswer()
         {
@@ -37,11 +55,21 @@ namespace CalcuProblemPage
                 return;
             }
 
-            bool success = evaluator.TryEvaluate(userCode, out double userAnswer);
+            bool success = _evaluator.TryEvaluate(userCode, out double userAnswer, out CodeErrorType errorType);
 
             if (!success)
             {
-                StartCoroutine(dialogManager.ShowNpcLineWithDelay("I couldn't understand your code. Check for syntax or variable errors."));
+                string errorMsg = errorType switch
+                {
+                    CodeErrorType.UndeclaredVariable => "You seem to be using a variable that wasn't declared.",
+                    CodeErrorType.HardcodedConstant => "Your final result looks hardcoded. Try using variables.",
+                    CodeErrorType.SyntaxError => "I couldn't understand your code. Please check the syntax.",
+                    _ => "Something went wrong in your code."
+                };
+                
+                errorText.text = errorMsg;
+                errorPanel.SetActive(true);
+                _isShowingErrorPanel = true;
                 return;
             }
 
@@ -59,31 +87,21 @@ namespace CalcuProblemPage
             else
             {
                 teachingPanel.SetActive(false);
-                StartCoroutine(ShowRetrySequence());
+                StartCoroutine(ShowRetrySequence("That's not correct. Try again."));
             }
-
-
         }
-       
-        
-        private IEnumerator ShowRetrySequence()
+
+        private IEnumerator ShowRetrySequence(string npcLine)
         {
-            List<string> lines = new() { "NPC: That's not correct. Try again." };
+            List<string> lines = new() { $"NPC: {npcLine}" };
             dialogManager.EnqueueDialogLines(lines);
-
             yield return new WaitUntil(() => dialogManager.IsDialogPlaying() == false);
-
-            teachingPanel.SetActive(true); // ✅ 自动弹出面板，无需再按 Enter
+            teachingPanel.SetActive(true);
         }
-
-
-
-
-
 
         private void ShowNextQuestion()
         {
-            gameManager.ShowNextQuestion(); // 调用 GameManager 的函数
+            gameManager.ShowNextQuestion();
         }
     }
 }
