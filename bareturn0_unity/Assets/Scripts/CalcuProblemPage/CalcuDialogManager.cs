@@ -1,6 +1,7 @@
-using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using TMPro;
 
 namespace CalcuProblemPage
 {
@@ -8,12 +9,25 @@ namespace CalcuProblemPage
     {
         [Header("UI References")]
         public GameObject playerDialogBox;
-        public Text playerText;
+        public TMP_Text playerText;
 
         public GameObject npcDialogBox;
-        public Text npcText;
+        public TMP_Text npcText;
 
         public float defaultDisplayTime = 2f;
+
+        // === 新增 ===
+        private Queue<string> dialogQueue = new();
+        private bool isWaitingForEnter = false;
+
+        void Update()
+        {
+            // 玩家按下 Enter 键继续
+            if (isWaitingForEnter && Input.GetKeyDown(KeyCode.Return))
+            {
+                ShowNextLine();
+            }
+        }
 
         public void ShowPlayerLine(string line)
         {
@@ -47,6 +61,49 @@ namespace CalcuProblemPage
             ShowNpcLine(line);
             yield return new WaitForSeconds(duration > 0 ? duration : defaultDisplayTime);
             HideAllDialogs();
+        }
+
+        // === 新增：按 Enter 键继续的版本 ===
+        public void EnqueueDialogLines(List<string> lines)
+        {
+            foreach (string line in lines)
+            {
+                dialogQueue.Enqueue(line);
+            }
+
+            if (!isWaitingForEnter && dialogQueue.Count > 0)
+            {
+                ShowNextLine();
+                isWaitingForEnter = true;
+            }
+        }
+
+        private void ShowNextLine()
+        {
+            HideAllDialogs();
+
+            if (dialogQueue.Count == 0)
+            {
+                isWaitingForEnter = false;
+                return;
+            }
+
+            string nextLine = dialogQueue.Dequeue();
+
+            if (nextLine.StartsWith("PLAYER:"))
+            {
+                ShowPlayerLine(nextLine.Replace("PLAYER:", "").Trim());
+            }
+            else
+            {
+                ShowNpcLine(nextLine.Replace("NPC:", "").Trim());
+            }
+        }
+
+        // 是否正在等待玩家按 Enter
+        public bool IsDialogPlaying()
+        {
+            return isWaitingForEnter;
         }
     }
 }
