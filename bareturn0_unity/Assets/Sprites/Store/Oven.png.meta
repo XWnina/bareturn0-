@@ -1,19 +1,10 @@
 fileFormatVersion: 2
-guid: 350d92a03fe039743b155b3637b263aa
+guid: 36ae38524793b4dd0a1c253ade199539
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -683525234326013033
-    second: Alchemist_idle_0
-  - first:
-      213: -6992869009944281095
-    second: Alchemist_idle_1
-  - first:
-      213: -5061528331137163054
-    second: Alchemist_idle_2
-  - first:
-      213: 2012999822328299896
-    second: Alchemist_idle_3
+      213: -6413138906981451842
+    second: Oven_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,7 +37,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -122,13 +113,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Alchemist_idle_0
+      name: Oven_0
       rect:
         serializedVersion: 2
-        x: 5
+        x: 0
         y: 0
-        width: 18
-        height: 36
+        width: 15
+        height: 29
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,74 +128,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 79b7bfcbb61a386f0800000000000000
-      internalID: -683525234326013033
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Alchemist_idle_1
-      rect:
-        serializedVersion: 2
-        x: 53
-        y: 0
-        width: 19
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 9fffe6d6fa654fe90800000000000000
-      internalID: -6992869009944281095
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Alchemist_idle_2
-      rect:
-        serializedVersion: 2
-        x: 101
-        y: 0
-        width: 19
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 2d06ef9ccc6d1c9b0800000000000000
-      internalID: -5061528331137163054
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Alchemist_idle_3
-      rect:
-        serializedVersion: 2
-        x: 149
-        y: 0
-        width: 18
-        height: 36
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 8718dce4cac9feb10800000000000000
-      internalID: 2012999822328299896
+      spriteID: eb732227424fff6a0800000000000000
+      internalID: -6413138906981451842
       vertices: []
       indices: 
       edges: []
@@ -223,10 +148,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Alchemist_idle_0: -683525234326013033
-      Alchemist_idle_1: -6992869009944281095
-      Alchemist_idle_2: -5061528331137163054
-      Alchemist_idle_3: 2012999822328299896
+      Oven_0: -6413138906981451842
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
