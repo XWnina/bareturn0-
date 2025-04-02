@@ -2,63 +2,86 @@ using UnityEngine;
 
 namespace CalcuProblemPage
 {
-    public class NPCController : MonoBehaviour
+    public class NpcController : MonoBehaviour
     {
-        [Header("Animator + 位置")]
+        [Header("动画与移动目标")]
         public Animator animator;
-        public Transform targetPosition; // NPC 要走到哪
+        public Transform targetPosition;
+        public Transform startPosition;
         public float moveSpeed = 2f;
 
-        private bool isWalking = false;
-        private bool reachedTarget = false;
+        private bool _isWalking;
+        private bool _reachedTarget;
+        private Transform _currentTarget;
 
         void Start()
         {
-   
-             transform.position = new Vector3(10f, transform.position.y, transform.position.z);
+            if (startPosition != null)
+            {
+                transform.position = startPosition.position;
+            }
+            animator.ResetTrigger("startRead");
+            animator.ResetTrigger("startWalk");
+            animator.ResetTrigger("startIdle");
         }
 
         void Update()
         {
-            if (isWalking)
+            if (_isWalking && _currentTarget != null)
             {
                 transform.position = Vector3.MoveTowards(
                     transform.position,
-                    targetPosition.position,
+                    _currentTarget.position,
                     moveSpeed * Time.deltaTime
                 );
 
-                if (Vector3.Distance(transform.position, targetPosition.position) < 0.05f)
+                if (Vector3.Distance(transform.position, _currentTarget.position) < 0.05f)
                 {
-                    isWalking = false;
-                    reachedTarget = true;
-                    animator.Play("idle"); // 切回 idle
+                    _isWalking = false;
+                    _reachedTarget = true;
+
+                    // 停止walk动画，切idle
+                    animator.ResetTrigger("startRead");
+                    animator.ResetTrigger("startWalk");
+                    animator.SetTrigger("startIdle");
                 }
             }
         }
 
         public void WalkIn()
         {
+            WalkTo(targetPosition);
+        }
+
+        public void WalkTo(Transform target)
+        {
+            _currentTarget = target;
+            _isWalking = true;
+            _reachedTarget = false;
+
             animator.ResetTrigger("startRead");
+            animator.ResetTrigger("startIdle");
             animator.SetTrigger("startWalk");
-            isWalking = true;
-            reachedTarget = false;
         }
 
         public void PlayRead()
         {
+            Debug.Log(">>> PlayRead() 被调用了！");
+            animator.ResetTrigger("startIdle");
             animator.ResetTrigger("startWalk");
             animator.SetTrigger("startRead");
         }
 
         public void PlayIdle()
         {
-            animator.Play("idle");
+            animator.ResetTrigger("startRead");
+            animator.ResetTrigger("startWalk");
+            animator.SetTrigger("startIdle");
         }
 
         public bool HasReachedTarget()
         {
-            return reachedTarget;
+            return _reachedTarget;
         }
     }
 }
