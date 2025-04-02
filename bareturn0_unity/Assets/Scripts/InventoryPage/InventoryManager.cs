@@ -6,29 +6,34 @@ using UnityEngine.SceneManagement;
 
 public class InventoryManager : MonoBehaviour
 {
-    // Full setting
+
     public static InventoryManager Instance;
-    public GameObject CardCollection;
-    public GameObject CardPrefab;
-    public List<CardData> playerCards = new List<CardData>();
-    public Button MaterialsButton;
     public Button ExitButton;
+    public GameObject CardCollection;
+    public GameObject CardDeck;
+    public Button MaterialsButton;
+    public Button NewDeckButton;
 
     // Card Collection
     public PlayerInfoLoader playerInfoLoader;
-    public GameObject scrollPrefab;
-    public GameObject materialPanel;
+    public List<CardData> playerCards = new List<CardData>();
+    public GameObject CardPrefab;
 
     // Material Panel
-    public GameObject materialBackground;
-    public List<string> playerScroll = new List<string>();
+    public GameObject MaterialBackground;
+    public GameObject TalentPrefab;
+    public List<string> talentList = new List<string>();
     public TextMeshProUGUI BlankNumText;
-    public Button CloseButton;
-
+    public GameObject MaterialPanel;
+    public Button MaterialCloseButton;
     public int blankcardNum;
     public int ifNum;
     public int whileNum;
     public int mathNum;
+
+    // Card Deck
+    public DeckInfoLoader deckInfoLoader;
+    public GameObject deckButtonPrefab;
 
 
     void Start()
@@ -41,20 +46,21 @@ public class InventoryManager : MonoBehaviour
             populateCollection();
         });
 
-        materialPanel.SetActive(false);
-        materialBackground.SetActive(false);
+        MaterialPanel.SetActive(false);
+        MaterialBackground.SetActive(false);
 
         ExitButton.onClick.AddListener(() =>
         {
             SceneManager.LoadScene(PlayerPrefs.GetString("PreviousScene"));
         });
 
-        MaterialsButton.onClick.AddListener(materialsbuttonclicked);
-        CloseButton.onClick.AddListener(() =>
+        MaterialsButton.onClick.AddListener(materialButtonClicked);
+        MaterialCloseButton.onClick.AddListener(() =>
         {
-            materialPanel.SetActive(false);
-            materialBackground.SetActive(false);
+            MaterialPanel.SetActive(false);
+            MaterialBackground.SetActive(false);
         });
+        DisplayAllDeckButtons();
     }
 
     public void populateCollection()
@@ -75,20 +81,20 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    public void PopulateScrollView()
+    public void populateMaterialView()
     {
-        foreach (Transform child in materialPanel.transform)
+        foreach (Transform child in MaterialPanel.transform)
         {
             if (child.gameObject.name != "CardThumbnial")
             {
                 Destroy(child.gameObject);
             }
         }
-        for (int i = 0; i < playerScroll.Count; i++)
+        for (int i = 0; i < talentList.Count; i++)
         {
-            string scrollName = playerScroll[i];
+            string scrollName = talentList[i];
 
-            GameObject scrollObject = Instantiate(scrollPrefab, materialPanel.transform);
+            GameObject scrollObject = Instantiate(TalentPrefab, MaterialPanel.transform);
             TalentUI scrollUI = scrollObject.GetComponent<TalentUI>();
             if (scrollName == "if" && ifNum != 0)
             {
@@ -105,13 +111,13 @@ public class InventoryManager : MonoBehaviour
 
         }
     }
-    public void materialsbuttonclicked()
+    public void materialButtonClicked()
     {
-        materialPanel.SetActive(true);
-        materialBackground.SetActive(true);
+        MaterialPanel.SetActive(true);
+        MaterialBackground.SetActive(true);
         playerInfoLoader.GetAllMaterials(() =>
       {
-          playerScroll.Clear();
+          talentList.Clear();
           blankcardNum = 0;
 
           foreach (string material in playerInfoLoader.materials)
@@ -123,26 +129,49 @@ public class InventoryManager : MonoBehaviour
               else if (material.ToLower().Contains("math"))
               {
                   mathNum++;
-                  playerScroll.Add(material);
+                  talentList.Add(material);
 
               }
               else if (material.ToLower().Contains("if"))
               {
                   ifNum++;
-                  playerScroll.Add(material);
+                  talentList.Add(material);
 
               }
               else if (material.ToLower().Contains("while"))
               {
                   whileNum++;
-                  playerScroll.Add(material);
+                  talentList.Add(material);
 
               }
 
           }
           BlankNumText.text = blankcardNum.ToString();
-          PopulateScrollView();
+          populateMaterialView();
       });
 
+    }
+    public void DisplayAllDeckButtons()
+    {
+        deckInfoLoader.LoadAllDecks((deckList) =>
+        {
+            foreach (Transform child in CardDeck.transform)
+            {
+                Destroy(child.gameObject);
+            }
+
+            foreach (var deck in deckList)
+            {
+                GameObject buttonObj = Instantiate(deckButtonPrefab, CardDeck.transform);
+                buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = deck.name;
+
+                string deckName = deck.name;
+                buttonObj.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
+                {
+                    Debug.Log("你点击了卡组：" + deckName);
+                    // 可以调用 LoadPlayerDeck(deckName) 来加载这个卡组内容
+                });
+            }
+        });
     }
 }
