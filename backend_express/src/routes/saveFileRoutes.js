@@ -34,9 +34,11 @@ router.post("/", authMiddleware, async (req, res) => {
       { cardName: "Slash", count: 2 },
       { cardName: "SmallShield", count: 2 },
     ];
-    
-     // Set default values for the materials
-     const initialMaterials = [
+    const collectionCards = initialCardPool.map((card) => ({ ...card }));
+    const deckCards = initialCardPool.map((card) => ({ ...card }));
+
+    // Set default values for the materials
+    const initialMaterials = [
       { name: "if", count: 1 },
       { name: "while", count: 1 },
       { name: "math", count: 1 },
@@ -47,7 +49,7 @@ router.post("/", authMiddleware, async (req, res) => {
       saveName,
       cardCollection: {
         name: "Card Collection",
-        cards: initialCardPool,
+        cards: collectionCards,
       },
       materials: initialMaterials,
       userId: req.user.id,
@@ -57,9 +59,8 @@ router.post("/", authMiddleware, async (req, res) => {
     const collectionDeck = new CardDeck({
       saveFileId: newSave._id,
       name: "Default Deck",
-      cards: initialCardPool,
+      cards: deckCards,
     });
-
     await collectionDeck.save();
 
     newSave.selectedDeck = collectionDeck._id;
@@ -170,7 +171,6 @@ router.get("/:saveName/id", authMiddleware, async (req, res) => {
   }
 });
 
-
 // Get progress for a specific save file
 router.get("/:saveName/progress", authMiddleware, async (req, res) => {
   try {
@@ -222,7 +222,7 @@ router.get("/:saveName/playerName", authMiddleware, async (req, res) => {
   try {
     const save = await SaveFile.findOne({
       userId: req.user.id,
-      saveName: req.params.saveNa
+      saveName: req.params.saveNa,
     });
 
     if (!save) {
