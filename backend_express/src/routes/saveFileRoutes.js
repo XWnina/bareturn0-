@@ -56,14 +56,14 @@ router.post("/", authMiddleware, async (req, res) => {
     });
 
     // Create CardDeck copy of cardCollection and link it as selectedDeck
-    const collectionDeck = new CardDeck({
+    const defaultSelectDeck = new CardDeck({
       saveFileId: newSave._id,
       name: "Default Deck",
       cards: deckCards,
     });
-    await collectionDeck.save();
+    await defaultSelectDeck.save();
 
-    newSave.selectedDeck = collectionDeck._id;
+    newSave.selectedDeck = defaultSelectDeck._id;
 
     await newSave.save();
     const saveFileCount = await SaveFile.countDocuments({
