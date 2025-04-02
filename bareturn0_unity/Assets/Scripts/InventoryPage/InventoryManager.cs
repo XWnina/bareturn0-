@@ -2,25 +2,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using System.Threading;
+using UnityEngine.SceneManagement;
 
 public class InventoryManager : MonoBehaviour
 {
+    // Full setting
     public static InventoryManager Instance;
-
     public GameObject CardCollection;
     public GameObject CardPrefab;
     public List<CardData> playerCards = new List<CardData>();
+    public Button MaterialsButton;
+    public Button ExitButton;
 
+    // Card Collection
     public PlayerInfoLoader playerInfoLoader;
     public GameObject scrollPrefab;
     public GameObject materialPanel;
+
+    // Material Panel
+    public GameObject materialBackground;
     public List<string> playerScroll = new List<string>();
     public TextMeshProUGUI BlankNumText;
-
-
-
-    public Button MaterialsButton;
+    public Button CloseButton;
 
     public int blankcardNum;
     public int ifNum;
@@ -30,6 +33,8 @@ public class InventoryManager : MonoBehaviour
 
     void Start()
     {
+        PlayerPrefs.SetString("PreviousScene", "draftMap");
+
         playerInfoLoader.LoadPlayerDeck("cardCollection", () =>
         {
             playerCards = playerInfoLoader.cardList;
@@ -37,7 +42,19 @@ public class InventoryManager : MonoBehaviour
         });
 
         materialPanel.SetActive(false);
+        materialBackground.SetActive(false);
+
+        ExitButton.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene(PlayerPrefs.GetString("PreviousScene"));
+        });
+
         MaterialsButton.onClick.AddListener(materialsbuttonclicked);
+        CloseButton.onClick.AddListener(() =>
+        {
+            materialPanel.SetActive(false);
+            materialBackground.SetActive(false);
+        });
     }
 
     public void populateCollection()
@@ -66,7 +83,6 @@ public class InventoryManager : MonoBehaviour
             {
                 Destroy(child.gameObject);
             }
-            // Destroy(child.gameObject);
         }
         for (int i = 0; i < playerScroll.Count; i++)
         {
@@ -92,6 +108,7 @@ public class InventoryManager : MonoBehaviour
     public void materialsbuttonclicked()
     {
         materialPanel.SetActive(true);
+        materialBackground.SetActive(true);
         playerInfoLoader.GetAllMaterials(() =>
       {
           playerScroll.Clear();
