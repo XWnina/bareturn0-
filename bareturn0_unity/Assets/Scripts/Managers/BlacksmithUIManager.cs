@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class BlacksmithUIManager : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class BlacksmithUIManager : MonoBehaviour
     public TextMeshProUGUI messageText;
 
     public EnhancementManager enhancementManager;
+    public CreateCardManage createCardManage;
+
+    public Button backToTownButton;
     void Start()
     {
         createPanel.SetActive(false);
@@ -25,6 +29,7 @@ public class BlacksmithUIManager : MonoBehaviour
         upgradeButton.onClick.AddListener(OnUpgradeButtonClicked);
         createBackButton.onClick.AddListener(OnReturnButtonClicked);
         EhBackButton.onClick.AddListener(OnReturnButtonClicked);
+        backToTownButton.onClick.AddListener(OnBackToTownClicked);
 
         messageText.text = "Welcome to my store, what do you need?";
     }
@@ -38,6 +43,9 @@ public class BlacksmithUIManager : MonoBehaviour
         // 隐藏两个按钮
         createButton.gameObject.SetActive(false);
         upgradeButton.gameObject.SetActive(false);
+        backToTownButton.gameObject.SetActive(false);
+
+        createCardManage.SetCreation();
 
         messageText.text = "What do you want to create?";
 
@@ -55,6 +63,7 @@ public class BlacksmithUIManager : MonoBehaviour
         // 隐藏两个按钮
         createButton.gameObject.SetActive(false);
         upgradeButton.gameObject.SetActive(false);
+        backToTownButton.gameObject.SetActive(false);
 
         enhancementManager.SetEnhancement();
         messageText.text = "chooce the card that you want to enhance";
@@ -72,7 +81,13 @@ public class BlacksmithUIManager : MonoBehaviour
         // 显示两个主按钮
         createButton.gameObject.SetActive(true);
         upgradeButton.gameObject.SetActive(true);
+        backToTownButton.gameObject.SetActive(true);
         messageText.text = "Welcome to my store, what do you need?";
+    }
+
+    public void OnBackToTownClicked()
+    {
+        SceneManager.LoadScene("Town");
     }
 
 

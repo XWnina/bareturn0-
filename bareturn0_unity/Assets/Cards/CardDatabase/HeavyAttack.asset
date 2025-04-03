@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: HeavyAttack
   m_EditorClassIdentifier: 
   cardName: HeavyAttack
-  description: Dealt 7 damage
+  description: Dealt 7 damage to fist enemy
   cost: 3
   artwork: {fileID: 21300000, guid: d8dafa470ba945d4782b4e3c10f2522e, type: 3}
   quality: 1
   cardEffect: {fileID: 11400000, guid: 38c72af332231ae4a9acd180fa747076, type: 2}
   targetingType: 3
+  upgradeOptions:
+  - {fileID: 11400000, guid: ed54611b71b0fd746afb377f44285f68, type: 2}
+  - {fileID: 11400000, guid: 9035ff51609540d43ba8bb839c333b86, type: 2}

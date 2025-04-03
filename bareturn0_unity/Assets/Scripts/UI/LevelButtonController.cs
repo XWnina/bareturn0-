@@ -67,24 +67,33 @@ public class LevelButtonManager : MonoBehaviour
             {
                 SceneManager.LoadScene("calcuTeaching");
             }
+            else if ((levelIndex + 1 == 4))
+            {
+                SceneManager.LoadScene("calcuProblem");
+            }
         }
     }
     public void UpdateLevelUI()
 {
     currentLevelIndex = MapUrlManager.CurrentLevel;
-    Debug.Log($"LevelButtonController: Updating Level UI: Current Level = {currentLevelIndex}");
+   // Debug.Log($"LevelButtonController: Updating Level UI: Current Level = {currentLevelIndex}");
 
     for (int i = 0; i < levels.Count; i++)
     {
+        //Debug.Log($"Levels.count {levels.Count}, i {i}");
         LevelButtonData level = levels[i];
 
         if (i < currentLevelIndex) // Levels that have been completed
         {
+            //Debug.Log($"button {i} color change, currentLevelIndex is {currentLevelIndex}");
             level.icon.sprite = level.passedSprite;
+            // if(level.icon.sprite == level.passedSprite){
+            //     Debug.Log($"change successful!");
+            // }
         }
-
-        if (i == currentLevelIndex) // The current level (where the indicator should be)
-        {
+        else if (i == currentLevelIndex) // The current level (where the indicator should be)
+        {       
+                //Debug.Log($"currentLevelIndex is {currentLevelIndex}");
                 Vector3 buttonPos = level.levelButton.transform.position;
 
                 // 这里假设向上偏移 1 个单位
@@ -94,12 +103,14 @@ public class LevelButtonManager : MonoBehaviour
                 youAreHereIndicator.transform.position = buttonPos + offset;
 
                 youAreHereIndicator.SetActive(true);
-            }
+        }
         else if (i > currentLevelIndex) // Locked levels
         {
             level.icon.sprite = level.lockedSprite;
         }
+        //levels[0].icon.sprite = level.lockedSprite;
     }
+
 }
 
 

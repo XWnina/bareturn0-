@@ -31,7 +31,7 @@ public class DeckManager : MonoBehaviour
 
     void Start()
     {
-        playerInfoLoader.LoadPlayerDeck("selectedDeck", () =>
+        playerInfoLoader.LoadPlayerDeck("selecteddeck", () =>
         {
             playerInfoLoader.InitialBattleDeck();
         });

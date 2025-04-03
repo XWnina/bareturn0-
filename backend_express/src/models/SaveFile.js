@@ -43,6 +43,16 @@ const SaveFileSchema = new mongoose.Schema(
         default: [],
       },
     },
+
+    materials: {
+      type: [
+        {
+          name: { type: String, required: true },
+          count: { type: Number, required: true },
+        },
+      ],
+    },
+    
   },
   { timestamps: true }
 );

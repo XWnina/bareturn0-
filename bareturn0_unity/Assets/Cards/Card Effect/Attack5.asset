@@ -9,9 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1150e4001d99e0e44ac4f8fbd0b61f94, type: 3}
-  m_Name: Level1
+  m_Script: {fileID: 11500000, guid: 92308633df04f8a4eb1f119ec5b35d8d, type: 3}
+  m_Name: Attack5
   m_EditorClassIdentifier: 
-  enemyDatas:
-  - {fileID: 11400000, guid: e27e51cba8fdd9e4883a6d1a24b99c84, type: 2}
-  - {fileID: 11400000, guid: e27e51cba8fdd9e4883a6d1a24b99c84, type: 2}
+  damage: 5

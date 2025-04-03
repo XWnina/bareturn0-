@@ -13,9 +13,12 @@ MonoBehaviour:
   m_Name: Slash
   m_EditorClassIdentifier: 
   cardName: Slash
-  description: dealt 2 damage
+  description: dealt 2 damage to chosen target
   cost: 1
   artwork: {fileID: 21300000, guid: b7cd8b393f49f5647af5b90b6da4bca0, type: 3}
   quality: 0
   cardEffect: {fileID: 11400000, guid: 8b67a467154b2d744ae75284b600a3c9, type: 2}
   targetingType: 0
+  upgradeOptions:
+  - {fileID: 11400000, guid: f803c71819b09e54387c59229f6a2139, type: 2}
+  - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}

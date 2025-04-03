@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 92308633df04f8a4eb1f119ec5b35d8d, type: 3}
-  m_Name: Attack1
+  m_Name: Attack10
   m_EditorClassIdentifier: 
-  damage: 5
+  damage: 10
