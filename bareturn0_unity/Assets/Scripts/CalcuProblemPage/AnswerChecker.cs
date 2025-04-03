@@ -29,16 +29,21 @@ namespace CalcuProblemPage
 
         private readonly CodeEvaluator _evaluator = new();
         private bool _isShowingErrorPanel;
+        private bool _finished = false;
+
 
         void Update()
         {
             if (_isShowingErrorPanel && Input.GetKeyDown(KeyCode.Return))
             {
                 errorPanel.SetActive(false);
-                teachingPanel.SetActive(true);
-                _isShowingErrorPanel = false;
+                if (!_finished)
+                {
+                    teachingPanel.SetActive(true);
+                    _isShowingErrorPanel = false;
+                }
             }
-
+            
             if (teachingPanel.activeSelf &&
                 (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) &&
                 Input.GetKeyDown(KeyCode.Return))
@@ -88,12 +93,11 @@ namespace CalcuProblemPage
             double error = Math.Abs(userAnswer - correctAnswer);
             Debug.Log($"✅ 用户答案: {userAnswer}, 正确答案: {correctAnswer}");
             Debug.Log($"误差: {error}, 容忍误差: {tolerance}, 判断结果: {error <= tolerance}");
+            double userRounded = Math.Round(userAnswer, 2); 
 
             if (error <= tolerance)
             {
                 teachingPanel.SetActive(false);
-
-                double userRounded = Math.Round(userAnswer, 2); // 四舍五入展示
                 string himHer = questionManager.GetCurrentCharacterGender() == "male" ? "him" : "her";
 
                 string sentence = questionManager.GetCurrentQuestionText().Contains("change should I give")
@@ -112,24 +116,31 @@ namespace CalcuProblemPage
                 }
                 else
                 {
+                    _finished = true;
                     yield return gameManager.ShowNextQuestion(); // ✅ 最后一题，等结语
                 }
             }
-            else
-            {
-                teachingPanel.SetActive(false);
-                yield return StartCoroutine(ShowRetrySequence("That's not correct. Try again."));
-            }
+            teachingPanel.SetActive(false);
+            
+            string retryMessage = $"That's not correct. Your answer is {userRounded:F2}. Try again.";
+
+            yield return StartCoroutine(ShowRetrySequence(retryMessage));
         }
 
 
         private IEnumerator ShowRetrySequence(string npcLine)
         {
+            if (_finished) yield break;
+            teachingPanel.SetActive(false); // ✅ 确保面板关闭（之前你只有外部调用了）
+
             List<string> lines = new() { $"NPC: {npcLine}" };
             dialogManager.EnqueueDialogLines(lines);
             yield return new WaitUntil(() => dialogManager.IsDialogPlaying() == false);
-            teachingPanel.SetActive(true);
+
+            if (!_finished)  // ✅ 再次确认没完成才显示教学面板
+                teachingPanel.SetActive(true);// ✅ 等说完再打开
         }
+
 
         private void ShowNextQuestion()
         {

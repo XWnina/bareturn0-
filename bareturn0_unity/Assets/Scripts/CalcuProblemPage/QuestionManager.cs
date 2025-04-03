@@ -193,7 +193,7 @@ namespace CalcuProblemPage
 
         public string GetCurrentCharacterGender()
         {
-            int indexToCheck = Mathf.Clamp(_currentIndex - 1, 0, _allQuestions.Count - 1);
+            int indexToCheck = Mathf.Clamp(_currentIndex, 0, _allQuestions.Count - 1);
 
             string text = _allQuestions[indexToCheck].text;
 
