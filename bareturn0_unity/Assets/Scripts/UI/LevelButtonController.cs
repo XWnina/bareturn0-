@@ -67,6 +67,10 @@ public class LevelButtonManager : MonoBehaviour
             {
                 SceneManager.LoadScene("calcuTeaching");
             }
+            else if ((levelIndex + 1 == 4))
+            {
+                SceneManager.LoadScene("calcuProblem");
+            }
         }
     }
     public void UpdateLevelUI()

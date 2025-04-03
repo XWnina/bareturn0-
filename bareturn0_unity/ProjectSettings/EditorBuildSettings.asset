@@ -56,6 +56,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/calcuTeaching.unity
     guid: 77082e1f8de226243acbdf99ac78d725
+  - enabled: 1
+    path: Assets/Scenes/calcuProblem.unity
+    guid: 6eabba326af544621bea1bf50665ddbc
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
