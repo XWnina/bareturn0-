@@ -12,6 +12,7 @@ public class DeckInfoLoader : MonoBehaviour
         public string _id;
         public string name;
     }
+    public string currentSaveFileId;
 
     [Serializable]
     public class DeckListResponse
@@ -57,6 +58,7 @@ public class DeckInfoLoader : MonoBehaviour
             if (response != null && !string.IsNullOrEmpty(response.saveFileId))
             {
                 Debug.Log("DeckInfoLoader: 提取到 saveFileId: " + response.saveFileId);
+                currentSaveFileId = response.saveFileId; 
                 yield return StartCoroutine(GetDecksBySaveId(response.saveFileId, onDecksLoaded));
             }
             else
