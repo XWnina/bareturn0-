@@ -9,6 +9,8 @@ public class MapUrlManager : MonoBehaviour
 {
     //private string apiBaseUrl = "http://localhost:3000/savefiles"; // Update API base URL
     public static int CurrentLevel { get; private set; } = 0; // Store user progress level
+    public PlayerInfoLoader playerInfoLoader;
+    public int coins;
 
     //private string username;
     private string saveName;
@@ -17,6 +19,7 @@ public class MapUrlManager : MonoBehaviour
     public GameObject rewardPanel; 
     public TextMeshProUGUI coinsText;
     public Button okButton;
+    //public BattleUIManager battleUIManager;
 
     void Start()
     {
@@ -107,16 +110,33 @@ public class MapUrlManager : MonoBehaviour
     {   
         yield return StartCoroutine(GetUserLevel());
         string previousScene = PlayerPrefs.GetString("PreviousScene", "");
+        //BattleUIManager uiManager = FindObjectOfType<BattleUIManager>();
+        bool didPass = BattleUIManager.Instance.passed;
         //int curProcess = GetUserLevel();
-        
+
         int curProcess = CurrentLevel;
-        Debug.Log($"上一个场景是: {previousScene}");
+        //Debug.Log($"上一个场景是: {previousScene}");
         //previousScene == "BattleScenes"
-        if (previousScene == "BattleScenes" && curProcess == 2)  // 确保是从 level2 进入的
+        if (didPass && curProcess == 2)  // 确保是从 level2 进入的
         {
-            Debug.Log("🎉 通过 level2，奖励 50 coins！");
-            StartCoroutine(UpdateCoins(50)); // 更新数据库
-            ShowRewardPanel(2, 50); // 弹出奖励界面
+            playerInfoLoader.LoadPlayerCoins(() =>
+            {
+                coins = playerInfoLoader.coins;
+                Debug.Log("🎉 通过 level2，奖励 100 coins！");
+                coins += 100;
+                StartCoroutine(UpdateCoins(coins)); // 更新数据库
+                ShowRewardPanel(2, 100); // 弹出奖励界面
+                BattleUIManager.Instance.passed = false;
+            });
+        }
+        if (didPass && curProcess == 5)
+        {
+            coins = playerInfoLoader.coins;
+            Debug.Log("🎉 通过 level5，奖励 150 coins！");
+            coins += 150;
+            StartCoroutine(UpdateCoins(coins)); // 更新数据库
+            ShowRewardPanel(5, 150); // 弹出奖励界面
+            BattleUIManager.Instance.passed = false;
         }
     }
 

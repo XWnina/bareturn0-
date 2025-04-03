@@ -496,4 +496,34 @@ router.put("/:saveName/updateSpeed", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/:saveName/profileInfo", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    const saveFile = await SaveFile.findOne({
+      userId: req.user.id,
+      saveName: req.params.saveName,
+    });
+
+    if (!user || !saveFile) {
+      const errorResponse = { error: "User or save file not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    const selectedDeck = await CardDeck.findById(saveFile.selectedDeck);
+
+    const message = `CurrentUserName:${user.username}\nCurrentSelectedDeck:${
+      selectedDeck?.name ?? "NULL"
+    }`;
+    const successResponse = { profileInfo: message };
+
+    logRequestResponse(req, res, successResponse);
+    res.json(successResponse);
+  } catch (err) {
+    const errorResponse = { error: err.message };
+    logRequestResponse(req, res, errorResponse);
+    res.status(500).json(errorResponse);
+  }
+});
+
 module.exports = router;

@@ -1,25 +1,28 @@
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using static DeckInfoLoader;
 
 public class PlayerInfoLoader : MonoBehaviour
 {
-    public CardDatabase cardDatabase;  // ¿¨ÅÆ¿â×ÊÔ´
+    public CardDatabase cardDatabase;  // å¡ç‰Œåº“èµ„æº
 
-    // ºó¶Ë API µØÖ·
+    // åç«¯ API åœ°å€
     //private const string URL_BASE = "http://localhost:3000/savefiles/";
 
-    // ÓÃÓÚ´æ´¢¼ÓÔØºó×ª»»ºÃµÄÊı¾İ
+    // ç”¨äºå­˜å‚¨åŠ è½½åè½¬æ¢å¥½çš„æ•°æ®
     public List<CardData> cardList = new List<CardData>();
     public List<string> materials = new List<string>();
+    public List<PlayerDeckInfo> PlayerDecks = new List<PlayerDeckInfo>();
     public int maxHealth;
     public int speed;
     public int coins;
 
 
-    #region ¼ÓÔØÍæ¼ÒµÄ¿¨×éÊı¾İ
+    #region åŠ è½½ç©å®¶çš„å¡ç»„æ•°æ®
     public void LoadPlayerDeck(string deckName, System.Action onLoaded)
     {
    
@@ -28,82 +31,92 @@ public class PlayerInfoLoader : MonoBehaviour
 
     private IEnumerator GetPlayerDeckRequest(string deckName, System.Action onLoaded)
     {
-        string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
-
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        string token = PlayerPrefs.GetString("token", "");
         string url = "";
-        if (deckName.ToLower() == "selecteddeck" || deckName == "cardCollection")
+
+        string deckNameLower = deckName.ToLower();
+
+        if (deckNameLower == "selecteddeck" || deckNameLower == "cardcollection")
         {
-            url = $"http://localhost:3000/savefiles/{saveFileId}/{deckName}";
+            // è¯»å– selectedDeck æˆ– cardCollection æ—¶ç”¨ saveName æ„é€ è·¯å¾„
+            url = $"http://localhost:3000/savefiles/{saveName}/{deckName}";
         }
         else
         {
-            url = $"http://localhost:3000/savefiles/findByName/{saveFileId}/{deckName}";
+            // è¯»å–ä¸€èˆ¬å¡ç»„æ—¶ç”¨ saveFileId
+            string saveFileId = null;
+            bool saveIdLoaded = false;
+
+            GetSaveId(saveName, (result) =>
+            {
+                saveFileId = result;
+                saveIdLoaded = true;
+            });
+
+            while (!saveIdLoaded)
+                yield return null;
+
+            if (string.IsNullOrEmpty(saveFileId))
+            {
+                Debug.LogError("âŒ è·å– saveFileId å¤±è´¥ï¼Œæ— æ³•åŠ è½½å¡ç»„");
+                yield break;
+            }
+
+            url = $"http://localhost:3000/carddecks/findByName/{saveFileId}/{deckName}";
         }
 
         UnityWebRequest request = UnityWebRequest.Get(url);
-        string authToken = PlayerPrefs.GetString("token", "");
-        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+        request.SetRequestHeader("Authorization", "Bearer " + token);
 
         yield return request.SendWebRequest();
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("¼ÓÔØ¿¨×éÊı¾İÊ§°Ü: " + request.error);
+            Debug.LogError("âŒ åŠ è½½å¡ç»„å¤±è´¥: " + request.error);
+            yield break;
         }
-        else
+
+        string json = request.downloadHandler.text;
+        Debug.Log($"ğŸ“¥ æ”¶åˆ° Deck æ•°æ®: {json}");
+
+        cardList = new List<CardData>();
+
+        try
         {
-            string json = request.downloadHandler.text;
-            Debug.Log("ºó¶Ë·µ»Ø¿¨×éÊı¾İ: " + json);
-
-            DeckDTO deck = null;
-            if (deckName == "selectedDeck")
+            if (deckNameLower == "selecteddeck")
             {
-                // ½âÎöÎª SelectedDeckDTO
-                SelectedDeckDTO selectedDTO = JsonUtility.FromJson<SelectedDeckDTO>(json);
-                if (selectedDTO != null && selectedDTO.selectedDeck != null)
-                {
-                    deck = selectedDTO.selectedDeck;
-                }
+                SelectedDeckResponse response = JsonUtility.FromJson<SelectedDeckResponse>(json);
+                cardList = ConvertDeckDTOToCardDataList(response.selectedDeck);
             }
-            else if (deckName.ToLower() == "cardcollection")
+            else if (deckNameLower == "cardcollection")
             {
-                // ½âÎöÎª CardCollectionDTO
-                CardCollectionDTO collectionDTO = JsonUtility.FromJson<CardCollectionDTO>(json);
-                if (collectionDTO != null && collectionDTO.cardCollection != null)
-                {
-                    deck = collectionDTO.cardCollection;
-                }
+                CardCollectionResponse response = JsonUtility.FromJson<CardCollectionResponse>(json);
+                cardList = ConvertDeckDTOToCardDataList(response.cardCollection);
             }
             else
             {
-                // ½âÎöÎª DeckByNameDTO
-                DeckByNameDTO nameDTO = JsonUtility.FromJson<DeckByNameDTO>(json);
-                if (nameDTO != null && nameDTO.deck != null)
-                {
-                    deck = nameDTO.deck;
-                }
+                DeckResponse response = JsonUtility.FromJson<DeckResponse>(json);
+                cardList = ConvertDeckDTOToCardDataList(response.deck);
             }
 
-            if (deck != null)
-            {
-                cardList = ConvertDeckDTOToCardDataList(deck);
-            }
-            else
-            {
-                Debug.LogWarning("·´ĞòÁĞ»¯¿¨×éÊı¾İÊ§°Ü»òÊı¾İÎª¿Õ¡£");
-            }
-            if (onLoaded != null) onLoaded();
+            Debug.Log($"âœ… å¡ç»„ {deckName} åŠ è½½å®Œæˆï¼Œå…± {cardList.Count} å¼ å¡");
+
+            onLoaded?.Invoke();
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"âŒ JSON è§£æå¤±è´¥: {e.Message}");
         }
     }
 
-    // ¸ù¾İ PlayerDeckDTO ×ª»»Îª List<CardData>
+    // æ ¹æ® PlayerDeckDTO è½¬æ¢ä¸º List<CardData>
     private List<CardData> ConvertDeckDTOToCardDataList(DeckDTO deckDTO)
     {
         List<CardData> result = new List<CardData>();
 
-        foreach (CardInDeckDTO cardInfo in deckDTO.cards)
+        foreach (var cardInfo in deckDTO.cards)
         {
-            // Í¨¹ı¿¨ÅÆ¿â²éÕÒ¶ÔÓ¦µÄ CardData
             CardData cardData = cardDatabase.GetCardByName(cardInfo.cardName);
             if (cardData != null)
             {
@@ -113,10 +126,6 @@ public class PlayerInfoLoader : MonoBehaviour
                     result.Add(cardCopy);
                 }
             }
-            else
-            {
-                Debug.LogWarning("ÕÒ²»µ½¿¨ÅÆ£º" + cardInfo.cardName);
-            }
         }
 
         return result;
@@ -124,7 +133,7 @@ public class PlayerInfoLoader : MonoBehaviour
     #endregion
 
 
-    #region ¼ÓÔØÍæ¼ÒÊı¾İ
+    #region åŠ è½½ç©å®¶æ•°æ®
     public void LoadPlayerStats(System.Action onStatsLoaded)
     {
         StartCoroutine(GetPlayerStatsRequest(onStatsLoaded));
@@ -137,7 +146,7 @@ public class PlayerInfoLoader : MonoBehaviour
         yield return StartCoroutine(LoadSpeed());
 
         onStatsLoaded?.Invoke();
-        Debug.Log("Íæ¼ÒÊôĞÔÒÑÈ«²¿¼ÓÔØÍê±Ï¡£");
+        Debug.Log("ç©å®¶å±æ€§å·²å…¨éƒ¨åŠ è½½å®Œæ¯•ã€‚");
     }
 
     private IEnumerator LoadMaxHealth()
@@ -152,18 +161,18 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("¼ÓÔØ maxHealth Ê§°Ü: " + request.error);
+            Debug.LogError("åŠ è½½ maxHealth å¤±è´¥: " + request.error);
         }
         else
         {
             string json = request.downloadHandler.text;
-            Debug.Log("ºó¶Ë·µ»Ø maxHealth Êı¾İ: " + json);
+            Debug.Log("åç«¯è¿”å› maxHealth æ•°æ®: " + json);
 
             MaxHealthDTO dto = JsonUtility.FromJson<MaxHealthDTO>(json);
             if (dto != null)
             {
                 maxHealth = dto.maxHealth;
-                Debug.Log($"Íæ¼Ò maxHealth = {dto.maxHealth}");
+                Debug.Log($"ç©å®¶ maxHealth = {dto.maxHealth}");
             }
         }
     }
@@ -180,25 +189,25 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("¼ÓÔØ speed Ê§°Ü: " + request.error);
+            Debug.LogError("åŠ è½½ speed å¤±è´¥: " + request.error);
         }
         else
         {
             string json = request.downloadHandler.text;
-            Debug.Log("ºó¶Ë·µ»Ø speed Êı¾İ: " + json);
+            Debug.Log("åç«¯è¿”å› speed æ•°æ®: " + json);
 
             SpeedDTO dto = JsonUtility.FromJson<SpeedDTO>(json);
             if (dto != null)
             {
                 speed = dto.speed;
-                Debug.Log($"Íæ¼Ò speed = {dto.speed}");
+                Debug.Log($"ç©å®¶ speed = {dto.speed}");
             }
         }
     }
     #endregion
 
 
-    #region ¼ÓÔØÍæ¼Ò½ğ±Ò
+    #region åŠ è½½ç©å®¶é‡‘å¸
     public void LoadPlayerCoins(System.Action onCoinsLoaded)
     {
         StartCoroutine(LoadCoinsRequest(onCoinsLoaded));
@@ -216,18 +225,18 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("¼ÓÔØ½ğ±ÒÊ§°Ü: " + request.error);
+            Debug.LogError("åŠ è½½é‡‘å¸å¤±è´¥: " + request.error);
         }
         else
         {
             string json = request.downloadHandler.text;
-            Debug.Log("ºó¶Ë·µ»Ø½ğ±ÒÊı¾İ: " + json);
+            Debug.Log("åç«¯è¿”å›é‡‘å¸æ•°æ®: " + json);
 
             CoinsDTO dto = JsonUtility.FromJson<CoinsDTO>(json);
             if (dto != null)
             {
                 coins = dto.coins;
-                Debug.Log($"Íæ¼Ò½ğ±Ò = {dto.coins}");
+                Debug.Log($"ç©å®¶é‡‘å¸ = {dto.coins}");
             }
         }
         onCoinsLoaded?.Invoke();
@@ -235,7 +244,7 @@ public class PlayerInfoLoader : MonoBehaviour
     #endregion
 
 
-    #region ¸üĞÂÍæ¼Ò½ğ±Ò
+    #region æ›´æ–°ç©å®¶é‡‘å¸
     public void UpdatePlayerCoin(int amount, System.Action onCoinUpdated)
     {
         StartCoroutine(UpdateCoins(amount, onCoinUpdated));
@@ -247,7 +256,7 @@ public class PlayerInfoLoader : MonoBehaviour
         string url = $"http://localhost:3000/savefiles/{saveName}/updateCoins";
         string authToken = PlayerPrefs.GetString("token", "");
 
-        // ·¢ËÍ JSON Êı¾İ { "coins": amount }
+        // å‘é€ JSON æ•°æ® { "coins": amount }
         string jsonBody = JsonUtility.ToJson(new CoinUpdate(amount));
 
         UnityWebRequest request = UnityWebRequest.Put(url, jsonBody);
@@ -261,11 +270,11 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log($"³É¹¦¸üĞÂ½ğ±Ò£º+{amount}");
+            Debug.Log($"æˆåŠŸæ›´æ–°é‡‘å¸ï¼š+{amount}");
         }
         else
         {
-            Debug.LogError($"¸üĞÂ½ğ±ÒÊ§°Ü: {request.error} - {request.downloadHandler.text}");
+            Debug.LogError($"æ›´æ–°é‡‘å¸å¤±è´¥: {request.error} - {request.downloadHandler.text}");
         }
         onCoinUpdated?.Invoke();
     }
@@ -301,11 +310,11 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log($"³É¹¦Ìí¼Ó¿¨ÅÆµ½¼¯ºÏ: {request.downloadHandler.text}");
+            Debug.Log($"æˆåŠŸæ·»åŠ å¡ç‰Œåˆ°é›†åˆ: {request.downloadHandler.text}");
         }
         else
         {
-            Debug.LogError($"Ìí¼Ó¿¨ÅÆÊ§°Ü: {request.error} - {request.downloadHandler.text}");
+            Debug.LogError($"æ·»åŠ å¡ç‰Œå¤±è´¥: {request.error} - {request.downloadHandler.text}");
         }
         onAdded?.Invoke();
     }
@@ -338,18 +347,94 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log($"³É¹¦ÒÆ³ı¿¨ÅÆ: {request.downloadHandler.text}");
+            Debug.Log($"æˆåŠŸç§»é™¤å¡ç‰Œ: {request.downloadHandler.text}");
         }
         else
         {
-            Debug.LogError($"ÒÆ³ı¿¨ÅÆÊ§°Ü: {request.error} - {request.downloadHandler.text}");
+            Debug.LogError($"ç§»é™¤å¡ç‰Œå¤±è´¥: {request.error} - {request.downloadHandler.text}");
         }
         onRemoved?.Invoke();
     }
     #endregion
 
 
-    #region ¸üĞÂ²ÄÁÏ
+    #region AddCardToDeck
+
+    public void AddCardToDeck(string deckId, string cardName, int count, System.Action onComplete = null)
+    {
+        StartCoroutine(AddCardToDeckRequest(deckId, cardName, count, onComplete));
+    }
+    public IEnumerator AddCardToDeckRequest(string deckId, string cardName, int count, System.Action onComplete = null)
+    {
+        string url = $"http://localhost:3000/carddecks/{deckId}/addCard";
+        string token = PlayerPrefs.GetString("token", "");
+
+        CardOperationDTO payload = new CardOperationDTO(cardName, count);
+        string jsonBody = JsonUtility.ToJson(payload);
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + token);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"æˆåŠŸå‘ Deck({deckId}) æ·»åŠ  {count} å¼  {cardName}");
+        }
+        else
+        {
+            Debug.LogError($"æ·»åŠ å¡å¤±è´¥: {request.error} - {request.downloadHandler.text}");
+        }
+
+        onComplete?.Invoke();
+    }
+    #endregion
+
+
+    #region RemoveCardFromDeck
+    public void RemoveCardFromDeck(string deckName, string cardName, int count, System.Action onComplete = null)
+    {
+        StartCoroutine(RemoveCardFromDeckRequest(deckName,cardName,count, onComplete));
+    }
+    public IEnumerator RemoveCardFromDeckRequest(string deckName, string cardName, int count, System.Action onComplete = null)
+    {
+        string saveFileId = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/carddecks/removeCardByName/{saveFileId}/{deckName}";
+        string token = PlayerPrefs.GetString("token", "");
+
+        CardOperationDTO payload = new CardOperationDTO(cardName, count);
+        string jsonBody = JsonUtility.ToJson(payload);
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + token);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"æˆåŠŸä» Deck({deckName}) ç§»é™¤ {count} å¼  {cardName}");
+        }
+        else
+        {
+            Debug.LogError($"ç§»é™¤å¡å¤±è´¥: {request.error} - {request.downloadHandler.text}");
+        }
+
+        onComplete?.Invoke();
+    }
+    #endregion
+
+
+    #region æ›´æ–°ææ–™
     public void UpdateMaterial(string materialName, int newCount, System.Action onUpdated)
     {
         StartCoroutine(UpdateMaterialRequest(materialName, newCount, onUpdated));
@@ -376,18 +461,18 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result == UnityWebRequest.Result.Success)
         {
-            Debug.Log($"³É¹¦¸üĞÂ²ÄÁÏ: {request.downloadHandler.text}");
+            Debug.Log($"æˆåŠŸæ›´æ–°ææ–™: {request.downloadHandler.text}");
         }
         else
         {
-            Debug.LogError($"¸üĞÂ²ÄÁÏÊ§°Ü: {request.error} - {request.downloadHandler.text}");
+            Debug.LogError($"æ›´æ–°ææ–™å¤±è´¥: {request.error} - {request.downloadHandler.text}");
         }
         onUpdated?.Invoke();
     }
     #endregion
 
 
-    #region »ñÈ¡ËùÓĞ²ÄÁÏ
+    #region è·å–æ‰€æœ‰ææ–™
     public void GetAllMaterials(System.Action onMaterialsLoaded)
     {
         StartCoroutine(GetAllMaterialsRequest(onMaterialsLoaded));
@@ -405,12 +490,12 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("»ñÈ¡ËùÓĞ²ÄÁÏÊ§°Ü: " + request.error);
+            Debug.LogError("è·å–æ‰€æœ‰ææ–™å¤±è´¥: " + request.error);
         }
         else
         {
             string json = request.downloadHandler.text;
-            Debug.Log("ºó¶Ë·µ»ØËùÓĞ²ÄÁÏÊı¾İ: " + json);
+            Debug.Log("åç«¯è¿”å›æ‰€æœ‰ææ–™æ•°æ®: " + json);
 
             MaterialsResponseDTO responseDTO = JsonUtility.FromJson<MaterialsResponseDTO>(json);
             if (responseDTO != null && responseDTO.materials != null)
@@ -423,11 +508,11 @@ public class PlayerInfoLoader : MonoBehaviour
                         materials.Add(mat.name);
                     }
                 }
-                Debug.Log("²ÄÁÏÁĞ±í¸üĞÂÍê³É¡£");
+                Debug.Log("ææ–™åˆ—è¡¨æ›´æ–°å®Œæˆã€‚");
             }
             else
             {
-                Debug.LogWarning("½âÎöËùÓĞ²ÄÁÏÊı¾İÊ§°Ü»òÊı¾İÎª¿Õ¡£");
+                Debug.LogWarning("è§£ææ‰€æœ‰ææ–™æ•°æ®å¤±è´¥æˆ–æ•°æ®ä¸ºç©ºã€‚");
             }
         }
         onMaterialsLoaded?.Invoke();
@@ -435,7 +520,7 @@ public class PlayerInfoLoader : MonoBehaviour
     #endregion
 
 
-    #region »ñÈ¡µ¥¸ö²ÄÁÏÊıÁ¿
+    #region è·å–å•ä¸ªææ–™æ•°é‡
     public void GetMaterialCount(string materialName, System.Action<int> onCountLoaded)
     {
         StartCoroutine(GetMaterialCountRequest(materialName, onCountLoaded));
@@ -453,13 +538,13 @@ public class PlayerInfoLoader : MonoBehaviour
 
         if (request.result != UnityWebRequest.Result.Success)
         {
-            Debug.LogError("»ñÈ¡²ÄÁÏÊıÁ¿Ê§°Ü: " + request.error);
+            Debug.LogError("è·å–ææ–™æ•°é‡å¤±è´¥: " + request.error);
             onCountLoaded?.Invoke(-1);
         }
         else
         {
             string json = request.downloadHandler.text;
-            Debug.Log("ºó¶Ë·µ»Ø²ÄÁÏÊıÁ¿Êı¾İ: " + json);
+            Debug.Log("åç«¯è¿”å›ææ–™æ•°é‡æ•°æ®: " + json);
 
             MaterialCountDTO dto = JsonUtility.FromJson<MaterialCountDTO>(json);
             if (dto != null)
@@ -468,18 +553,105 @@ public class PlayerInfoLoader : MonoBehaviour
             }
             else
             {
-                Debug.LogWarning("½âÎö²ÄÁÏÊıÁ¿Êı¾İÊ§°Ü¡£");
+                Debug.LogWarning("è§£æææ–™æ•°é‡æ•°æ®å¤±è´¥ã€‚");
                 onCountLoaded?.Invoke(-1);
             }
         }
     }
     #endregion
 
+
+    #region è·å–æ‰€æœ‰deck
+    public void GetALLDecks(string saveFileId, System.Action onDecksLoaded)
+    {
+         StartCoroutine(GetAllDecksRequest(saveFileId ,onDecksLoaded));
+    }
+
+    private IEnumerator GetAllDecksRequest(string saveFileId, System.Action onDecksLoaded)
+    {
+        Debug.Log($"[GetAllDecksRequest] å½“å‰å­˜æ¡£ ID: {saveFileId}");
+
+        string authToken = PlayerPrefs.GetString("token", "");
+
+        string url = $"http://localhost:3000/carddecks/save/{saveFileId}";
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("åŠ è½½æ‰€æœ‰ Deck å¤±è´¥: " + request.error);
+        }
+        else
+        {
+            string json = request.downloadHandler.text;
+            Debug.Log("åç«¯è¿”å› Deck åˆ—è¡¨: " + json);
+
+            AllDecksDTO allDecks = JsonUtility.FromJson<AllDecksDTO>(json);
+            if (allDecks != null && allDecks.decks != null)
+            {
+                PlayerDecks.Clear();
+
+                foreach (var deck in allDecks.decks)
+                {
+                    PlayerDecks.Add(new PlayerDeckInfo(deck.name, deck._id));
+                    Debug.Log($"åŠ è½½ Deck: {deck.name}ï¼ŒID = {deck._id}");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("è§£æ Deck æ•°æ®å¤±è´¥æˆ–ä¸ºç©ºã€‚");
+            }
+        }
+        onDecksLoaded?.Invoke();
+    }
+    #endregion
+
+
+    public void GetSaveId(string saveName, System.Action<string> onLoaded)
+    {
+        StartCoroutine(GetSaveIdRequest(saveName, onLoaded));
+    }
+
+    private IEnumerator GetSaveIdRequest(string saveName, System.Action<string> onLoaded)
+    {
+        string token = PlayerPrefs.GetString("token", "");
+        string url = $"http://localhost:3000/savefiles/{saveName}/id";
+
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        request.SetRequestHeader("Authorization", "Bearer " + token);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("è·å– saveFileId å¤±è´¥: " + request.error);
+            onLoaded?.Invoke(null); // å›è°ƒ null è¡¨ç¤ºå¤±è´¥
+        }
+        else
+        {
+            string json = request.downloadHandler.text;
+            Debug.Log("è·å–åˆ° saveFileId è¿”å›: " + json);
+
+            SaveIdResponseDTO response = JsonUtility.FromJson<SaveIdResponseDTO>(json);
+            if (response != null && !string.IsNullOrEmpty(response.saveFileId))
+            {
+                onLoaded?.Invoke(response.saveFileId);
+            }
+            else
+            {
+                Debug.LogWarning("è¿”å›çš„ saveFileId ä¸ºç©º");
+                onLoaded?.Invoke(null);
+            }
+        }
+    }
+
     public void InitialBattleDeck()
     {
         DeckManager.Instance.initialDeck = cardList;
         DeckManager.Instance.SetupInitialDeck();
-        Debug.Log("¿¨×é¼ÓÔØ³É¹¦£¬³éÅÆ¶ÑÒÑ¸üĞÂ¡£");
+        Debug.Log("å¡ç»„åŠ è½½æˆåŠŸï¼ŒæŠ½ç‰Œå †å·²æ›´æ–°ã€‚");
     }
 
     public void InitialPlayerStats()
@@ -487,4 +659,140 @@ public class PlayerInfoLoader : MonoBehaviour
         PlayerController.instance.maxHealth = maxHealth;
         PlayerController.instance.speed = speed;
     }
+
+
+    #region RefeshAllDecks
+    public void RefeshAllDecks(CardData removedCard, CardData addedCard)
+    {
+        StartCoroutine(RefeshAllDecksCoroutine(removedCard, addedCard));
+    }
+
+    private IEnumerator RefeshAllDecksCoroutine(CardData removedCard, CardData addedCard)
+    {
+        Debug.Log($"å¼€å§‹è°ƒæ•´decks");
+
+        Debug.Log("ğŸŸ¡ å¼€å§‹é€šè¿‡ saveName è·å– saveFileId...");
+
+        // Step 1: è·å–å½“å‰ä¿å­˜çš„ saveName
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        if (string.IsNullOrEmpty(saveName))
+        {
+            Debug.LogError("å½“å‰æœªè®¾ç½® saveNameï¼");
+            yield break;
+        }
+
+        // Step 2: è·å–saveFileId
+        string saveFileId = null;
+        bool saveIdLoaded = false;
+
+        GetSaveId(saveName, (result) =>
+        {
+            saveFileId = result;
+            saveIdLoaded = true;
+        });
+        while (!saveIdLoaded)
+            yield return null;
+
+        // Step 3: åŠ è½½æ‰€æœ‰å¡ç»„
+        bool decksLoaded = false;
+        GetALLDecks(saveFileId, () =>
+        {
+            Debug.Log("æ‰€æœ‰ Deck åŠ è½½å®Œæ¯•");
+            decksLoaded = true;
+        });
+        while (!decksLoaded)
+            yield return null;
+
+
+
+        if (PlayerDecks == null || PlayerDecks.Count == 0)
+        {
+            Debug.LogWarning("æ²¡æœ‰æ‰¾åˆ°ä»»ä½•å¡ç»„ï¼Œåœæ­¢æ›¿æ¢æµç¨‹");
+            yield break;
+        }
+
+        Debug.Log($"å¼€å§‹éå† {PlayerDecks.Count} ä¸ªå¡ç»„æ›¿æ¢å¡ç‰Œ...");
+        foreach (var deck in PlayerDecks)
+        {
+            Debug.Log($"æ£€æŸ¥ deck æ˜¯å¦ä¸ºç©ºï¼šdeck = {(deck == null ? "null" : deck.deckName)}, id = {deck?.deckId}");
+            Debug.Log($"ğŸ” æ›¿æ¢å‚æ•°ï¼šremovedCard={removedCard?.cardName}, addedCard={addedCard?.cardName}");
+            yield return StartCoroutine(CheckAndReplaceInDeck(deck.deckId, deck.deckName, removedCard.cardName, addedCard.cardName));
+        }
+
+        Debug.Log("æ‰€æœ‰å¡ç»„æ›¿æ¢æµç¨‹ç»“æŸã€‚");
+
+    }
+
+    private IEnumerator CheckAndReplaceInDeck(string deckId, string deckName, string oldCardName, string newCardName)
+    {
+        // Step 1ï¼šåŠ è½½ç›®æ ‡ Deck çš„å¡ç»„æ•°æ®
+        bool loaded = false;
+
+        Debug.Log(deckName);
+        LoadPlayerDeck(deckName, () =>
+        {
+            loaded = true;
+        });
+
+        // ç­‰å¾…åŠ è½½å®Œæˆ
+        while (!loaded)
+            yield return null;
+
+        List<CardData> deckCardList = new List<CardData>(cardList);
+
+
+        Debug.Log($"ğŸ” oldCardName: \"{oldCardName}\", é•¿åº¦ = {oldCardName.Length}");
+        int deckOldCardCount = 0;
+        foreach (var card in deckCardList)
+        {
+            Debug.Log($"ğŸƒ å¡ç‰Œå: \"{card.cardName}\", é•¿åº¦ = {card.cardName.Length}");
+            if (card.cardName.Trim().Equals(oldCardName.Trim(), System.StringComparison.Ordinal))
+            {
+                Debug.Log($"equals");
+                deckOldCardCount++;
+            }
+        }
+        Debug.Log("deckOldCardCount:"+ deckOldCardCount);
+
+        if (deckOldCardCount == 0)
+        {
+            Debug.Log($"â­ï¸ Deckã€{deckName}ã€‘ä¸­æ²¡æœ‰ {oldCardName}ï¼Œè·³è¿‡ã€‚");
+            yield break;
+        }
+
+        // Step 2ï¼šåŠ è½½æ”¶è— collection å¡ç»„ï¼ˆé€šè¿‡ LoadPlayerDeck("collection")ï¼‰
+        int collectionOldCardCount = 0;
+        bool collectionLoaded = false;
+
+        LoadPlayerDeck("cardCollection", () =>
+        {
+            foreach (var card in cardList)
+            {
+                if (card.cardName == oldCardName)
+                {
+                    collectionOldCardCount++;
+                }
+            }
+            collectionLoaded = true;
+        });
+
+        while (!collectionLoaded)
+            yield return null;
+
+        // Step 3ï¼šåˆ¤æ–­æ˜¯å¦è¶…å‡ºæ”¶è—æ•°é‡
+        if (deckOldCardCount != 0)
+        {
+            Debug.Log($"Deckã€{deckName}ã€‘å‘ç°æ—§å¡ {oldCardName}ï¼Œå‡†å¤‡æ›¿æ¢ä¸º {newCardName}");
+            // Step 4ï¼šç§»é™¤è¶…å‡ºçš„æ—§å¡
+            //yield return StartCoroutine(RemoveCardFromDeckRequest(deckName, oldCardName, 1));
+            // Step 5ï¼šæ·»åŠ æ–°å¡
+            yield return StartCoroutine(AddCardToDeckRequest(deckId, newCardName, 1));
+            Debug.Log($"Deckã€{deckName}ã€‘å·²å®Œæˆæ›¿æ¢ã€‚");
+        }
+        else
+        {
+            Debug.Log($"Deckã€{deckName}ã€‘æ²¡æœ‰å¤šä½™çš„ {oldCardName}ï¼Œè·³è¿‡ã€‚");
+        }
+    }
+    #endregion
 }

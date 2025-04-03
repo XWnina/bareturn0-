@@ -236,51 +236,71 @@ public class DeckPanelManager : MonoBehaviour
     }
 
     IEnumerator SetDeckAsSelected()
-    {
-        string token = PlayerPrefs.GetString("token");
-        string saveName = PlayerPrefs.GetString("currentSaveName", "");
-        string url = $"http://localhost:3000/savefiles/{saveName}/setSelectedDeck";
-
-        var data = new { deckId = this.deckId };
-        string jsonBody = JsonUtility.ToJson(data);
-
-        UnityWebRequest request = new UnityWebRequest(url, "PUT");
-        request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonBody));
-        request.downloadHandler = new DownloadHandlerBuffer();
-        request.SetRequestHeader("Content-Type", "application/json");
-        request.SetRequestHeader("Authorization", "Bearer " + token);
-        yield return request.SendWebRequest();
-    }
-
-    IEnumerator DeleteCurrentDeck()
 {
     string token = PlayerPrefs.GetString("token");
-    string url = $"http://localhost:3000/carddecks/{deckId}";
+    string saveName = PlayerPrefs.GetString("currentSaveName", "");
+    string url = $"http://localhost:3000/selectedDeckAndCardCollection/{saveName}/setSelectedDeck";
 
-    UnityWebRequest request = UnityWebRequest.Delete(url);
+    // Debug.Log("[SetDeckAsSelected] token: " + token);
+    // Debug.Log("[SetDeckAsSelected] saveName: " + saveName);
+    // Debug.Log("[SetDeckAsSelected] deckId: " + this.deckId);
+    // Debug.Log("[SetDeckAsSelected] URL: " + url);
+
+    SetSelectedDeckRequest data = new SetSelectedDeckRequest { deckId = this.deckId };
+    string jsonBody = JsonUtility.ToJson(data);
+
+    // Debug.Log("[SetDeckAsSelected] Request Body: " + jsonBody);
+
+    UnityWebRequest request = new UnityWebRequest(url, "PUT");
+    request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonBody));
+    request.downloadHandler = new DownloadHandlerBuffer();
+    request.SetRequestHeader("Content-Type", "application/json");
     request.SetRequestHeader("Authorization", "Bearer " + token);
 
     yield return request.SendWebRequest();
 
-    string responseText = request.downloadHandler != null ? request.downloadHandler.text : "";
+    string responseText = request.downloadHandler.text;
+    Debug.Log("[SetDeckAsSelected] Response: " + responseText);
 
-    if (request.result != UnityWebRequest.Result.Success)
+    if (request.result != UnityWebRequest.Result.Success || responseText.Contains("error"))
     {
-        Debug.LogError("Delete failed: " + request.error);
+        Debug.LogError("[SetDeckAsSelected] Failed to set selected deck");
     }
     else
     {
-        if (InventoryManager.Instance != null)
-        {
-            InventoryManager.Instance.DisplayAllDeckButtons();
-        }
+        Debug.Log("[SetDeckAsSelected] Successfully updated selected deck");
     }
-
-    yield return new WaitForSeconds(1.5f);
-    gameObject.SetActive(false);
 }
 
-    
+    IEnumerator DeleteCurrentDeck()
+    {
+        string token = PlayerPrefs.GetString("token");
+        string url = $"http://localhost:3000/carddecks/{deckId}";
+
+        UnityWebRequest request = UnityWebRequest.Delete(url);
+        request.SetRequestHeader("Authorization", "Bearer " + token);
+
+        yield return request.SendWebRequest();
+
+        string responseText = request.downloadHandler != null ? request.downloadHandler.text : "";
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Delete failed: " + request.error);
+        }
+        else
+        {
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.DisplayAllDeckButtons();
+            }
+        }
+
+        yield return new WaitForSeconds(1.5f);
+        gameObject.SetActive(false);
+    }
+
+
 
     [System.Serializable] public class Card { public string cardName; public int count; }
     [System.Serializable] public class CardCollection { public List<Card> cards; }
@@ -290,4 +310,10 @@ public class DeckPanelManager : MonoBehaviour
     [System.Serializable] public class CardRequestData { public string cardName; public int count; }
     [System.Serializable] public class ErrorResponse { public string error; }
     [System.Serializable] public class SuccessResponse { public string message; }
+    [System.Serializable]
+    public class SetSelectedDeckRequest
+    {
+        public string deckId;
+    }
+
 }
