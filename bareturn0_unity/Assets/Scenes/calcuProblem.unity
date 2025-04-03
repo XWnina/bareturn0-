@@ -1465,7 +1465,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 859285104}
         m_TargetAssemblyTypeName: CalcuProblemPage.AnswerChecker, Assembly-CSharp
-        m_MethodName: CheckAnswer
+        m_MethodName: CheckAnswerWrapper
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

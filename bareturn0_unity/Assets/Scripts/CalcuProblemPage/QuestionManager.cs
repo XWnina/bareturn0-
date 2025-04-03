@@ -10,8 +10,9 @@ namespace CalcuProblemPage
         public class Question
         {
             public string text;
-            public double answer; 
+            public double answer;
         }
+
         public bool skipToLast = false;
 
         private readonly List<string> _productNames = new()
@@ -50,6 +51,7 @@ namespace CalcuProblemPage
                 _currentIndex = 0;
             }
         }
+
         public void GenerateAllQuestions()
         {
             _allQuestions.Clear();
@@ -85,7 +87,6 @@ namespace CalcuProblemPage
             double price2 = RoundToTwoDecimals(RandomPrice());
             double discount = RandomDiscount();
 
-            
 
             string questionText;
             double answer;
@@ -93,12 +94,14 @@ namespace CalcuProblemPage
             if (level == 1)
             {
                 answer = price1 * quantity1;
-                questionText = $"{characterName} bought {quantity1} {item1} today, each for {price1:F2} coins. How much should I charge {himHer}?";
+                questionText =
+                    $"{characterName} bought {quantity1} {item1} today, each for {price1:F2} coins. How much should I charge {himHer}?";
             }
             else if (level == 2)
             {
                 answer = price1 * quantity1 + price2 * quantity2;
-                questionText = $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each and {quantity2} {item2} at {price2:F2} coins each. How much should I charge {himHer}?";
+                questionText =
+                    $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each and {quantity2} {item2} at {price2:F2} coins each. How much should I charge {himHer}?";
             }
             else // level == 3
             {
@@ -111,12 +114,14 @@ namespace CalcuProblemPage
                     double payment = RoundToTwoDecimals(discountedTotal + RandomPrice(2f, 10f));
                     answer = payment - discountedTotal;
 
-                    questionText = $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. {Capitalize(heShe)} gave me {payment:F2} coins. How much change should I give {himHer}?";
+                    questionText =
+                        $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. {Capitalize(heShe)} gave me {payment:F2} coins. How much change should I give {himHer}?";
                 }
                 else
                 {
                     answer = discountedTotal;
-                    questionText = $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. How much should I charge {himHer}?";
+                    questionText =
+                        $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. How much should I charge {himHer}?";
                 }
             }
 
@@ -130,6 +135,7 @@ namespace CalcuProblemPage
             {
                 item = _productNames[UnityEngine.Random.Range(0, _productNames.Count)];
             } while (item == exclude);
+
             return item;
         }
 
@@ -179,10 +185,12 @@ namespace CalcuProblemPage
             if (_currentIndex < 4) return 2;
             return 3;
         }
+
         private double RandomDiscount(double min = 0.6, double max = 0.9)
         {
             return Math.Round(UnityEngine.Random.Range((float)min, (float)max), 4);
         }
+
         public string GetCurrentCharacterGender()
         {
             int indexToCheck = Mathf.Clamp(_currentIndex - 1, 0, _allQuestions.Count - 1);
@@ -197,6 +205,5 @@ namespace CalcuProblemPage
 
             return "male"; // fallback
         }
-
     }
 }

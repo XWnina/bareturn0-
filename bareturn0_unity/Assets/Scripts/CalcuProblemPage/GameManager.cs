@@ -1,12 +1,12 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using CalcuProblemPage;
 using TMPro;
+using UnityEngine.Networking;
 
 namespace CalcuProblemPage
 {
-
     public class GameManager : MonoBehaviour
     {
         [Header("Managers & Controllers")] public CalcuDialogManager dialogManager;
@@ -16,8 +16,18 @@ namespace CalcuProblemPage
         [Header("UI References")] public GameObject teachingPanel;
         public TMP_Text questionText;
 
+        private string _token;
+        private string _saveName;
+
+
         void Start()
         {
+            _token = PlayerPrefs.GetString("token", "");
+            _saveName = PlayerPrefs.GetString("currentSaveName", "");
+
+            Debug.Log("🔐 Token: " + _token);
+            Debug.Log("📂 SaveName: " + _saveName);
+
             StartCoroutine(StartQuestSequence());
         }
 
@@ -76,6 +86,10 @@ namespace CalcuProblemPage
                 };
 
                 dialogManager.EnqueueDialogLines(endLines);
+                yield return new WaitUntil(() => dialogManager.IsDialogPlaying() == false);
+
+                // 等结束语播放完后再跳转或更新进度
+                StartCoroutine(UpdateProgressAndGoToMap(4));
             }
         }
 
@@ -112,6 +126,58 @@ namespace CalcuProblemPage
             yield return new WaitForSeconds(waitTime);
 
             dialogManager.HideAllDialogs();
+        }
+
+        private IEnumerator UpdateProgressAndGoToMap(int progress)
+        {
+            if (string.IsNullOrEmpty(_token) || string.IsNullOrEmpty(_saveName))
+            {
+                Debug.LogError("❌ Token 或 SaveName 缺失，无法更新进度！");
+                yield break;
+            }
+
+            string url = $"http://localhost:3000/savefiles/{_saveName}/updateProgress";
+            string jsonData = JsonUtility.ToJson(new ProgressWrapper(progress));
+            Debug.Log("📤 正在更新进度：" + jsonData);
+
+            using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
+            {
+                request.method = "PUT";
+                request.uploadHandler = new UploadHandlerRaw(System.Text.Encoding.UTF8.GetBytes(jsonData));
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.SetRequestHeader("Authorization", "Bearer " + _token);
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log("✅ Progress updated: " + request.downloadHandler.text);
+                }
+                else
+                {
+                    Debug.LogError("❌ Failed to update progress: " + request.error);
+                }
+            }
+
+            // 跳转场景
+            Invoke(nameof(LoadDraftMapScene), 2f);
+        }
+
+        private void LoadDraftMapScene()
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene("draftMap");
+        }
+
+        [Serializable]
+        private class ProgressWrapper
+        {
+            public int progress;
+
+            public ProgressWrapper(int p)
+            {
+                progress = p;
+            }
         }
     }
 }

@@ -7,8 +7,7 @@ namespace CalcuProblemPage
 {
     public class CalcuDialogManager : MonoBehaviour
     {
-        [Header("UI References")]
-        public GameObject playerDialogBox;
+        [Header("UI References")] public GameObject playerDialogBox;
         public TMP_Text playerText;
 
         public GameObject npcDialogBox;
