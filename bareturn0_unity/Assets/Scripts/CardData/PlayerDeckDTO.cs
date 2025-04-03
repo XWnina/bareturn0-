@@ -4,33 +4,38 @@ using UnityEngine;
 using System.Text;
 using UnityEngine.Networking;
 
-[Serializable]
-public class DeckDTO
+[System.Serializable]
+public class DeckResponse
 {
-    public string _id;
-    public string saveFileId;
-    public string name;
-    public List<CardInDeckDTO> cards;
+    public string deckId;
+    public DeckDTO deck;
 }
 
-[Serializable]
-public class CardInDeckDTO
-{
-    public string cardName;
-    public int count;
-}
-
-[Serializable]
-public class SelectedDeckDTO
+[System.Serializable]
+public class SelectedDeckResponse
 {
     public DeckDTO selectedDeck;
 }
 
-[Serializable]
-public class DeckByNameDTO
+[System.Serializable]
+public class CardCollectionResponse
 {
-    public string deckId;
-    public DeckDTO deck;
+    public DeckDTO cardCollection;
+}
+
+[System.Serializable]
+public class DeckDTO
+{
+    public string _id;
+    public string name;
+    public List<CardCountDTO> cards;
+}
+
+[System.Serializable]
+public class CardCountDTO
+{
+    public string cardName;
+    public int count;
 }
 
 [System.Serializable]
@@ -43,12 +48,6 @@ public class MaxHealthDTO
 public class SpeedDTO
 {
     public int speed;
-}
-
-[Serializable]
-public class CardCollectionDTO
-{
-    public DeckDTO cardCollection;
 }
 
 [Serializable]
@@ -106,4 +105,29 @@ public class MaterialsResponseDTO
 public class MaterialCountDTO
 {
     public int count;
+}
+
+[System.Serializable]
+public class AllDecksDTO
+{
+    public List<DeckDTO> decks;
+}
+
+[System.Serializable]
+public class PlayerDeckInfo
+{
+    public string deckName;
+    public string deckId;
+
+    public PlayerDeckInfo(string name, string id)
+    {
+        deckName = name;
+        deckId = id;
+    }
+}
+
+[System.Serializable]
+public class SaveIdResponseDTO
+{
+    public string saveFileId;
 }
