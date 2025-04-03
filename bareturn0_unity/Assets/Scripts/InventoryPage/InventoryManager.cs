@@ -123,7 +123,13 @@ public class InventoryManager : MonoBehaviour
             CardData cardData = playerCards[i];
             GameObject card = Instantiate(CardPrefab, CardCollection.transform);
             CardThumbnailUI cardThumbnail = card.GetComponent<CardThumbnailUI>();
+            // Enable hover description
+            cardThumbnail.enableHoverDescription = true;
+            cardThumbnail.hoverDescriptionGroup = card.transform.Find("HoverDecriptionImage").gameObject;
+            cardThumbnail.hoverDescriptionTMP = card.transform.Find("HoverDecriptionImage/HoverDescriptionTMP").GetComponent<TextMeshProUGUI>();
+            
             cardThumbnail.SetCardThumbnail(cardData);
+
         }
     }
 

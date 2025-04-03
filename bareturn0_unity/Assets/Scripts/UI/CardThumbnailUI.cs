@@ -18,20 +18,24 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public Button button;
 
     public bool allowHoverEffect = true;
-    private CardData cardData;
+    private CardData cardData; public GameObject hoverDescriptionGroup; // HoverDecriptionImage
+    public TextMeshProUGUI hoverDescriptionTMP; // HoverDescriptionTMP
+    public bool enableHoverDescription = false;
 
 
-    // Ô¤Éè²»Í¬Æ·ÖÊµÄ¿¨ÅÆ±ß¿ò
+
+
+    // Ô¤ï¿½è²»Í¬Æ·ï¿½ÊµÄ¿ï¿½ï¿½Æ±ß¿ï¿½
     public Sprite commonFrame;
     public Sprite rareFrame;
     public Sprite epicFrame;
 
-    // Ô¤Éè²»Í¬Æ·ÖÊµÄ¿¨ÅÆÃû³ÆÑÕÉ«
+    // Ô¤ï¿½è²»Í¬Æ·ï¿½ÊµÄ¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
     private Color commonColor = new Color(0.72f, 0.45f, 0.20f); // Í­É«
-    private Color rareColor = new Color(0.75f, 0.75f, 0.75f);   // ÒøÉ«
-    private Color epicColor = new Color(1f, 0.84f, 0f);         // ½ðÉ«
+    private Color rareColor = new Color(0.75f, 0.75f, 0.75f);   // ï¿½ï¿½É«
+    private Color epicColor = new Color(1f, 0.84f, 0f);         // ï¿½ï¿½É«
 
-    private Vector3 originalScale;   // ¼ÇÂ¼³õÊ¼Ëõ·Å
+    private Vector3 originalScale;   // ï¿½ï¿½Â¼ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
 
 
     void Awake()
@@ -39,19 +43,19 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         originalScale = transform.localScale;
     }
 
-    // Íâ²¿µ÷ÓÃ£ºÉèÖÃ±¾ËõÂÔÍ¼¶ÔÓ¦µÄ¿¨Êý¾Ý
+    // ï¿½â²¿ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Ó¦ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
     public void SetCardThumbnail(CardData data)
     {
         cardData = data;
 
-        // ÉèÖÃ¿¨ÅÆÆ·ÖÊ
+        // ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Æ·ï¿½ï¿½
         UpdateCardQuilityView();
 
-        // ÉèÖÃ¿¨ÅÆÍ¼Æ¬
+        // ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½Í¼Æ¬
         if (cardData.artwork != null)
             artworkImage.sprite = cardData.artwork;
 
-        // ÉèÖÃÎÄ±¾
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½
         cardNameText.text = cardData.cardName;
         costText.text = cardData.cost.ToString();
         descriptionText.text = cardData.description;
@@ -84,7 +88,7 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         descriptionText.gameObject.SetActive(false);
         cardFrame.sprite = commonFrame;
     }
-        
+
 
     private void UpdateCardQuilityView()
     {
@@ -111,24 +115,37 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
-    // Ìá¹©Ò»¸öÄÃµ½CardDataµÄ·½·¨£¬ÒÔ±ãµã»÷Ê±´«³ö
+    // ï¿½á¹©Ò»ï¿½ï¿½ï¿½Ãµï¿½CardDataï¿½Ä·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô±ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½
     public CardData GetCardData()
     {
         return cardData;
     }
 
-    // Êó±êÐüÍ£½Ó¿Ú
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½Ó¿ï¿½
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!allowHoverEffect) return;
-        // ·Å´ó
+        // ï¿½Å´ï¿½
         transform.localScale = originalScale * 1.2f;
+
+        // Only show the hover description if it's enabled
+        if (enableHoverDescription && hoverDescriptionGroup != null && hoverDescriptionTMP != null)
+        {
+            hoverDescriptionTMP.text = cardData.description;
+            hoverDescriptionGroup.SetActive(true);
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (!allowHoverEffect) return;
-        // »Ö¸´
+        // ï¿½Ö¸ï¿½
         transform.localScale = originalScale;
+
+        // Hide the hover description
+        if (enableHoverDescription && hoverDescriptionGroup != null)
+        {
+            hoverDescriptionGroup.SetActive(false);
+        }
     }
 }
