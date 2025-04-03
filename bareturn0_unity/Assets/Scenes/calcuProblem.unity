@@ -408,7 +408,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &63059494
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3896,7 +3896,7 @@ Canvas:
   serializedVersion: 3
   m_RenderMode: 1
   m_Camera: {fileID: 1445494044}
-  m_PlaneDistance: 100
+  m_PlaneDistance: 1
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
@@ -4709,7 +4709,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00ad09d1c236548798799d4f1d28b3bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  skipToLast: 1
+  skipToLast: 0
 --- !u!4 &1856600582
 Transform:
   m_ObjectHideFlags: 0
