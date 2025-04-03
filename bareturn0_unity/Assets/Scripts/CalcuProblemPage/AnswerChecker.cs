@@ -90,16 +90,51 @@ namespace CalcuProblemPage
         if (error <= tolerance)
         {
             teachingPanel.SetActive(false);
-            StartCoroutine(dialogManager.ShowNpcLineWithDelay("That's correct!"));
-            questionManager.MoveToNextQuestion();
+
+            double userRounded = Math.Round(userAnswer, 2); // 四舍五入展示
+            string himHer = questionManager.GetCurrentCharacterGender() == "male" ? "him" : "her";
+
+            string sentence;
+
+            if (questionManager.GetCurrentQuestionText().Contains("change should I give"))
+            {
+                sentence = $"That's correct! I should give {himHer} {userRounded:F2} coins.";
+            }
+            else
+            {
+                sentence = $"That's correct! I should charge {himHer} {userRounded:F2} coins.";
+            }
+
             inputField.text = "";
-            Invoke(nameof(ShowNextQuestion), 2f);
+
+            if (questionManager.HasMoreQuestions())
+            {
+                questionManager.MoveToNextQuestion();
+
+                // 播放 NPC 正确回答反馈
+                List<string> lines = new()
+                {
+                    $"NPC: {sentence}"
+                };
+                dialogManager.EnqueueDialogLines(lines);
+
+                Invoke(nameof(ShowNextQuestion), 2f);
+            }
+            else
+            {
+                // 播放 NPC 正确反馈 + 结尾感谢语
+                List<string> endLines = new()
+                {
+                    $"NPC: {sentence}",
+                    "NPC: Thanks! You helped me complete all the tasks.",
+                    "NPC: Feel free to stop by my store anytime. You're always welcome here."
+                };
+                dialogManager.EnqueueDialogLines(endLines);
+            }
         }
-        else
-        {
-            teachingPanel.SetActive(false);
-            StartCoroutine(ShowRetrySequence("That's not correct. Try again."));
-        }
+
+
+
     }
 
     private IEnumerator ShowRetrySequence(string npcLine)

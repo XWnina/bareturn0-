@@ -17,13 +17,13 @@ namespace CalcuProblemPage
         public float defaultDisplayTime = 2f;
 
         // === 新增 ===
-        private Queue<string> dialogQueue = new();
-        private bool isWaitingForEnter = false;
+        private readonly Queue<string> _dialogQueue = new();
+        private bool _isWaitingForEnter = false;
 
         void Update()
         {
             // 玩家按下 Enter 键继续
-            if (isWaitingForEnter && Input.GetKeyDown(KeyCode.Return))
+            if (_isWaitingForEnter && Input.GetKeyDown(KeyCode.Return))
             {
                 ShowNextLine();
             }
@@ -68,13 +68,13 @@ namespace CalcuProblemPage
         {
             foreach (string line in lines)
             {
-                dialogQueue.Enqueue(line);
+                _dialogQueue.Enqueue(line);
             }
 
-            if (!isWaitingForEnter && dialogQueue.Count > 0)
+            if (!_isWaitingForEnter && _dialogQueue.Count > 0)
             {
                 ShowNextLine();
-                isWaitingForEnter = true;
+                _isWaitingForEnter = true;
             }
         }
 
@@ -82,13 +82,13 @@ namespace CalcuProblemPage
         {
             HideAllDialogs();
 
-            if (dialogQueue.Count == 0)
+            if (_dialogQueue.Count == 0)
             {
-                isWaitingForEnter = false;
+                _isWaitingForEnter = false;
                 return;
             }
 
-            string nextLine = dialogQueue.Dequeue();
+            string nextLine = _dialogQueue.Dequeue();
 
             if (nextLine.StartsWith("PLAYER:"))
             {
@@ -103,7 +103,7 @@ namespace CalcuProblemPage
         // 是否正在等待玩家按 Enter
         public bool IsDialogPlaying()
         {
-            return isWaitingForEnter;
+            return _isWaitingForEnter;
         }
     }
 }

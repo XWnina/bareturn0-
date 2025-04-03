@@ -12,6 +12,7 @@ namespace CalcuProblemPage
             public string text;
             public double answer; 
         }
+        public bool skipToLast = false;
 
         private readonly List<string> _productNames = new()
         {
@@ -40,8 +41,15 @@ namespace CalcuProblemPage
         void Start()
         {
             GenerateAllQuestions();
+            if (skipToLast)
+            {
+                _currentIndex = 5; // ✅ 跳到第6题
+            }
+            else
+            {
+                _currentIndex = 0;
+            }
         }
-
         public void GenerateAllQuestions()
         {
             _allQuestions.Clear();
@@ -174,6 +182,20 @@ namespace CalcuProblemPage
         private double RandomDiscount(double min = 0.6, double max = 0.9)
         {
             return Math.Round(UnityEngine.Random.Range((float)min, (float)max), 4);
+        }
+        public string GetCurrentCharacterGender()
+        {
+            int indexToCheck = Mathf.Clamp(_currentIndex - 1, 0, _allQuestions.Count - 1);
+
+            string text = _allQuestions[indexToCheck].text;
+
+            foreach (var entry in _characterGender)
+            {
+                if (text.Contains(entry.Key))
+                    return entry.Value;
+            }
+
+            return "male"; // fallback
         }
 
     }
