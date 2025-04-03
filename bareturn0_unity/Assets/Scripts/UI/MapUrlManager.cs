@@ -122,20 +122,20 @@ public class MapUrlManager : MonoBehaviour
             playerInfoLoader.LoadPlayerCoins(() =>
             {
                 coins = playerInfoLoader.coins;
-                Debug.Log("🎉 通过 level2，奖励 50 coins！");
+                Debug.Log("🎉 通过 level2，奖励 100 coins！");
                 coins += 100;
                 StartCoroutine(UpdateCoins(coins)); // 更新数据库
-                ShowRewardPanel(2, 50); // 弹出奖励界面
+                ShowRewardPanel(2, 100); // 弹出奖励界面
                 BattleUIManager.Instance.passed = false;
             });
         }
         if (didPass && curProcess == 5)
         {
             coins = playerInfoLoader.coins;
-            Debug.Log("🎉 通过 level2，奖励 50 coins！");
+            Debug.Log("🎉 通过 level5，奖励 150 coins！");
             coins += 150;
             StartCoroutine(UpdateCoins(coins)); // 更新数据库
-            ShowRewardPanel(5, 100); // 弹出奖励界面
+            ShowRewardPanel(5, 150); // 弹出奖励界面
             BattleUIManager.Instance.passed = false;
         }
     }
