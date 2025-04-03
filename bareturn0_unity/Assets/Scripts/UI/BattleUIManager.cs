@@ -10,9 +10,9 @@ public class BattleUIManager : MonoBehaviour
     public static BattleUIManager Instance;
 
     [Header("Battle Result UI")]
-    public GameObject battleResultPanel; // ½áËãÃæ°å
-    public TextMeshProUGUI resultText; // Ê¤Àû/Ê§°ÜÎÄ±¾
-    public Button returnButton; // ·µ»Ø²Ëµ¥°´Å¥
+    public GameObject battleResultPanel; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    public TextMeshProUGUI resultText; // Ê¤ï¿½ï¿½/Ê§ï¿½ï¿½ï¿½Ä±ï¿½
+    public Button returnButton; // ï¿½ï¿½ï¿½Ø²Ëµï¿½ï¿½ï¿½Å¥
 
     [Header("Basic Battle Informations")]
     public TextMeshProUGUI playerHealthText;
@@ -23,17 +23,18 @@ public class BattleUIManager : MonoBehaviour
 
     [Header("Energy Segment Images (in order)")]
     public List<Image> energySegments;
-    public Sprite litSegmentSprite;   // ÁÁÆðÊ±µÄ¸ñ×ÓËØ²Ä
-    public Sprite unlitSegmentSprite; // Î´ÁÁÊ±µÄ¸ñ×ÓËØ²Ä
+    public Sprite litSegmentSprite;   // ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½Ø²ï¿½
+    public Sprite unlitSegmentSprite; // Î´ï¿½ï¿½Ê±ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½Ø²ï¿½
 
     [Header("Warnings")]
     public TextMeshProUGUI energyWarningText;
+    public bool passed;
 
     private void Awake()
     {
         Instance = this;
 
-        // ³õÊ¼Òþ²ØEnergy Warning
+        // ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Energy Warning
         if (energyWarningText != null)
         {
             energyWarningText.gameObject.SetActive(false); 
@@ -41,24 +42,24 @@ public class BattleUIManager : MonoBehaviour
     }
 
 
-    // ÏÔÊ¾¡°ÄÜÁ¿²»×ã¡±ÌáÊ¾
+    // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ã¡±ï¿½ï¿½Ê¾
     public void ShowEnergyWarning()
     {
         if (energyWarningText == null) return;
 
-        StopAllCoroutines(); // È·±£²»»áÖØ¸´Ö´ÐÐ¶à¸öµ­»¯
+        StopAllCoroutines(); // È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¸ï¿½Ö´ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         StartCoroutine(FadeOutWarning());
     }
 
-    //µ­³öÐ§¹û
+    //ï¿½ï¿½ï¿½ï¿½Ð§ï¿½ï¿½
     private IEnumerator FadeOutWarning()
     {
         energyWarningText.gameObject.SetActive(true);
-        energyWarningText.alpha = 1; // Á¢¼´±äÎª¿É¼û
+        energyWarningText.alpha = 1; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½É¼ï¿½
 
-        yield return new WaitForSeconds(0.5f); // Í£Áô 0.5 Ãë
+        yield return new WaitForSeconds(0.5f); // Í£ï¿½ï¿½ 0.5 ï¿½ï¿½
 
-        // ½¥½¥µ­³ö
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         float fadeDuration = 0.5f;
         float elapsedTime = 0;
         while (elapsedTime < fadeDuration)
@@ -68,21 +69,25 @@ public class BattleUIManager : MonoBehaviour
             yield return null;
         }
 
-        energyWarningText.gameObject.SetActive(false); // ÍêÈ«ÏûÊ§ºóÒþ²Ø
+        energyWarningText.gameObject.SetActive(false); // ï¿½ï¿½È«ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     }
 
-    // ÏÔÊ¾Õ½¶·½á¹û
+    // ï¿½ï¿½Ê¾Õ½ï¿½ï¿½ï¿½ï¿½ï¿½
     public void ShowBattleResult(bool isVictory)
     {
-        battleResultPanel.SetActive(true); // ÏÔÊ¾Ãæ°åa
+        battleResultPanel.SetActive(true); // ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½a
         resultText.text = isVictory ? "YOU WIN!!!" : "YOU LOSS...";
         resultText.color = isVictory ? Color.green : Color.red;
 
         if (isVictory)
         {
             BattleManager.Instance.sendProgress();
+            passed = true;
         }
-        // ¼àÌý·µ»Ø²Ëµ¥°´Å¥
+        else {
+            passed = false;
+        }
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø²Ëµï¿½ï¿½ï¿½Å¥
         returnButton.onClick.RemoveAllListeners();
         returnButton.onClick.AddListener(ReturnToMap);
     }
@@ -101,12 +106,12 @@ public class BattleUIManager : MonoBehaviour
         Image fillImage = PlayerHealthBar.fillRect.GetComponent<Image>();
         if (BattleManager.Instance.player.currentArmor > 0)
         {
-            // »ÒÀ¶É«£¨Äã¿ÉÒÔ¸ù¾ÝÐèÒªµ÷ÕûRGBÖµ£©
+            // ï¿½ï¿½ï¿½ï¿½É«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¸ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½RGBÖµï¿½ï¿½
             fillImage.color = new Color(0.6f, 0.6f, 0.6f, 1f);
         }
         else
         {
-            // ºìÉ«
+            // ï¿½ï¿½É«
             fillImage.color = Color.red;
         }
 
@@ -114,12 +119,12 @@ public class BattleUIManager : MonoBehaviour
         {
             if (i < BattleManager.Instance.player.currentEnergy)
             {
-                // ÁÁÆð
+                // ï¿½ï¿½ï¿½ï¿½
                 energySegments[i].sprite = litSegmentSprite;
             }
             else
             {
-                // Î´ÁÁ
+                // Î´ï¿½ï¿½
                 energySegments[i].sprite = unlitSegmentSprite;
             }
         }
@@ -128,22 +133,22 @@ public class BattleUIManager : MonoBehaviour
 
     private void Update()
     {
-        // ¼ì²é BattleManager ÊÇ·ñ´æÔÚ
+        // ï¿½ï¿½ï¿½ BattleManager ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
         if (BattleManager.Instance != null)
         {
-            // ¸üÐÂÍæ¼ÒÑªÁ¿ÏÔÊ¾£¨µ±Ç°ÑªÁ¿/×î´óÑªÁ¿£©
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñªï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½Ç°Ñªï¿½ï¿½/ï¿½ï¿½ï¿½Ñªï¿½ï¿½ï¿½ï¿½
             playerHealthText.text = $"{BattleManager.Instance.player.currentHealth}/{BattleManager.Instance.player.maxHealth}";
 
-            // ¸üÐÂÍæ¼Ò»¤¶Ü£¨»¤¼×£©ÏÔÊ¾
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Ü£ï¿½ï¿½ï¿½ï¿½×£ï¿½ï¿½ï¿½Ê¾
             playerShieldText.text = $"{BattleManager.Instance.player.currentArmor}";
 
-            // ¸üÐÂÍæ¼ÒÊ£ÓàÄÜÁ¿ÏÔÊ¾
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
             playerEnergyText.text = $"{BattleManager.Instance.player.currentEnergy}";
 
-            // ¸üÐÂµ±Ç°»ØºÏÊýÏÔÊ¾
+            // ï¿½ï¿½ï¿½Âµï¿½Ç°ï¿½Øºï¿½ï¿½ï¿½ï¿½ï¿½Ê¾
             roundText.text = $"Round: {BattleManager.Instance.CurrentRoundNumber}";
 
-            //¸úÐÂÍæ¼ÒÑªÌõ£¬»¤¶ÜÌõ
+            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             UpdatePlayerUIBar();
         }
     }
