@@ -184,6 +184,7 @@ public class EnhancementManager : MonoBehaviour
 
         // 升级逻辑：将当前卡牌替换为升级后的卡牌 upgradeCard1
         CardData upgradeCard = upgradeCard1;
+        CardData removedCard = currentSelectedCard;
 
 
         // 0. 计算需要扣除的金币
@@ -234,6 +235,7 @@ public class EnhancementManager : MonoBehaviour
                 // 5. 刷新 ScrollView 显示
                 PopulateScrollView();
 
+                playerInfoLoader.RefeshAllDecks(removedCard, upgradeCard);
                 Debug.Log("左侧升级选择成功");
             });
         });
@@ -252,6 +254,7 @@ public class EnhancementManager : MonoBehaviour
 
         // 升级逻辑：将当前卡牌替换为升级后的卡牌 upgradeCard2
         CardData upgradeCard = upgradeCard2;
+        CardData removedCard = currentSelectedCard;
 
 
         // 0. 计算需要扣除的金币
@@ -302,6 +305,7 @@ public class EnhancementManager : MonoBehaviour
                 // 5. 刷新 ScrollView 显示
                 PopulateScrollView();
 
+                playerInfoLoader.RefeshAllDecks(removedCard, upgradeCard);
                 Debug.Log("左侧升级选择成功");
             });
         });
