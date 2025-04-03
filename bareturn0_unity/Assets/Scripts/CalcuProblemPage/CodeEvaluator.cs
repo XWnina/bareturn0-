@@ -17,7 +17,7 @@ namespace CalcuProblemPage
             Debug.Log(code);
 
             _variables.Clear();
-            result = 0;
+            result = 0.0;
             errorType = CodeErrorType.None;
 
             string[] lines = code.Split(new[] { '\n', ';' }, StringSplitOptions.RemoveEmptyEntries);
@@ -47,7 +47,7 @@ namespace CalcuProblemPage
                 string varName = parts[0].Trim();
                 string expression = parts[1].Trim();
 
-                // 检查变量是否已声明（如果不是新声明）
+                // 非声明赋值时，变量必须已声明
                 if (!isDeclaration && !_variables.ContainsKey(varName))
                 {
                     Debug.LogError($"变量 [{varName}] 未声明就赋值: {line}");
@@ -63,7 +63,7 @@ namespace CalcuProblemPage
                     return false;
                 }
 
-                // 尝试计算表达式
+                // 计算表达式
                 if (!TryEvaluateExpression(expression, out double value))
                 {
                     Debug.LogError("无法求值表达式: " + expression);
@@ -71,7 +71,7 @@ namespace CalcuProblemPage
                     return false;
                 }
 
-                // 如果是 int 声明则向下取整
+                // 如果是 int 声明则向下取整（仍保留为 double 类型）
                 if (line.StartsWith("int "))
                 {
                     value = Math.Floor(value);
@@ -93,10 +93,8 @@ namespace CalcuProblemPage
                 return false;
             }
 
-            // 返回结果
-            if (!string.IsNullOrEmpty(lastVar) && _variables.ContainsKey(lastVar))
+            if (!string.IsNullOrEmpty(lastVar) && _variables.TryGetValue(lastVar, out result))
             {
-                result = _variables[lastVar];
                 return true;
             }
 
@@ -108,16 +106,22 @@ namespace CalcuProblemPage
         {
             try
             {
+                // 替换表达式中的变量为实际值
                 foreach (var pair in _variables)
                 {
-                    expr = Regex.Replace(expr, $@"\b{Regex.Escape(pair.Key)}\b",
-                        pair.Value.ToString(CultureInfo.InvariantCulture));
+                    expr = Regex.Replace(
+                        expr,
+                        $@"\b{Regex.Escape(pair.Key)}\b",
+                        pair.Value.ToString(CultureInfo.InvariantCulture)
+                    );
                 }
 
                 Debug.Log("最终表达式: " + expr);
 
+                // 使用 DataTable 计算表达式
                 DataTable table = new();
                 object evalResult = table.Compute(expr, "");
+
                 result = Convert.ToDouble(evalResult, CultureInfo.InvariantCulture);
                 return true;
             }
@@ -125,7 +129,7 @@ namespace CalcuProblemPage
             {
                 Debug.LogError("表达式计算失败: " + expr);
                 Debug.LogException(e);
-                result = 0;
+                result = 0.0;
                 return false;
             }
         }
