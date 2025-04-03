@@ -66,6 +66,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
   - {fileID: 11400000, guid: 4450dba38259358458460eccfb251a2a, type: 2}
   - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}
+  - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}
   enemyHand: []
   drawCount: 1
 --- !u!70 &8920047322979453000
@@ -271,7 +272,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 321754407
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -364,7 +365,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 321754407
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 5487567821104667819, guid: f7d4b895404174f45805c1cdfc784c1d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
