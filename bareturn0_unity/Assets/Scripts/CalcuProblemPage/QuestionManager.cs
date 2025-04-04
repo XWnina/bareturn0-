@@ -14,7 +14,7 @@ namespace CalcuProblemPage
         }
 
         public bool skipToLast = false;
-        [Header("Demo three")]
+        [Header("Demo Mode(Press \u2192 to skip)")]
         public bool demoMode = false; // ✅ Inspector 中可勾选
 
 
@@ -62,7 +62,7 @@ namespace CalcuProblemPage
 
             for (int level = 1; level <= 3; level++)
             {
-                int numQuestions = demoMode ? 1 : 2; // ✅ demo 模式下每个 level 出一题
+                int numQuestions =  2; // ✅ demo 模式下每个 level 出一题
 
                 for (int i = 0; i < numQuestions; i++)
                 {

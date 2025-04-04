@@ -43,14 +43,41 @@ namespace CalcuProblemPage
                     _isShowingErrorPanel = false;
                 }
             }
-            
+            if (teachingPanel.activeSelf)
+            {
+                if (dialogManager.nextButton != null && dialogManager.nextButton.activeSelf)
+                {
+                    dialogManager.nextButton.SetActive(false);
+                }
+            }
+
             if (teachingPanel.activeSelf &&
                 (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)) &&
                 Input.GetKeyDown(KeyCode.Return))
             {
                 StartCoroutine(CheckAnswer());
             }
+            
+
+            // ✅ DEMO 模式：按 → 键跳过当前题目
+            if (questionManager.demoMode && Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                teachingPanel.SetActive(false);
+                inputField.text = "";
+                questionManager.MoveToNextQuestion();
+
+                if (questionManager.HasMoreQuestions())
+                {
+                    StartCoroutine(gameManager.ShowNextQuestion());
+                }
+                else
+                {
+                    _finished = true;
+                    StartCoroutine(gameManager.ShowNextQuestion()); // 最后自动触发结语和跳转
+                }
+            }
         }
+
 
         public void CheckAnswerWrapper()
         {
@@ -61,15 +88,17 @@ namespace CalcuProblemPage
         {
             string userCode = inputField.text.Trim();
 
-            Debug.Log("=== 用户输入代码 ===");
+            Debug.Log("=== User code ===");
             Debug.Log(userCode);
 
             if (string.IsNullOrWhiteSpace(userCode) || !userCode.Contains("="))
             {
-                yield return
-                    dialogManager.ShowNpcLineWithDelay("You haven't written any valid code. Please try again.");
+                errorText.text = "You haven't written any valid code. Please try again.";
+                errorPanel.SetActive(true);
+                _isShowingErrorPanel = true;
                 yield break;
             }
+
 
             bool success = _evaluator.TryEvaluate(userCode, out double userAnswer, out CodeErrorType errorType);
 
@@ -91,8 +120,8 @@ namespace CalcuProblemPage
 
             double correctAnswer = questionManager.GetCurrentAnswer();
             double error = Math.Abs(userAnswer - correctAnswer);
-            Debug.Log($"✅ 用户答案: {userAnswer}, 正确答案: {correctAnswer}");
-            Debug.Log($"误差: {error}, 容忍误差: {tolerance}, 判断结果: {error <= tolerance}");
+            Debug.Log($"✅ userAnswer: {userAnswer}, correctAnswer: {correctAnswer}");
+            Debug.Log($"inaccuracy: {error}, tolerance: {tolerance}, result: {error <= tolerance}");
             double userRounded = Math.Round(userAnswer, 2); 
 
             if (error <= tolerance)
@@ -120,11 +149,14 @@ namespace CalcuProblemPage
                     yield return gameManager.ShowNextQuestion(); // ✅ 最后一题，等结语
                 }
             }
-            teachingPanel.SetActive(false);
-            
-            string retryMessage = $"That's not correct. Your answer is {userRounded:F2}. Try again.";
+            else
+            {
+                teachingPanel.SetActive(false);
 
-            yield return StartCoroutine(ShowRetrySequence(retryMessage));
+                string retryMessage = $"That's not correct. Your answer is {userRounded:F2}. Try again.";
+
+                yield return StartCoroutine(ShowRetrySequence(retryMessage));
+            }
         }
 
 

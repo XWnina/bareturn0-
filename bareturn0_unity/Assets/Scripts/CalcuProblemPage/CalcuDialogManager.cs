@@ -14,10 +14,14 @@ namespace CalcuProblemPage
         public TMP_Text npcText;
 
         public float defaultDisplayTime = 2f;
-
-        // === 新增 ===
+        
         private readonly Queue<string> _dialogQueue = new();
         private bool _isWaitingForEnter = false;
+        [Header("Optional UI")]
+        public GameObject nextButton; // ← 拖入 Next 按钮对象
+        
+        
+
 
         void Update()
         {
@@ -27,6 +31,14 @@ namespace CalcuProblemPage
                 ShowNextLine();
             }
         }
+        public void ContinueDialogManually()
+        {
+            if (_isWaitingForEnter)
+            {
+                ShowNextLine();
+            }
+        }
+
 
         public void ShowPlayerLine(string line)
         {
@@ -62,7 +74,7 @@ namespace CalcuProblemPage
             HideAllDialogs();
         }
 
-        // === 新增：按 Enter 键继续的版本 ===
+       
         public void EnqueueDialogLines(List<string> lines)
         {
             foreach (string line in lines)
@@ -74,8 +86,10 @@ namespace CalcuProblemPage
             {
                 ShowNextLine();
                 _isWaitingForEnter = true;
+                if (nextButton != null) nextButton.SetActive(true); // ✅ 显示 Next
             }
         }
+
 
         private void ShowNextLine()
         {
@@ -84,6 +98,7 @@ namespace CalcuProblemPage
             if (_dialogQueue.Count == 0)
             {
                 _isWaitingForEnter = false;
+                if (nextButton != null) nextButton.SetActive(false); // ✅ 隐藏 Next
                 return;
             }
 
