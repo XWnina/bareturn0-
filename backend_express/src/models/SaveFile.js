@@ -17,13 +17,10 @@ const SaveFileSchema = new mongoose.Schema(
 
     unlockedAchievements: [
       {
-        achievementId: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "Achievement",
-        },
-        achievedDate: { type: Date, default: null },
-      },
-    ], // Reference to the Achievement model
+        name: { type: String, required: true },
+        achievedDate: { type: Date, default: null }
+      }
+    ],// Reference to the Achievement model
 
     selectedDeck: {
       type: mongoose.Schema.Types.ObjectId,

@@ -3,36 +3,63 @@ const Achievement = require("../models/Achievement");
 require("dotenv").config();
 
 const predefinedAchievements = [
-    { name: "Person You Know Who", method: "Complete the first level and gain your own player name" },
-    { name: "Freshman", method: "Login to the game and create a new savefile for the first time" },
-    { name: "Survivor", method: "Complete the second level" },
-    { name: "Master Explorer", method: "Find all hidden secrets in a level" }
+  // General achievements
+  { name: "FirstStep", method: "Create your first save file", hidden: false },
+  {
+    name: "PassionOn",
+    method: "Owning more than one save file",
+    hidden: false,
+  },
+
+  // Level achievements
+  { name: "Person You Know Who", method: "Complete level 1", hidden: false },
+  { name: "Live For Your Own", method: "Complete level 4", hidden: false },
+
+  // Hidden achievements
+  {
+    name: "Rich Kid",
+    method: "Gain more than 2000 coins",
+    hidden: true,
+    revealCondition: "Live For Your Own",
+  },
+  {
+    name: "Mini Tycoon",
+    method: "Gain more than 5000 coins",
+    hidden: true,
+    revealCondition: "Rich Kid",
+  },
+  {
+    name: "Millionaire",
+    method: "Gain more than 1000000 coins",
+    hidden: true,
+    revealCondition: "Rich Kid",
+  },
+  {
+    name: "Battle Expert",
+    method: "Winning more than 10 battles",
+    hidden: true,
+    revealCondition: "Fighter",
+  },
 ];
 
 async function initializeAchievements() {
-    try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
-        });
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
 
-        console.log("Connected to MongoDB");
-
-        for (const ach of predefinedAchievements) {
-            await Achievement.findOneAndUpdate(
-                { name: ach.name }, // If already exists, skip insertion
-                { method: ach.method, preset: true },
-                { upsert: true }
-            );
-        }
-
-        console.log("Predefined achievements initialized");
-
-        mongoose.disconnect();
-    } catch (err) {
-        console.error("Error initializing achievements:", err);
-        mongoose.disconnect();
+    for (const ach of predefinedAchievements) {
+      await Achievement.findOneAndUpdate(
+        { name: ach.name },
+        { $setOnInsert: ach },
+        { upsert: true }
+      );
     }
+
+    console.log("Achievements initialized");
+    await mongoose.disconnect();
+  } catch (err) {
+    console.error("Initialization failed:", err);
+    await mongoose.disconnect();
+  }
 }
 
 initializeAchievements();
