@@ -111,13 +111,13 @@ public class MapUrlManager : MonoBehaviour
         yield return StartCoroutine(GetUserLevel());
         string previousScene = PlayerPrefs.GetString("PreviousScene", "");
         //BattleUIManager uiManager = FindObjectOfType<BattleUIManager>();
-        bool didPass = BattleUIManager.Instance.passed;
+        //bool didPass = BattleUIManager.Instance.passed;
         //int curProcess = GetUserLevel();
 
         int curProcess = CurrentLevel;
         //Debug.Log($"上一个场景是: {previousScene}");
         //previousScene == "BattleScenes"
-        if (didPass && curProcess == 2)  // 确保是从 level2 进入的
+        if (BattleUIManager.Instance != null && BattleUIManager.Instance.passed && curProcess == 2)  // 确保是从 level2 进入的
         {
             playerInfoLoader.LoadPlayerCoins(() =>
             {
@@ -129,7 +129,7 @@ public class MapUrlManager : MonoBehaviour
                 BattleUIManager.Instance.passed = false;
             });
         }
-        if (didPass && curProcess == 5)
+        if (BattleUIManager.Instance != null && BattleUIManager.Instance.passed && curProcess == 5)
         {
             coins = playerInfoLoader.coins;
             Debug.Log("🎉 通过 level5，奖励 150 coins！");

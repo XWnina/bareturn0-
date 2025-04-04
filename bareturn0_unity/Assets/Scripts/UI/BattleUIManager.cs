@@ -28,7 +28,7 @@ public class BattleUIManager : MonoBehaviour
 
     [Header("Warnings")]
     public TextMeshProUGUI energyWarningText;
-    public bool passed;
+    public bool passed = false;
 
     private void Awake()
     {
