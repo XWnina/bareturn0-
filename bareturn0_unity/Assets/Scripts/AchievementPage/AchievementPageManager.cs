@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.Networking;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class AchievementPageManager : MonoBehaviour
 {
@@ -10,15 +12,23 @@ public class AchievementPageManager : MonoBehaviour
     public Transform lockedParent;   // lockedScrollView/Viewport/Content
     public GameObject achievementPrefab; // Prefab containing: name, method, unlockedInfo
 
+    public Button ExitButton;
     private string apiBaseUrl = "http://localhost:3000/achievements";
 
     void Start()
     {
+        PlayerPrefs.SetString("PreviousScene", "draftMap");
+
         string saveName = PlayerPrefs.GetString("currentSaveName", "");
         if (!string.IsNullOrEmpty(saveName))
         {
             StartCoroutine(LoadAchievements(saveName));
         }
+
+        ExitButton.onClick.AddListener(() =>
+        {
+            SceneManager.LoadScene(PlayerPrefs.GetString("PreviousScene"));
+        });
     }
 
     IEnumerator LoadAchievements(string saveName)
@@ -58,7 +68,7 @@ public class AchievementPageManager : MonoBehaviour
                 {
                     infoText.text = $"Unlocked: {a.achievedDate}";
                 }
-                else if(!a.unlocked && infoText != null && !a.hidden)
+                else if (!a.unlocked && infoText != null && !a.hidden)
                 {
                     infoText.text = "Locked"; // Show locked status
                 }
