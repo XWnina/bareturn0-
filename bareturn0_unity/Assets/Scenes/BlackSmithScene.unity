@@ -636,7 +636,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 321754407
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 1
   m_Sprite: {fileID: 8580868470382951195, guid: 7c345b6a6e79afa4daec891e7fe86693, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -1293,7 +1293,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 889378644}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9499999
+  m_Size: 0.95
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4434,6 +4434,7 @@ MonoBehaviour:
   cardDatabase: {fileID: 11400000, guid: c643ec059d5c6fa47b26552475be8af0, type: 2}
   cardList: []
   materials: []
+  PlayerDecks: []
   maxHealth: 0
   speed: 0
   coins: 0
@@ -6657,7 +6658,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1199313122}
   m_HandleRect: {fileID: 1199313121}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
