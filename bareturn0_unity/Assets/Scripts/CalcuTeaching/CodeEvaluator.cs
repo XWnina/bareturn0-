@@ -38,9 +38,6 @@ namespace CalcuTeaching
             "If you have: int a = 10;Try writing a line of code that increments a variable",
             "If you have: int a = 10; Write a line of code that uses the decrement operator.",
             "Try combining what you've learned! (e.g. int apple = 3; int pear = 4; int sum = apple + pear;)"
-
-
-
         };
 
 
@@ -54,13 +51,9 @@ namespace CalcuTeaching
             @"^int\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*\d+\s*\*\s*\d+\s*;$",
             @"^int\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*\d+\s*/\s*\d+\s*;$",
             @"^int\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*\d+\s*%\s*\d+\s*;$",
-            @"^a\s*\+\+\s*;$",  // 只允许 a++
-            @"^a\s*--\s*;$",    // 只允许 a--
+            @"^a\s*\+\+\s*;$", // 只允许 a++
+            @"^a\s*--\s*;$", // 只允许 a--
             @"^int\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*\d+\s*;\s*int\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*\d+\s*;\s*int\s+[a-zA-Z_][a-zA-Z0-9_]*\s*=\s*[a-zA-Z_][a-zA-Z0-9_]*\s*\+\s*[a-zA-Z_][a-zA-Z0-9_]*\s*;$"
-
-
-
-
         };
 
         private void TriggerNextDialogue()
@@ -105,10 +98,7 @@ namespace CalcuTeaching
             {
                 npcDialogueController.StartMixedTeachingDialogue();
             }
-
-
         }
-
 
 
         public void OnSubmit()
@@ -150,7 +140,6 @@ namespace CalcuTeaching
                     // 所有关卡完成后的结语
                     npcDialogueController.StartCompletionDialogue();
                 }
-
             }
             else
             {
@@ -160,10 +149,9 @@ namespace CalcuTeaching
         }
 
 
-
         public string GetVariableValue()
         {
-            string result = codeInput.text.Trim();  // 默认返回用户输入的代码
+            string result = codeInput.text.Trim(); // 默认返回用户输入的代码
 
             // 获取用户输入的代码
             string userInput = codeInput.text.Trim();
@@ -171,7 +159,7 @@ namespace CalcuTeaching
             {
                 if (_currentQuestionIndex == 0) // `int` 类型
                 {
-                    result =  CleanVariableExpression(userInput);
+                    result = CleanVariableExpression(userInput);
                 }
                 else if (_currentQuestionIndex == 1) // `double` 类型
                 {
@@ -213,21 +201,20 @@ namespace CalcuTeaching
                 {
                     result = EvaluateMixedExpression(userInput);
                 }
-
             }
             catch (FormatException ex)
             {
                 // 捕获格式异常，提示用户重新输入
                 Debug.LogError($"格式错误: {ex.Message}");
                 npcText.text = "输入的代码格式不正确，请重新输入。";
-                codeInput.text = "";  // 清空输入框
-                return "Invalid input, please try again.";  // 提示用户重新输入
+                codeInput.text = ""; // 清空输入框
+                return "Invalid input, please try again."; // 提示用户重新输入
             }
 
             return result;
         }
-    
-    
+
+
         private string EvaluateIntExpression(string expression)
         {
             string variableName = "";
@@ -246,12 +233,13 @@ namespace CalcuTeaching
                     string[] nameParts = parts[0].Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                     if (nameParts.Length == 2)
                     {
-                        variableName = nameParts[1];  // 只获取变量名
+                        variableName = nameParts[1]; // 只获取变量名
                     }
                     else
                     {
-                        variableName = parts[0].Trim();  // 兜底
+                        variableName = parts[0].Trim(); // 兜底
                     }
+
                     Debug.Log($"Variable name: {variableName}");
 
                     string valuePart = parts[1].Trim().Replace(";", "");
@@ -273,7 +261,7 @@ namespace CalcuTeaching
 
         private int EvaluateExpression(string expression)
         {
-            expression = expression.Replace(" ", "");  // 去掉空格
+            expression = expression.Replace(" ", ""); // 去掉空格
             Debug.Log($"Evaluating simple expression: {expression}");
 
             try
@@ -285,7 +273,7 @@ namespace CalcuTeaching
                     if (parts.Length == 2)
                     {
                         Debug.Log($"Parsed addition: {parts[0].Trim()} + {parts[1].Trim()}");
-                        return int.Parse(parts[0].Trim()) + int.Parse(parts[1].Trim());  // 返回加法结果
+                        return int.Parse(parts[0].Trim()) + int.Parse(parts[1].Trim()); // 返回加法结果
                     }
                 }
 
@@ -296,7 +284,7 @@ namespace CalcuTeaching
                     if (parts.Length == 2)
                     {
                         Debug.Log($"Parsed subtraction: {parts[0].Trim()} - {parts[1].Trim()}");
-                        return int.Parse(parts[0].Trim()) - int.Parse(parts[1].Trim());  // 返回减法结果
+                        return int.Parse(parts[0].Trim()) - int.Parse(parts[1].Trim()); // 返回减法结果
                     }
                 }
 
@@ -307,7 +295,7 @@ namespace CalcuTeaching
                     if (parts.Length == 2)
                     {
                         Debug.Log($"Parsed multiplication: {parts[0].Trim()} * {parts[1].Trim()}");
-                        return int.Parse(parts[0].Trim()) * int.Parse(parts[1].Trim());  // 返回乘法结果
+                        return int.Parse(parts[0].Trim()) * int.Parse(parts[1].Trim()); // 返回乘法结果
                     }
                 }
 
@@ -331,7 +319,7 @@ namespace CalcuTeaching
                     }
                 }
 
-                
+
                 // 处理模运算（取余数）
                 if (expression.Contains("%"))
                 {
@@ -344,7 +332,7 @@ namespace CalcuTeaching
                         if (right == 0)
                         {
                             Debug.LogError("❌ 不能对 0 取余！");
-                            return int.MinValue;  // 返回非法值
+                            return int.MinValue; // 返回非法值
                         }
 
                         Debug.Log($"Parsed modulo: {left} % {right}");
@@ -360,14 +348,14 @@ namespace CalcuTeaching
             {
                 Debug.LogError($"格式错误: {ex.Message}");
                 npcText.text = "输入的代码格式不正确，请重新输入。";
-                return 0;  // 默认返回 0，提示错误
+                return 0; // 默认返回 0，提示错误
             }
         }
 
         private string EvaluateIncrement(string expression)
         {
             string variableName = expression.Replace("++", "").Replace(";", "").Trim();
-            int value = 11;  // ✅ 直接设为 101
+            int value = 11; // ✅ 直接设为 101
             return $"{variableName} = {value}";
         }
 
@@ -376,10 +364,10 @@ namespace CalcuTeaching
         private string EvaluateDecrement(string expression)
         {
             string variableName = expression.Replace("--", "").Replace(";", "").Trim();
-            int value = 9;  // ✅ 直接设为 99
+            int value = 9; // ✅ 直接设为 99
             return $"{variableName} = {value}";
         }
-    
+
         private string EvaluateMixedExpression(string expression)
         {
             Debug.Log($"混合运算表达式: {expression}");
@@ -428,54 +416,49 @@ namespace CalcuTeaching
                 }
             }
 
-            return  InvalidResultFlag;
+            return InvalidResultFlag;
         }
 
 
-
-
-
-
-    
         private string CleanVariableExpression(string expression)
         {
-            Debug.Log($"原始输入: {expression}");  // 打印原始输入表达式
+            Debug.Log($"原始输入: {expression}"); // 打印原始输入表达式
 
             // 去掉变量声明中的数据类型（如 int、double、float 等）
             string[] parts = expression.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-            Debug.Log($"分割后的部分: {string.Join(", ", parts)}");  // 打印分割后的各部分
+            Debug.Log($"分割后的部分: {string.Join(", ", parts)}"); // 打印分割后的各部分
 
             if (parts.Length == 2)
             {
                 string variableName = parts[0].Trim(); // 获取变量名部分
-                string valuePart = parts[1].Trim();    // 获取赋值部分
+                string valuePart = parts[1].Trim(); // 获取赋值部分
 
                 // 去掉数据类型，例如 "int", "float", "double"
                 variableName = Regex.Replace(variableName, @"\b(int|float|double)\b", "").Trim();
-                Debug.Log($"清理后的变量名: {variableName}");  // 打印清理后的变量名
+                Debug.Log($"清理后的变量名: {variableName}"); // 打印清理后的变量名
 
                 // 去掉尾部的分号（如果有的话）
                 if (valuePart.EndsWith(";"))
                 {
-                    valuePart = valuePart.Substring(0, valuePart.Length - 1).Trim();  // 去掉结尾的分号
-                    Debug.Log($"去掉分号后的赋值部分: {valuePart}");  // 打印去掉分号后的结果
+                    valuePart = valuePart.Substring(0, valuePart.Length - 1).Trim(); // 去掉结尾的分号
+                    Debug.Log($"去掉分号后的赋值部分: {valuePart}"); // 打印去掉分号后的结果
                 }
 
                 // 如果是 float 类型，去掉末尾的 "f"
                 if (valuePart.EndsWith("f"))
                 {
-                    valuePart = valuePart.Substring(0, valuePart.Length - 1).Trim();  // 去掉末尾的 "f"
-                    Debug.Log($"去掉 'f' 后的赋值部分: {valuePart}");  // 打印去掉 "f" 后的结果
+                    valuePart = valuePart.Substring(0, valuePart.Length - 1).Trim(); // 去掉末尾的 "f"
+                    Debug.Log($"去掉 'f' 后的赋值部分: {valuePart}"); // 打印去掉 "f" 后的结果
                 }
 
                 // 返回清理后的表达式，例如："a = 3"
                 string cleanedExpression = $"{variableName} = {valuePart}";
-                Debug.Log($"清理后的表达式: {cleanedExpression}");  // 打印最终结果
+                Debug.Log($"清理后的表达式: {cleanedExpression}"); // 打印最终结果
                 return cleanedExpression;
             }
 
-            Debug.Log($"没有 '=' 符号，原始表达式返回: {expression}");  // 没有 '=' 时返回原始表达式
-            return expression;  // 如果没有 '='，直接返回原始表达式
+            Debug.Log($"没有 '=' 符号，原始表达式返回: {expression}"); // 没有 '=' 时返回原始表达式
+            return expression; // 如果没有 '='，直接返回原始表达式
         }
 
         private bool CheckCode(string code)
@@ -488,29 +471,28 @@ namespace CalcuTeaching
             {
                 return true;
             }
-    
+
             // 如果代码格式不匹配，则返回 false
             return false;
         }
-    
-    
 
 
         private void Update()
         {
             // 检查 Ctrl + Enter（适合提交）
-            if (teachingPanel.activeSelf && Input.GetKeyDown(KeyCode.Return) && (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
+            if (teachingPanel.activeSelf && Input.GetKeyDown(KeyCode.Return) &&
+                (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl)))
             {
                 Debug.Log("Detected Ctrl+Enter, submitting code...");
                 OnSubmit();
             }
+
             if (hasSubmitted && !inputCorrect && !teachingPanel.activeSelf && Input.GetKeyDown(KeyCode.E))
             {
                 npcDialog.SetActive(false);
                 teachingPanel.SetActive(true);
                 hasSubmitted = false;
             }
-
         }
 
         public void PrepareNextQuestion(int index)
@@ -522,6 +504,7 @@ namespace CalcuTeaching
             codeInput.text = "";
             questionText.text = _questions[index];
         }
+
         public void PrepareNextQuestionWithoutPanel(int index)
         {
             npcDialog.SetActive(false);
@@ -537,7 +520,7 @@ namespace CalcuTeaching
         {
             return _currentQuestionIndex;
         }
-        
+
 
         public IEnumerator UpdateProgress(int progress)
         {
@@ -581,21 +564,5 @@ namespace CalcuTeaching
                 }
             }
         }
-
-        [Serializable]
-        private class ProgressWrapper
-        {
-            public int progress;
-            public ProgressWrapper(int p)
-            {
-                this.progress = p;
-            }
-        }
-
-
-      
-
-
     }
-    
-} 
+}
