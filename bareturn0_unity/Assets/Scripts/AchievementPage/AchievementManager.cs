@@ -1,132 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using TMPro;
+using System.Collections;
+using System.Text;
 
 public class AchievementManager : MonoBehaviour
 {
-    private string backendURL = "http://localhost:3000/achievements"; // API base URL
-    private string token;
-    private string saveFile;
-
-    public GameObject achievementPrefab;
-    public Transform contentPanel; // Assign this to the ScrollView Content
-
-    private void Start()
+    // Call this method with the achievement name you want to unlock
+    public void UnlockAchievement(string achievementName)
     {
-        // Load token and save file name from PlayerPrefs
-        token = PlayerPrefs.GetString("token", "");
-        saveFile = PlayerPrefs.GetString("currentSaveName", "");
+        string saveName = PlayerPrefs.GetString("currentSaveName", null);
 
-        if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(saveFile))
+        if (string.IsNullOrEmpty(saveName))
         {
-            StartCoroutine(FetchLockedAchievements());
-            StartCoroutine(FetchUnlockedAchievements());
+            Debug.LogError("Save name not set in PlayerPrefs.");
+            return;
         }
-        else
-        {
-            Debug.LogError("Start: Token or SaveFile missing! Cannot fetch achievements.");
-        }
+
+        StartCoroutine(SendUnlockRequest(saveName, achievementName));
     }
 
-    private IEnumerator FetchLockedAchievements()
+    private IEnumerator SendUnlockRequest(string saveName, string achievementName)
     {
-        UnityWebRequest lockedRequest = UnityWebRequest.Get($"{backendURL}/{saveFile}/locked");
-        lockedRequest.SetRequestHeader("Authorization", $"Bearer {token}");
-        yield return lockedRequest.SendWebRequest();
+        string url = $"http://localhost:3000/achievements/{saveName}/unlock";
 
-        if (lockedRequest.result != UnityWebRequest.Result.Success)
+        string jsonBody = JsonUtility.ToJson(new AchievementUnlockRequest
         {
-            Debug.LogError("FetchLockedAchievements: Error fetching locked achievements: " + lockedRequest.error);
-        }
-        else
-        {
-            LockedAchievementData[] lockedData = JsonHelper.FromJson<LockedAchievementData>(lockedRequest.downloadHandler.text);
+            achievementName = achievementName
+        });
 
-            foreach (var lockAch in lockedData)
+        using (UnityWebRequest request = UnityWebRequest.Put(url, jsonBody))
+        {
+            request.method = UnityWebRequest.kHttpVerbPUT;
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            // Add token if you're using auth
+            if (PlayerPrefs.HasKey("Token"))
             {
-                CreateAchievementUI(lockAch.name, lockAch.method, "Not Achieved Yet", false);
+                string token = PlayerPrefs.GetString("Token");
+                request.SetRequestHeader("Authorization", "Bearer " + token);
+            }
+
+            yield return request.SendWebRequest();
+
+            if (request.result == UnityWebRequest.Result.Success)
+            {
+                Debug.Log($"✅ Achievement '{achievementName}' unlocked!");
+            }
+            else
+            {
+                Debug.LogError($"❌ Failed to unlock achievement: {request.error}\n{request.downloadHandler.text}");
             }
         }
     }
 
-    private IEnumerator FetchUnlockedAchievements()
-    {
-
-        UnityWebRequest unlockedRequest = UnityWebRequest.Get($"{backendURL}/{saveFile}/unlocked");
-        unlockedRequest.SetRequestHeader("Authorization", $"Bearer {token}");
-        yield return unlockedRequest.SendWebRequest();
-
-        if (unlockedRequest.result != UnityWebRequest.Result.Success)
-        {
-            Debug.LogError("FetchUnlockedAchievements: Error fetching unlocked achievements: " + unlockedRequest.error);
-        }
-        else
-        {
-            UnlockedAchievementData[] unlockedData = JsonHelper.FromJson<UnlockedAchievementData>(unlockedRequest.downloadHandler.text);
-
-            foreach (var unlock in unlockedData)
-            {
-                CreateAchievementUI(unlock.achievementName, unlock.description, unlock.achievedDate, true);
-            }
-        }
-    }
-    private void CreateAchievementUI(string name, string description, string status, bool isUnlocked)
-    {
-        GameObject newAchievement = Instantiate(achievementPrefab, contentPanel);
-        newAchievement.transform.localScale = Vector3.one;
-
-        TMP_Text[] textElements = newAchievement.GetComponentsInChildren<TMP_Text>();
-
-        if (textElements.Length >= 3)
-        {
-            textElements[0].text = name;          // Achievement Name
-            textElements[1].text = description;   // Achievement Condition (Unlock Condition)
-            textElements[2].text = status;        // Achievement Status (Achieved Date or "Not Achieved Yet")
-        }
-        else
-        {
-            Debug.LogError($"CreateAchievementUI: Achievement UI Prefab is missing required text elements! {name}");
-        }
-
-        Debug.Log(isUnlocked
-            ? $"🟢 Displaying UNLOCKED achievement: {name} | Condition: {description} | Achieved on: {status}"
-            : $"🔴 Displaying LOCKED achievement: {name} | Condition: {description} | Status: Not Achieved Yet");
-    }
-
-
+    // Small helper class for JSON body
     [System.Serializable]
-    public class UnlockedAchievementData
+    public class AchievementUnlockRequest
     {
-        public string achievementName; // ✅ Name
-        public string description;  // ✅ Unlock condition
-        public string achievedDate;
-    }
-
-
-    [System.Serializable]
-    public class LockedAchievementData
-    {
-        public string name;
-        public string method;  // ✅ Unlock condition
-    }
-
-
-}
-
-// ✅ JSON Helper for array handling in Unity
-public static class JsonHelper
-{
-    public static T[] FromJson<T>(string json)
-    {
-        string newJson = "{ \"array\": " + json + "}";
-        return JsonUtility.FromJson<Wrapper<T>>(newJson).array;
-    }
-
-    [System.Serializable]
-    private class Wrapper<T>
-    {
-        public T[] array;
+        public string achievementName;
     }
 }
