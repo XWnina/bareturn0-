@@ -148,7 +148,7 @@ namespace CalcuTeaching
                 else
                 {
                     // 所有关卡完成后的结语
-                    Invoke(nameof(ShowCompletionDialogue), 2f);
+                    npcDialogueController.StartCompletionDialogue();
                 }
 
             }
@@ -522,37 +522,24 @@ namespace CalcuTeaching
             codeInput.text = "";
             questionText.text = _questions[index];
         }
+        public void PrepareNextQuestionWithoutPanel(int index)
+        {
+            npcDialog.SetActive(false);
+            teachingPanel.SetActive(false); // ✅ 保证面板不弹出
+            hasSubmitted = false;
+            inputCorrect = false;
+            codeInput.text = "";
+            questionText.text = _questions[index];
+        }
+
 
         public int GetCurrentQuestionIndex()
         {
             return _currentQuestionIndex;
         }
-        private void ShowCompletionDialogue()
-        {
-            // 第一句：简洁的成就感反馈
-            npcText.text = "Nice work. You can go teach the store people how to use computers now.";
+        
 
-            // 第二句 2 秒后显示（店铺提示）
-            Invoke(nameof(ShowBlacksmithLine), 2f);
-
-            // 保存记录并准备跳转场景
-            PlayerPrefs.SetString("PreviousScene", "calcuTeaching");
-            PlayerPrefs.Save();
-
-            string testValue = PlayerPrefs.GetString("PreviousScene", "NotFound");
-            Debug.Log("✅ PreviousScene 存储值为: " + testValue);
-
-            StartCoroutine(UpdateProgress(3));
-    
-            // 延迟跳转到 draftMap 场景（留出时间看完对话）
-            Invoke(nameof(LoadDraftMapScene), 6f); // 总共延迟 6 秒
-        }
-        private void ShowBlacksmithLine()
-        {
-            npcText.text = "My shop is right in town. Come visit when you have time!";
-        }
-
-        private IEnumerator UpdateProgress(int progress)
+        public IEnumerator UpdateProgress(int progress)
         {
             string token = PlayerPrefs.GetString("token", "");
             string saveName = PlayerPrefs.GetString("currentSaveName", "");
@@ -571,7 +558,7 @@ namespace CalcuTeaching
             }
 
             string url = $"http://localhost:3000/savefiles/{saveName}/updateProgress";
-            string jsonData = JsonUtility.ToJson(new ProgressWrapper(progress));
+            string jsonData = $"{{\"progress\":{progress}}}";
             Debug.Log("📤 发送的 JSON 数据：" + jsonData);
 
             using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
@@ -606,11 +593,9 @@ namespace CalcuTeaching
         }
 
 
-        private void LoadDraftMapScene()
-        {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("draftMap");
-        }
+      
 
 
     }
+    
 } 

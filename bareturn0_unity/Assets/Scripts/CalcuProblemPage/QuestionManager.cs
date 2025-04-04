@@ -14,6 +14,9 @@ namespace CalcuProblemPage
         }
 
         public bool skipToLast = false;
+        [Header("Demo Mode(Press \u2192 to skip)")]
+        public bool demoMode = false; // ✅ Inspector 中可勾选
+
 
         private readonly List<string> _productNames = new()
         {
@@ -59,7 +62,9 @@ namespace CalcuProblemPage
 
             for (int level = 1; level <= 3; level++)
             {
-                for (int i = 0; i < 2; i++)
+                int numQuestions =  2; // ✅ demo 模式下每个 level 出一题
+
+                for (int i = 0; i < numQuestions; i++)
                 {
                     string character = _characterNames[charIndex % _characterNames.Count];
                     Question q = GenerateQuestion(level, character);
@@ -70,6 +75,7 @@ namespace CalcuProblemPage
 
             _currentIndex = 0;
         }
+
 
         public Question GenerateQuestion(int level, string characterName)
         {

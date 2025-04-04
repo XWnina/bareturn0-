@@ -66,7 +66,6 @@ namespace CalcuProblemPage
 
         public void PlayRead()
         {
-            Debug.Log(">>> PlayRead() 被调用了！");
             animator.ResetTrigger("startIdle");
             animator.ResetTrigger("startWalk");
             animator.SetTrigger("startRead");
