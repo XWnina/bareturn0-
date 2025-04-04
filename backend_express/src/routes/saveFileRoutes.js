@@ -33,6 +33,7 @@ router.post("/", authMiddleware, async (req, res) => {
       { cardName: "Shield", count: 2 },
       { cardName: "Slash", count: 2 },
       { cardName: "SmallShield", count: 2 },
+      { cardName: "CheatAttack", count: 2 },
     ];
     const collectionCards = initialCardPool.map((card) => ({ ...card }));
     const deckCards = initialCardPool.map((card) => ({ ...card }));
@@ -42,7 +43,7 @@ router.post("/", authMiddleware, async (req, res) => {
       { name: "if", count: 1 },
       { name: "while", count: 1 },
       { name: "math", count: 1 },
-      { name: "BlankCard", count: 1 },
+      { name: "BlankCard", count: 10 },
     ];
 
     const newSave = new SaveFile({
