@@ -27508,7 +27508,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 787349977}
-  - component: {fileID: 787349976}
   - component: {fileID: 787349978}
   m_Layer: 0
   m_Name: PlayerInfoLoader
@@ -27517,18 +27516,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &787349976
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 787349975}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8b69f02bd6bcc7e4f847f91feba7ae9e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &787349977
 Transform:
   m_ObjectHideFlags: 0
@@ -43968,7 +43955,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1984698981}
-  - component: {fileID: 1984698980}
   - component: {fileID: 1984698979}
   m_Layer: 0
   m_Name: AchievementPopUpManager
@@ -43990,20 +43976,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   achievementPopupPanel: {fileID: 2105114636}
-  achievementText: {fileID: 50684106}
-  closeButton: {fileID: 734515471}
---- !u!114 &1984698980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1984698978}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d8de9e1c7380461bba272b2023fdb8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   achievementText: {fileID: 50684106}
   closeButton: {fileID: 734515471}
 --- !u!4 &1984698981

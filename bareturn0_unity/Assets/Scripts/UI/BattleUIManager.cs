@@ -32,7 +32,15 @@ public class BattleUIManager : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject); // 避免重复
+        }
 
         // ��ʼ����Energy Warning
         if (energyWarningText != null)
