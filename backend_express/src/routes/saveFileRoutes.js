@@ -73,24 +73,24 @@ router.post("/", authMiddleware, async (req, res) => {
     let achievementUnlocked = null;
 
     if (saveFileCount === 1) {
-      const freshmanAchievement = await Achievement.findOne({
-        name: "Freshman",
-      });
+      const firstStep = await Achievement.findOne({ name: "FirstStep" });
 
-      if (freshmanAchievement) {
+      if (firstStep) {
+        const unlockTime = new Date();
+
         newSave.unlockedAchievements.push({
-          achievementId: freshmanAchievement._id,
-          achievedDate: new Date(),
+          name: firstStep.name,
+          achievedDate: unlockTime,
         });
 
         await newSave.save();
 
         achievementUnlocked = {
-          message: "Freshman achievement unlocked!",
+          message: "FirstStep achievement unlocked!",
           achievement: {
-            name: freshmanAchievement.name,
-            method: freshmanAchievement.method,
-            achievedDate: new Date(),
+            name: firstStep.name,
+            method: firstStep.method,
+            achievedDate: unlockTime,
           },
         };
       }
