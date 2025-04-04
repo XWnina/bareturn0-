@@ -73,13 +73,21 @@ public class TownMapManager : MonoBehaviour
                 int userProgress = progressData.progress;
                 Debug.Log($"[TownMapManager] ✅ Progress fetched: {userProgress}");
 
-                if (userProgress >= 3)
+                if (userProgress == 3)
                 {
                     BlacksmithShopButton.interactable = true;
-                    StoreButton.interactable = true;
                     close1Txt.gameObject.SetActive(false);
-                    close2Txt.gameObject.SetActive(false);
                     BlacksmithShopNPC.gameObject.SetActive(true);
+                    StoreButton.interactable = false;        
+                    close2Txt.gameObject.SetActive(true);            
+                    StoreNPC.gameObject.SetActive(false);
+                }
+                else if (userProgress >= 4) {
+                    BlacksmithShopButton.interactable = true;
+                    close1Txt.gameObject.SetActive(false);
+                    BlacksmithShopNPC.gameObject.SetActive(true);
+                    StoreButton.interactable = true;        
+                    close2Txt.gameObject.SetActive(false);            
                     StoreNPC.gameObject.SetActive(true);
                 }
                 else
