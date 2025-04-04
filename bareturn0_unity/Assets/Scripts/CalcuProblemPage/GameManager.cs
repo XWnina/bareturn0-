@@ -88,6 +88,7 @@ namespace CalcuProblemPage
                 yield return new WaitUntil(() => dialogManager.IsDialogPlaying() == false);
 
                 // 等结束语播放完后再跳转或更新进度
+                
                 StartCoroutine(UpdateProgressAndGoToMap(4));
             }
         }
@@ -158,6 +159,8 @@ namespace CalcuProblemPage
                     Debug.LogError("❌ Failed to update progress: " + request.error);
                 }
             }
+            FindObjectOfType<AchievementManager>()?. UnlockAchievement ("Live For Your Own");
+            PlayerPrefs.SetInt("AchievementUnlock", 2);
 
             // 跳转场景
             Invoke(nameof(LoadDraftMapScene), 2f);
