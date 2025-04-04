@@ -14,13 +14,10 @@ namespace CalcuProblemPage
         public TMP_Text npcText;
 
         public float defaultDisplayTime = 2f;
-        
+
         private readonly Queue<string> _dialogQueue = new();
         private bool _isWaitingForEnter = false;
-        [Header("Optional UI")]
-        public GameObject nextButton; // ← 拖入 Next 按钮对象
-        
-        
+        [Header("Optional UI")] public GameObject nextButton; // ← 拖入 Next 按钮对象
 
 
         void Update()
@@ -31,6 +28,7 @@ namespace CalcuProblemPage
                 ShowNextLine();
             }
         }
+
         public void ContinueDialogManually()
         {
             if (_isWaitingForEnter)
@@ -74,7 +72,7 @@ namespace CalcuProblemPage
             HideAllDialogs();
         }
 
-       
+
         public void EnqueueDialogLines(List<string> lines)
         {
             foreach (string line in lines)

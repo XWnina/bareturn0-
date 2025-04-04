@@ -43,6 +43,7 @@ namespace CalcuProblemPage
                     _isShowingErrorPanel = false;
                 }
             }
+
             if (teachingPanel.activeSelf)
             {
                 if (dialogManager.nextButton != null && dialogManager.nextButton.activeSelf)
@@ -57,7 +58,7 @@ namespace CalcuProblemPage
             {
                 StartCoroutine(CheckAnswer());
             }
-            
+
 
             // ✅ DEMO 模式：按 → 键跳过当前题目
             if (questionManager.demoMode && Input.GetKeyDown(KeyCode.RightArrow))
@@ -122,7 +123,7 @@ namespace CalcuProblemPage
             double error = Math.Abs(userAnswer - correctAnswer);
             Debug.Log($"✅ userAnswer: {userAnswer}, correctAnswer: {correctAnswer}");
             Debug.Log($"inaccuracy: {error}, tolerance: {tolerance}, result: {error <= tolerance}");
-            double userRounded = Math.Round(userAnswer, 2); 
+            double userRounded = Math.Round(userAnswer, 2);
 
             if (error <= tolerance)
             {
@@ -169,8 +170,8 @@ namespace CalcuProblemPage
             dialogManager.EnqueueDialogLines(lines);
             yield return new WaitUntil(() => dialogManager.IsDialogPlaying() == false);
 
-            if (!_finished)  // ✅ 再次确认没完成才显示教学面板
-                teachingPanel.SetActive(true);// ✅ 等说完再打开
+            if (!_finished) // ✅ 再次确认没完成才显示教学面板
+                teachingPanel.SetActive(true); // ✅ 等说完再打开
         }
 
 

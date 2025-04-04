@@ -15,9 +15,9 @@ namespace CalcuTeaching
         public TextMeshProUGUI questionText;
         public CodeEvaluator codeEvaluator;
         public GameObject nextButton;
+
         [Header("Demo Mode(Press \u2192 to skip)")]
         public bool demoMode;
-
 
 
         private int _dialogueIndex;
@@ -118,6 +118,7 @@ namespace CalcuTeaching
             "For example: int result = 5 % 2;  // result will be 1",
             "Try writing a modulo expression yourself!"
         };
+
         private string[] _completionLines = new[]
         {
             "Nice work. You can go teach the store people how to use computers now.",
@@ -135,13 +136,12 @@ namespace CalcuTeaching
 
             Debug.Log($"🔑 当前Token为: {token}");
             Debug.Log($"📂 当前存档名为: {saveName}");
-            nextButton.SetActive(true);  
+            nextButton.SetActive(true);
             npcDialog.SetActive(true);
             playerDialog.SetActive(false);
             teachingPanel.SetActive(false);
-            
-            ShowNextLine();
 
+            ShowNextLine();
         }
 
         private void ShowNextLine()
@@ -197,10 +197,12 @@ namespace CalcuTeaching
                 }
             }
         }
+
         public void OnNextButtonClicked()
         {
-            HandleDialogueAdvance();  // 封装原先 Update() 中 Enter 的逻辑
+            HandleDialogueAdvance(); // 封装原先 Update() 中 Enter 的逻辑
         }
+
         private void HandleDialogueAdvance()
         {
             if (_playingDoubleIntro)
@@ -266,8 +268,6 @@ namespace CalcuTeaching
         }
 
 
-
-
         private void Update()
         {
             if (demoMode && Input.GetKeyDown(KeyCode.RightArrow))
@@ -294,38 +294,35 @@ namespace CalcuTeaching
                 TriggerNextTeachingDialogue(0);
                 _waitingForInput = false;
             }
-
-
-
         }
 
-        
+
         private void SkipToNextQuestion()
-{
-    int currentIndex = codeEvaluator.GetCurrentQuestionIndex();
-    int nextIndex = currentIndex + 1;
+        {
+            int currentIndex = codeEvaluator.GetCurrentQuestionIndex();
+            int nextIndex = currentIndex + 1;
 
-    if (nextIndex < 11)
-    {
-        Debug.Log($"🚀 Demo 跳转到题目 {nextIndex}");
+            if (nextIndex < 11)
+            {
+                Debug.Log($"🚀 Demo 跳转到题目 {nextIndex}");
 
-        typeof(CodeEvaluator)
-            .GetField("_currentQuestionIndex", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
-            ?.SetValue(codeEvaluator, nextIndex);
+                typeof(CodeEvaluator)
+                    .GetField("_currentQuestionIndex",
+                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+                    ?.SetValue(codeEvaluator, nextIndex);
 
-        codeEvaluator.PrepareNextQuestionWithoutPanel(nextIndex);
-        TriggerNextTeachingDialogue(nextIndex);
+                codeEvaluator.PrepareNextQuestionWithoutPanel(nextIndex);
+                TriggerNextTeachingDialogue(nextIndex);
 
-        // ✅ 这里是关键：阻止再次触发 index 0
-        _waitingForInput = false;
-    }
-    else
-    {
-        Debug.Log("✅ Demo 已到最后一题，调用结语");
-        codeEvaluator.SendMessage("ShowCompletionDialogue");
-    }
-}
-
+                // ✅ 这里是关键：阻止再次触发 index 0
+                _waitingForInput = false;
+            }
+            else
+            {
+                Debug.Log("✅ Demo 已到最后一题，调用结语");
+                codeEvaluator.SendMessage("ShowCompletionDialogue");
+            }
+        }
 
 
         private void TriggerNextTeachingDialogue(int index)
@@ -333,7 +330,8 @@ namespace CalcuTeaching
             switch (index)
             {
                 case 0:
-                    StartTeachingDialogue(new string[] {
+                    StartTeachingDialogue(new string[]
+                    {
                     }, "Declare an int variable and assign it a value. For example: int apple = 3;");
                     break;
                 case 1:
@@ -368,6 +366,7 @@ namespace CalcuTeaching
                     break;
             }
         }
+
         public void StartCompletionDialogue()
         {
             _isShowingCompletion = true;
@@ -377,8 +376,8 @@ namespace CalcuTeaching
             PlayerPrefs.SetString("PreviousScene", "calcuTeaching");
             PlayerPrefs.Save();
             StartCoroutine(codeEvaluator.UpdateProgress(3));
-
         }
+
         private void ShowNextCompletionLine()
         {
             if (_completionLineIndex < _completionLines.Length)
@@ -396,6 +395,7 @@ namespace CalcuTeaching
                 Invoke(nameof(LoadNextScene), 2f); // 给个缓冲时间
             }
         }
+
         private void LoadNextScene()
         {
             if (_shouldLoadNextScene)
@@ -403,15 +403,6 @@ namespace CalcuTeaching
                 UnityEngine.SceneManagement.SceneManager.LoadScene("draftMap");
             }
         }
-
-
-
-        
-        
-
-
-
-
 
 
         public void StartDoubleTeachingDialogue(int questionIndex)
@@ -604,11 +595,13 @@ namespace CalcuTeaching
                 codeInput.text = "";
             }
         }
+
         public void StartModuloTeachingDialogue()
         {
-            StartTeachingDialogue(_modIntroLines, "Try writing a modulo expression yourself! (e.g. int result = 5 % 2;)");
+            StartTeachingDialogue(_modIntroLines,
+                "Try writing a modulo expression yourself! (e.g. int result = 5 % 2;)");
         }
-       
+
         public void StartIncrementTeachingDialogue()
         {
             string[] incIntroLines = new string[]
@@ -621,6 +614,7 @@ namespace CalcuTeaching
             string npcQuestionText = "If you have: int a = 10;Try writing a line of code that increments a variable.";
             StartTeachingDialogue(incIntroLines, npcQuestionText);
         }
+
         public void StartDecrementTeachingDialogue()
         {
             string[] decIntroLines = new string[]
@@ -632,6 +626,7 @@ namespace CalcuTeaching
             string npcQuestionText = "If you have: int a = 10; Write a line of code that uses the decrement operator.";
             StartTeachingDialogue(decIntroLines, npcQuestionText);
         }
+
         private readonly string[] _mixedIntroLines = new string[]
         {
             "Excellent! You've learned variables and operators.",
@@ -658,7 +653,7 @@ namespace CalcuTeaching
 
         private void ShowNextTeachingLine()
         {
-            Debug.Log("当前教学行索引：" + _currentLineIndex);  // 调试用
+            Debug.Log("当前教学行索引：" + _currentLineIndex); // 调试用
             if (_currentLineIndex < _currentIntroLines.Length)
             {
                 npcDialog.SetActive(true);
@@ -679,19 +674,13 @@ namespace CalcuTeaching
                 // 反馈计算结果
                 if (codeEvaluator.inputCorrect)
                 {
-                    npcText.text = $"Well done! {codeEvaluator.GetVariableValue()}";  // 显示计算结果
+                    npcText.text = $"Well done! {codeEvaluator.GetVariableValue()}"; // 显示计算结果
                 }
+
                 codeEvaluator.hasSubmitted = false;
                 codeEvaluator.inputCorrect = false;
                 codeInput.text = "";
             }
         }
-
-
-
-        
-
-
-
     }
 }
