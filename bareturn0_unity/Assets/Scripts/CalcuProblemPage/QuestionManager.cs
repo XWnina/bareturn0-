@@ -10,8 +10,10 @@ namespace CalcuProblemPage
         public class Question
         {
             public string text;
-            public float answer;
+            public double answer;
         }
+
+        public bool skipToLast = false;
 
         private readonly List<string> _productNames = new()
         {
@@ -40,6 +42,14 @@ namespace CalcuProblemPage
         void Start()
         {
             GenerateAllQuestions();
+            if (skipToLast)
+            {
+                _currentIndex = 5; // ✅ 跳到第6题
+            }
+            else
+            {
+                _currentIndex = 0;
+            }
         }
 
         public void GenerateAllQuestions()
@@ -73,44 +83,47 @@ namespace CalcuProblemPage
             int quantity1 = UnityEngine.Random.Range(1, 5);
             int quantity2 = UnityEngine.Random.Range(1, 4);
 
-            float price1 = RandomPrice();
-            float price2 = RandomPrice();
-            float discount = UnityEngine.Random.Range(0.6f, 0.9f);
+            double price1 = RoundToTwoDecimals(RandomPrice());
+            double price2 = RoundToTwoDecimals(RandomPrice());
+            double discount = RandomDiscount();
+
+
             string questionText;
-            float answer;
+            double answer;
 
             if (level == 1)
             {
                 answer = price1 * quantity1;
-                questionText = $"{characterName} bought {quantity1} {item1} today, each for {price1:F2} coins. How much should I charge {himHer}?";
+                questionText =
+                    $"{characterName} bought {quantity1} {item1} today, each for {price1:F2} coins. How much should I charge {himHer}?";
             }
             else if (level == 2)
             {
                 answer = price1 * quantity1 + price2 * quantity2;
-                questionText = $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each and {quantity2} {item2} at {price2:F2} coins each. How much should I charge {himHer}?";
+                questionText =
+                    $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each and {quantity2} {item2} at {price2:F2} coins each. How much should I charge {himHer}?";
             }
             else // level == 3
             {
-                float originalTotal = price1 * quantity1;
-                float discountedTotal = Mathf.Round(originalTotal * discount * 100f) / 100f;
-                int discountPercent = Mathf.RoundToInt(discount * 100);
+                double originalTotal = price1 * quantity1;
+                double discountedTotal = originalTotal * discount;
+                int discountPercent = Mathf.RoundToInt((float)(discount * 100));
 
                 if (UnityEngine.Random.value < 0.5f)
                 {
-                    float payment = discountedTotal + RandomPrice(2f, 10f);
-                    payment = Mathf.Round(payment * 100f) / 100f;
-                    answer = Mathf.Round((payment - discountedTotal) * 100f) / 100f;
+                    double payment = RoundToTwoDecimals(discountedTotal + RandomPrice(2f, 10f));
+                    answer = payment - discountedTotal;
 
-                    questionText = $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. {Capitalize(heShe)} gave me {payment:F2} coins. How much change should I give {himHer}?";
+                    questionText =
+                        $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. {Capitalize(heShe)} gave me {payment:F2} coins. How much change should I give {himHer}?";
                 }
                 else
                 {
                     answer = discountedTotal;
-                    questionText = $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. How much should I charge {himHer}?";
+                    questionText =
+                        $"{characterName} bought {quantity1} {item1} at {price1:F2} coins each with a {discountPercent}% discount. How much should I charge {himHer}?";
                 }
             }
-
-            answer = Mathf.Round(answer * 100f) / 100f;
 
             return new Question { text = questionText, answer = answer };
         }
@@ -122,13 +135,18 @@ namespace CalcuProblemPage
             {
                 item = _productNames[UnityEngine.Random.Range(0, _productNames.Count)];
             } while (item == exclude);
+
             return item;
         }
 
-        private float RandomPrice(float min = 1.0f, float max = 30.0f)
+        private double RandomPrice(double min = 1.0, double max = 30.0)
         {
-            float value = UnityEngine.Random.Range(min, max);
-            return Mathf.Round(value * 100f) / 100f;
+            return UnityEngine.Random.Range((float)min, (float)max);
+        }
+
+        private double RoundToTwoDecimals(double value)
+        {
+            return Math.Round(value, 2, MidpointRounding.AwayFromZero);
         }
 
         private string Capitalize(string input)
@@ -144,11 +162,11 @@ namespace CalcuProblemPage
             return "No more questions.";
         }
 
-        public float GetCurrentAnswer()
+        public double GetCurrentAnswer()
         {
             if (_currentIndex < _allQuestions.Count)
                 return _allQuestions[_currentIndex].answer;
-            return -1f;
+            return -1.0;
         }
 
         public void MoveToNextQuestion()
@@ -166,6 +184,26 @@ namespace CalcuProblemPage
             if (_currentIndex < 2) return 1;
             if (_currentIndex < 4) return 2;
             return 3;
+        }
+
+        private double RandomDiscount(double min = 0.6, double max = 0.9)
+        {
+            return Math.Round(UnityEngine.Random.Range((float)min, (float)max), 4);
+        }
+
+        public string GetCurrentCharacterGender()
+        {
+            int indexToCheck = Mathf.Clamp(_currentIndex, 0, _allQuestions.Count - 1);
+
+            string text = _allQuestions[indexToCheck].text;
+
+            foreach (var entry in _characterGender)
+            {
+                if (text.Contains(entry.Key))
+                    return entry.Value;
+            }
+
+            return "male"; // fallback
         }
     }
 }

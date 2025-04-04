@@ -529,22 +529,29 @@ namespace CalcuTeaching
         }
         private void ShowCompletionDialogue()
         {
-            // 显示最终对话
-            npcText.text = "Incredible! You've learned all the basic calculations.\\n";
+            // 第一句：简洁的成就感反馈
+            npcText.text = "Nice work. You can go teach the store people how to use computers now.";
 
-            // 设置全局变量
+            // 第二句 2 秒后显示（店铺提示）
+            Invoke(nameof(ShowBlacksmithLine), 2f);
+
+            // 保存记录并准备跳转场景
             PlayerPrefs.SetString("PreviousScene", "calcuTeaching");
-            PlayerPrefs.Save(); // ✅ 推荐保存
-            // ✅ 立即读取并打印验证
+            PlayerPrefs.Save();
+
             string testValue = PlayerPrefs.GetString("PreviousScene", "NotFound");
             Debug.Log("✅ PreviousScene 存储值为: " + testValue);
-        
-        
-            StartCoroutine(UpdateProgress(3));  // 你可以根据当前关卡传入对应数字
-        
-            // 跳转到 draftMap 场景（延迟一两秒更自然）
-            Invoke(nameof(LoadDraftMapScene), 3f); // 3秒后跳转
+
+            StartCoroutine(UpdateProgress(3));
+    
+            // 延迟跳转到 draftMap 场景（留出时间看完对话）
+            Invoke(nameof(LoadDraftMapScene), 6f); // 总共延迟 6 秒
         }
+        private void ShowBlacksmithLine()
+        {
+            npcText.text = "My shop is right in town. Come visit when you have time!";
+        }
+
         private IEnumerator UpdateProgress(int progress)
         {
             string token = PlayerPrefs.GetString("token", "");

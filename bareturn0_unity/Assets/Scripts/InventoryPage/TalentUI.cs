@@ -17,7 +17,7 @@ public class TalentUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public int count;
     public TextMeshProUGUI countText;
 
-    private Vector3 originalScale;   // ��¼��ʼ����
+    private Vector3 originalScale; // Store the original scale of the object
     public bool allowHoverEffect = true;
     void Awake()
     {
@@ -51,18 +51,18 @@ public class TalentUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         return nameText.text;
     }
-    // �����ͣ�ӿ�
+   
     public void OnPointerEnter(PointerEventData eventData)
     {
         if (!allowHoverEffect) return;
-        // �Ŵ�
+        // Scale up the object when the pointer enters
         transform.localScale = originalScale * 1.2f;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         if (!allowHoverEffect) return;
-        // �ָ�
+
         transform.localScale = originalScale;
     }
 }

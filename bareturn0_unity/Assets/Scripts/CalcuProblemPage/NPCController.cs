@@ -4,8 +4,7 @@ namespace CalcuProblemPage
 {
     public class NpcController : MonoBehaviour
     {
-        [Header("动画与移动目标")]
-        public Animator animator;
+        [Header("动画与移动目标")] public Animator animator;
         public Transform targetPosition;
         public Transform startPosition;
         public float moveSpeed = 2f;
@@ -20,6 +19,7 @@ namespace CalcuProblemPage
             {
                 transform.position = startPosition.position;
             }
+
             animator.ResetTrigger("startRead");
             animator.ResetTrigger("startWalk");
             animator.ResetTrigger("startIdle");

@@ -3,10 +3,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System.Collections;
+using UnityEngine.Networking;
 
 public class InventoryManager : MonoBehaviour
 {
-
     public static InventoryManager Instance;
     public Button ExitButton;
     public GameObject CardCollection;
@@ -38,8 +39,19 @@ public class InventoryManager : MonoBehaviour
     // Deck Panel
     public GameObject DeckPanel;
     public TextMeshProUGUI DeckPanelTitle;
+    public Button DeckPanelCloseButton;
+    public DeckPanelManager deckPanelManager;
 
+    // New Deck Panel
+    public GameObject NewDeckPanel;
+    public TMP_InputField DeckNameInput;
+    public Button ConfirmCreateDeckButton;
+    public Button CancelCreateDeckButton;
 
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -66,7 +78,37 @@ public class InventoryManager : MonoBehaviour
             MaterialPanel.SetActive(false);
             MaterialBackground.SetActive(false);
         });
+
+        DeckPanelCloseButton.onClick.AddListener(() =>
+        {
+            DeckPanel.SetActive(false);
+            DeckPanelTitle.text = "";
+        });
+
         DisplayAllDeckButtons();
+
+        NewDeckPanel.SetActive(false);
+
+        NewDeckButton.onClick.AddListener(() =>
+        {
+            NewDeckPanel.SetActive(true);
+            DeckNameInput.text = "";
+        });
+
+        CancelCreateDeckButton.onClick.AddListener(() =>
+        {
+            NewDeckPanel.SetActive(false);
+        });
+
+        ConfirmCreateDeckButton.onClick.AddListener(() =>
+        {
+            string deckName = DeckNameInput.text.Trim();
+            if (!string.IsNullOrEmpty(deckName))
+            {
+                StartCoroutine(CreateNewDeck(deckName));
+            }
+        });
+
     }
 
     public void populateCollection()
@@ -79,9 +121,13 @@ public class InventoryManager : MonoBehaviour
         for (int i = 0; i < playerCards.Count; i++)
         {
             CardData cardData = playerCards[i];
-
             GameObject card = Instantiate(CardPrefab, CardCollection.transform);
             CardThumbnailUI cardThumbnail = card.GetComponent<CardThumbnailUI>();
+            // Enable hover description
+            cardThumbnail.enableHoverDescription = true;
+            cardThumbnail.hoverDescriptionGroup = card.transform.Find("HoverDecriptionImage").gameObject;
+            cardThumbnail.hoverDescriptionTMP = card.transform.Find("HoverDecriptionImage/HoverDescriptionTMP").GetComponent<TextMeshProUGUI>();
+            
             cardThumbnail.SetCardThumbnail(cardData);
 
         }
@@ -96,12 +142,13 @@ public class InventoryManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
+
         for (int i = 0; i < talentList.Count; i++)
         {
             string scrollName = talentList[i];
-
             GameObject scrollObject = Instantiate(TalentPrefab, MaterialPanel.transform);
             TalentUI scrollUI = scrollObject.GetComponent<TalentUI>();
+
             if (scrollName == "if" && ifNum != 0)
             {
                 scrollUI.setScroll(scrollName, ifNum);
@@ -114,49 +161,48 @@ public class InventoryManager : MonoBehaviour
             {
                 scrollUI.setScroll(scrollName, mathNum);
             }
-
         }
     }
+
     public void materialButtonClicked()
     {
+        Debug.Log("Material Button Clicked");
         MaterialPanel.SetActive(true);
         MaterialBackground.SetActive(true);
+
         playerInfoLoader.GetAllMaterials(() =>
-      {
-          talentList.Clear();
-          blankcardNum = 0;
+        {
+            talentList.Clear();
+            blankcardNum = 0;
 
-          foreach (string material in playerInfoLoader.materials)
-          {
-              if (material.ToLower().Contains("blank"))
-              {
-                  blankcardNum++;
-              }
-              else if (material.ToLower().Contains("math"))
-              {
-                  mathNum++;
-                  talentList.Add(material);
+            foreach (string material in playerInfoLoader.materials)
+            {
+                if (material.ToLower().Contains("blank"))
+                {
+                    blankcardNum++;
+                }
+                else if (material.ToLower().Contains("math"))
+                {
+                    mathNum++;
+                    talentList.Add(material);
+                }
+                else if (material.ToLower().Contains("if"))
+                {
+                    ifNum++;
+                    talentList.Add(material);
+                }
+                else if (material.ToLower().Contains("while"))
+                {
+                    whileNum++;
+                    talentList.Add(material);
+                }
+            }
 
-              }
-              else if (material.ToLower().Contains("if"))
-              {
-                  ifNum++;
-                  talentList.Add(material);
-
-              }
-              else if (material.ToLower().Contains("while"))
-              {
-                  whileNum++;
-                  talentList.Add(material);
-
-              }
-
-          }
-          BlankNumText.text = blankcardNum.ToString();
-          populateMaterialView();
-      });
-
+            BlankNumText.text = blankcardNum.ToString();
+            populateMaterialView();
+        });
     }
+
     public void DisplayAllDeckButtons()
     {
         deckInfoLoader.LoadAllDecks((deckList) =>
@@ -169,17 +215,64 @@ public class InventoryManager : MonoBehaviour
             foreach (var deck in deckList)
             {
                 GameObject buttonObj = Instantiate(DeckButtonPrefab, CardDeck.transform);
-                buttonObj.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = deck.name;
+                buttonObj.GetComponentInChildren<TextMeshProUGUI>().text = deck.name;
 
                 string deckName = deck.name;
-                buttonObj.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
-                {
-                    Debug.Log("你点击了卡组：" + deckName);
+                string deckId = deck._id;
+                string saveFileId = deckInfoLoader.currentSaveFileId;
 
-                    DeckPanel.SetActive(true); // 显示面板
-                    DeckPanelTitle.text = deckName; // 设置标题
+                buttonObj.GetComponent<Button>().onClick.AddListener(() =>
+                {
+                    Debug.Log("Deck Button Clicked: " + deckName);
+                    DeckPanel.SetActive(true);
+                    DeckPanelTitle.text = deckName;
+                    deckPanelManager.LoadDeckEditor(deckId, saveFileId, deckName);
                 });
             }
         });
     }
+    IEnumerator CreateNewDeck(string deckName)
+    {
+        string token = PlayerPrefs.GetString("token");
+        string saveFileId = deckInfoLoader.currentSaveFileId;
+        string url = $"http://localhost:3000/carddecks/create";
+
+        // JSON payload
+        CreateDeckRequest payload = new CreateDeckRequest
+        {
+            name = deckName,
+            saveFileId = saveFileId
+        };
+
+        string jsonBody = JsonUtility.ToJson(payload);
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + token);
+
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            Debug.LogError("Failed to create deck: " + request.error);
+            Debug.LogError("Response: " + request.downloadHandler.text);
+        }
+        else
+        {
+            NewDeckPanel.SetActive(false);
+            DisplayAllDeckButtons(); // Refresh deck list
+        }
+    }
+    [System.Serializable]
+    public class CreateDeckRequest
+    {
+        public string name;
+        public string saveFileId;
+    }
+
+
 }
