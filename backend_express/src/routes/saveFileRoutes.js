@@ -222,7 +222,7 @@ router.get("/:saveName/playerName", authMiddleware, async (req, res) => {
   try {
     const save = await SaveFile.findOne({
       userId: req.user.id,
-      saveName: req.params.saveNa,
+      saveName: req.params.saveName,
     });
 
     if (!save) {
@@ -337,6 +337,39 @@ router.get("/:saveName/cardCollection", authMiddleware, async (req, res) => {
   }
 });
 
+// Get full savefile object by saveName
+router.get("/:saveName", authMiddleware, async (req, res) => {
+  try {
+    const save = await SaveFile.findOne({
+      userId: req.user.id,
+      saveName: req.params.saveName,
+    });
+
+    if (!save) {
+      const errorResponse = { error: "Save file not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    const response = {
+      saveName: save.saveName,
+      playerName: save.playerName,
+      progress: save.progress,
+      coins: save.coins,
+      maxHealth: save.maxHealth,
+      speed: save.speed,
+      createdAt: save.createdAt,
+    };
+
+    logRequestResponse(req, res, response);
+    res.json(response);
+  } catch (err) {
+    const error = { error: err.message };
+    logRequestResponse(req, res, error);
+    res.status(500).json(error);
+  }
+});
+
 /* Setters */
 // Update playerName
 router.put("/:saveName/updatePlayerName", authMiddleware, async (req, res) => {
@@ -369,6 +402,31 @@ router.put("/:saveName/updatePlayerName", authMiddleware, async (req, res) => {
   } catch (err) {
     logRequestResponse(req, res, { error: err.message });
     res.status(500).json({ error: err.message });
+  }
+});
+router.get("/:saveName/selectedDeckName", authMiddleware, async (req, res) => {
+  try {
+    const saveFile = await SaveFile.findOne({
+      userId: req.user.id,
+      saveName: req.params.saveName,
+    });
+
+    if (!saveFile) {
+      const errorResponse = { error: "Save file not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    const selectedDeck = await CardDeck.findById(saveFile.selectedDeck);
+    const selectedDeckName = selectedDeck?.name ?? "NULL";
+
+    const response = { selectedDeckName };
+    logRequestResponse(req, res, response);
+    res.json(response);
+  } catch (err) {
+    const error = { error: err.message };
+    logRequestResponse(req, res, error);
+    res.status(500).json(error);
   }
 });
 
