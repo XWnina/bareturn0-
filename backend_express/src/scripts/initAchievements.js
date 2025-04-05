@@ -13,6 +13,7 @@ const predefinedAchievements = [
 
   // Level achievements
   { name: "Person You Know Who", method: "Complete level 1", hidden: false },
+  { name: "Fighter", method: "Complete level 2", hidden: false },
   { name: "Live For Your Own", method: "Complete level 4", hidden: false },
 
   // Hidden achievements

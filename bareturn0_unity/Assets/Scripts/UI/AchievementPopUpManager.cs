@@ -13,14 +13,13 @@ public class AchievementPopUpManager : MonoBehaviour
     // Mapping from int (PlayerPrefs) to achievement name
     private Dictionary<int, string> achievementIdToName = new Dictionary<int, string>
     {
-        { 0, "FirstStep" },
         { 1, "Person You Know Who" },
-        { 2, "Live For Your Own" },
-        { 4, "Rich Kid" },
-        { 5, "Mini Tycoon" },
-        { 6, "Millionaire" },
-        { 7, "Battle Expert" },
-        { 8, "PassionOn" }
+        { 2, "Fighter" },
+        { 4, "Live For Your Own" },
+        
+        { 10, "Mini Tycoon" },
+        { 11, "Millionaire" },
+        { 12, "Battle Expert" },
     };
 
     void Start()
