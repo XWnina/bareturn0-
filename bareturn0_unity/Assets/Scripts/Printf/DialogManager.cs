@@ -4,6 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Networking;
 
 public class DialogManager : MonoBehaviour
 {
@@ -120,10 +121,9 @@ public class DialogManager : MonoBehaviour
             {
                 Debug.LogError("❌ SendDialogInfoManager is NULL! Could not save data.");
             }
-            // Unlock achievement for completing the first level
-            FindObjectOfType<AchievementManager>()?.UnlockAchievement("Person You Know Who");
-            PlayerPrefs.SetInt("AchievementUnlock", 1); 
-            
+          
+            PlayerPrefs.SetInt("AchievementUnlock", 1);
+
             StartCoroutine(LoadSceneAfterDelay("draftMap", 1f));
             return;
         }
@@ -464,6 +464,5 @@ public class DialogManager : MonoBehaviour
 
         return sb.ToString();
     }
-
 
 }

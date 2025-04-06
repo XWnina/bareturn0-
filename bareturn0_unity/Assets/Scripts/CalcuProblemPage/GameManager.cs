@@ -18,6 +18,8 @@ namespace CalcuProblemPage
 
         private string _token;
         private string _saveName;
+        private string baseUrl = "http://localhost:3000/";
+
 
 
         void Start()
@@ -88,7 +90,7 @@ namespace CalcuProblemPage
                 yield return new WaitUntil(() => dialogManager.IsDialogPlaying() == false);
 
                 // 等结束语播放完后再跳转或更新进度
-                
+
                 StartCoroutine(UpdateProgressAndGoToMap(4));
             }
         }
@@ -159,8 +161,8 @@ namespace CalcuProblemPage
                     Debug.LogError("❌ Failed to update progress: " + request.error);
                 }
             }
-            FindObjectOfType<AchievementManager>()?. UnlockAchievement ("Live For Your Own");
-            PlayerPrefs.SetInt("AchievementUnlock", 2);
+            StartCoroutine(UnlockAchievement(_saveName, "Live For Your Own"));
+            PlayerPrefs.SetInt("AchievementUnlock", 4);
 
             // 跳转场景
             Invoke(nameof(LoadDraftMapScene), 2f);
@@ -181,5 +183,36 @@ namespace CalcuProblemPage
                 progress = p;
             }
         }
+        private IEnumerator UnlockAchievement(string saveName, string achievementName)
+        {
+            string url = $"{baseUrl}achievements/{saveName}/unlock";
+
+            string jsonData = "{ \"achievementName\": \"" + achievementName + "\" }";
+
+            using (UnityWebRequest request = new UnityWebRequest(url, "PUT"))
+            {
+                byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.SetRequestHeader("Authorization", "Bearer " + _token);
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log("✅ Achievement unlocked successfully: " + request.downloadHandler.text);
+                }
+                else
+                {
+                    Debug.LogError("❌ Failed to unlock achievement: " + request.error);
+                    Debug.LogError("Response: " + request.downloadHandler.text);
+                }
+            }
+        }
+
     }
+
+
+
 }
