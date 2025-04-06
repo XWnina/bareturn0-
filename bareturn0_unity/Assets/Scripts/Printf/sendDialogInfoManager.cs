@@ -29,7 +29,6 @@ public class SendDialogInfoManager : MonoBehaviour
         StartCoroutine(UpdatePlayerName(playerName));
         StartCoroutine(UpdateProgress(progress));
         StartCoroutine(UnlockAchievement(saveName, "Person You Know Who"));
-        PlayerPrefs.SetString("ProgressOne", "true");
     }
 
     private IEnumerator UnlockAchievement(string saveName, string achievementName)

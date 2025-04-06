@@ -17,9 +17,12 @@ public class AchievementPopUpManager : MonoBehaviour
         { 2, "Fighter" },
         { 4, "Live For Your Own" },
         
-        { 10, "Mini Tycoon" },
-        { 11, "Millionaire" },
-        { 12, "Battle Expert" },
+        // Hidden achievements
+        { 10, "Rich Kid"},
+        { 11, "Mini Tycoon"},
+        { 12, "Millionaire"},
+        { 13, "Battle Expert"},
+
     };
 
     void Start()
