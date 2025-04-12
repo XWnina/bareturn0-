@@ -13,6 +13,8 @@ public class BattleUIManager : MonoBehaviour
     public GameObject battleResultPanel; // �������
     public TextMeshProUGUI resultText; // ʤ��/ʧ���ı�
     public Button returnButton; // ���ز˵���ť
+    public Button escButton;
+    public GameObject pausePanel;
 
     [Header("Basic Battle Informations")]
     public TextMeshProUGUI playerHealthText;
