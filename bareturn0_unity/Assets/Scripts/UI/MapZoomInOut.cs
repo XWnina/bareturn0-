@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+
 
 public class MapZoomInOut : MonoBehaviour
 {
@@ -30,25 +32,31 @@ public class MapZoomInOut : MonoBehaviour
     }
 
     void HandlePan()
+{
+    // 如果鼠标指在 UI 上，直接退出，不做拖动
+    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            dragOrigin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        }
-
-        if (Input.GetMouseButton(0))
-        {
-            Vector3 difference = dragOrigin - Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Vector3 newPosition = Camera.main.transform.position + difference;
-
-            // 限制在地图范围内（注意使用摄像机尺寸做动态边界调整）
-            float camHeight = Camera.main.orthographicSize;
-            float camWidth = camHeight * Camera.main.aspect;
-
-            newPosition.x = Mathf.Clamp(newPosition.x, panLimitMin.x + camWidth, panLimitMax.x - camWidth);
-            newPosition.y = Mathf.Clamp(newPosition.y, panLimitMin.y + camHeight, panLimitMax.y - camHeight);
-
-            Camera.main.transform.position = new Vector3(newPosition.x, newPosition.y, Camera.main.transform.position.z);
-        }
+        return;
     }
+
+    if (Input.GetMouseButtonDown(0))
+    {
+        dragOrigin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    }
+
+    if (Input.GetMouseButton(0))
+    {
+        Vector3 difference = dragOrigin - Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 newPosition = Camera.main.transform.position + difference;
+
+        float camHeight = Camera.main.orthographicSize;
+        float camWidth = camHeight * Camera.main.aspect;
+
+        newPosition.x = Mathf.Clamp(newPosition.x, panLimitMin.x + camWidth, panLimitMax.x - camWidth);
+        newPosition.y = Mathf.Clamp(newPosition.y, panLimitMin.y + camHeight, panLimitMax.y - camHeight);
+
+        Camera.main.transform.position = new Vector3(newPosition.x, newPosition.y, Camera.main.transform.position.z);
+    }
+}
+
 }
