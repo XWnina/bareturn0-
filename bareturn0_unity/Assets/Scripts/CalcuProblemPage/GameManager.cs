@@ -4,6 +4,8 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine.Networking;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace CalcuProblemPage
 {
@@ -20,7 +22,11 @@ namespace CalcuProblemPage
         private string _saveName;
         private string baseUrl = "http://localhost:3000/";
 
-
+        public GameObject pausePanel;
+        public Button closeButton;
+        public Button escButton;
+        public Button backMapButton;
+        public Button backMenuButton;
 
         void Start()
         {
@@ -30,6 +36,24 @@ namespace CalcuProblemPage
             Debug.Log("🔐 Token: " + _token);
             Debug.Log("📂 SaveName: " + _saveName);
             StartCoroutine(StartQuestSequence());
+            pausePanel.SetActive(false);
+            escButton.onClick.AddListener(showPausePanel);
+            backMapButton.onClick.AddListener(loadMenu);
+            backMenuButton.onClick.AddListener(loadMap);
+            closeButton.onClick.AddListener(closePausePanel);
+        }
+        
+        void loadMap(){
+            SceneManager.LoadScene("draftMap");
+        }
+        void loadMenu(){
+            SceneManager.LoadScene("MainScene");
+        }
+        void showPausePanel(){
+            pausePanel.SetActive(true);
+        }
+        void closePausePanel(){
+            pausePanel.SetActive(false);
         }
 
         private IEnumerator StartQuestSequence()
