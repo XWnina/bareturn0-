@@ -149,8 +149,8 @@ namespace CalcuTeaching
             teachingPanel.SetActive(false);
             pausePanel.SetActive(false);
             escButton.onClick.AddListener(showPausePanel);
-            backMapButton.onClick.AddListener(loadMenu);
-            backMenuButton.onClick.AddListener(loadMap);
+            backMapButton.onClick.AddListener(loadMap);
+            backMenuButton.onClick.AddListener(loadMenu);
             closeButton.onClick.AddListener(closePausePanel);
 
             ShowNextLine();
