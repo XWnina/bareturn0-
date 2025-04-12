@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 namespace CalcuTeaching
@@ -8,6 +10,11 @@ namespace CalcuTeaching
         public GameObject npcDialog;
         public GameObject playerDialog;
         public GameObject teachingPanel;
+        public GameObject pausePanel;
+        public Button closeButton;
+        public Button escButton;
+        public Button backMapButton;
+        public Button backMenuButton;
 
         public TextMeshProUGUI npcText;
         public TextMeshProUGUI playerText;
@@ -140,8 +147,26 @@ namespace CalcuTeaching
             npcDialog.SetActive(true);
             playerDialog.SetActive(false);
             teachingPanel.SetActive(false);
+            pausePanel.SetActive(false);
+            escButton.onClick.AddListener(showPausePanel);
+            backMapButton.onClick.AddListener(loadMenu);
+            backMenuButton.onClick.AddListener(loadMap);
+            closeButton.onClick.AddListener(closePausePanel);
 
             ShowNextLine();
+        }
+
+        void loadMap(){
+            SceneManager.LoadScene("draftMap");
+        }
+        void loadMenu(){
+            SceneManager.LoadScene("MainScene");
+        }
+        void showPausePanel(){
+            pausePanel.SetActive(true);
+        }
+        void closePausePanel(){
+            pausePanel.SetActive(false);
         }
 
         private void ShowNextLine()
