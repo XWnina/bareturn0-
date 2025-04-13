@@ -10,11 +10,16 @@ public class BattleUIManager : MonoBehaviour
     public static BattleUIManager Instance;
 
     [Header("Battle Result UI")]
-    public GameObject battleResultPanel; // �������
-    public TextMeshProUGUI resultText; // ʤ��/ʧ���ı�
-    public Button returnButton; // ���ز˵���ť
+    public GameObject battleResultPanel;
+    public TextMeshProUGUI resultText;
+    public Button returnButton;
+
+    [Header("Pause UI")]
     public Button escButton;
     public GameObject pausePanel;
+    public Button closeButton;
+    public Button backToMapButton;
+    public Button backToMainButton;
 
     [Header("Basic Battle Informations")]
     public TextMeshProUGUI playerHealthText;
@@ -25,8 +30,8 @@ public class BattleUIManager : MonoBehaviour
 
     [Header("Energy Segment Images (in order)")]
     public List<Image> energySegments;
-    public Sprite litSegmentSprite;   // ����ʱ�ĸ����ز�
-    public Sprite unlitSegmentSprite; // δ��ʱ�ĸ����ز�
+    public Sprite litSegmentSprite;
+    public Sprite unlitSegmentSprite;
 
     [Header("Warnings")]
     public TextMeshProUGUI energyWarningText;
@@ -44,32 +49,58 @@ public class BattleUIManager : MonoBehaviour
             Destroy(gameObject); // 避免重复
         }
 
-        // ��ʼ����Energy Warning
+        // Energy Warning
         if (energyWarningText != null)
         {
             energyWarningText.gameObject.SetActive(false); 
         }
     }
 
+    private void Start()
+    {
+        pausePanel.SetActive(false);
+        escButton.onClick.AddListener(OnEscClicked);
+    }
 
-    // ��ʾ���������㡱��ʾ
+    public void OnEscClicked()
+    {
+        pausePanel.SetActive(true);
+        closeButton.onClick.RemoveAllListeners();
+        backToMapButton.onClick.RemoveAllListeners();
+        backToMainButton.onClick.RemoveAllListeners();
+
+        closeButton.onClick.AddListener(OnCloseClicked);
+        backToMapButton.onClick.AddListener(ReturnToMap);
+        backToMainButton.onClick.AddListener(ReturnToMain);
+    }
+
+    public void ReturnToMain()
+    {
+        Debug.Log("Returning to map...");
+        SceneManager.LoadScene("MainScene");
+    }
+
+    public void OnCloseClicked()
+    {
+        pausePanel.SetActive(false);
+    }
     public void ShowEnergyWarning()
     {
         if (energyWarningText == null) return;
 
-        StopAllCoroutines(); // ȷ�������ظ�ִ�ж������
+        StopAllCoroutines();
         StartCoroutine(FadeOutWarning());
     }
 
-    //����Ч��
+
     private IEnumerator FadeOutWarning()
     {
         energyWarningText.gameObject.SetActive(true);
-        energyWarningText.alpha = 1; // ������Ϊ�ɼ�
+        energyWarningText.alpha = 1;
 
-        yield return new WaitForSeconds(0.5f); // ͣ�� 0.5 ��
+        yield return new WaitForSeconds(0.5f);
 
-        // ��������
+
         float fadeDuration = 0.5f;
         float elapsedTime = 0;
         while (elapsedTime < fadeDuration)
@@ -79,13 +110,13 @@ public class BattleUIManager : MonoBehaviour
             yield return null;
         }
 
-        energyWarningText.gameObject.SetActive(false); // ��ȫ��ʧ������
+        energyWarningText.gameObject.SetActive(false);
     }
 
-    // ��ʾս�����
+
     public void ShowBattleResult(bool isVictory)
     {
-        battleResultPanel.SetActive(true); // ��ʾ���a
+        battleResultPanel.SetActive(true);
         resultText.text = isVictory ? "YOU WIN!!!" : "YOU LOSS...";
         resultText.color = isVictory ? Color.green : Color.red;
 
@@ -97,7 +128,7 @@ public class BattleUIManager : MonoBehaviour
         else {
             passed = false;
         }
-        // �������ز˵���ť
+
         returnButton.onClick.RemoveAllListeners();
         returnButton.onClick.AddListener(ReturnToMap);
     }
@@ -116,12 +147,10 @@ public class BattleUIManager : MonoBehaviour
         Image fillImage = PlayerHealthBar.fillRect.GetComponent<Image>();
         if (BattleManager.Instance.player.currentArmor > 0)
         {
-            // ����ɫ������Ը�����Ҫ����RGBֵ��
             fillImage.color = new Color(0.6f, 0.6f, 0.6f, 1f);
         }
         else
         {
-            // ��ɫ
             fillImage.color = Color.red;
         }
 
@@ -129,12 +158,10 @@ public class BattleUIManager : MonoBehaviour
         {
             if (i < BattleManager.Instance.player.currentEnergy)
             {
-                // ����
                 energySegments[i].sprite = litSegmentSprite;
             }
             else
             {
-                // δ��
                 energySegments[i].sprite = unlitSegmentSprite;
             }
         }
@@ -143,22 +170,20 @@ public class BattleUIManager : MonoBehaviour
 
     private void Update()
     {
-        // ��� BattleManager �Ƿ����
         if (BattleManager.Instance != null)
         {
-            // �������Ѫ����ʾ����ǰѪ��/���Ѫ����
+
             playerHealthText.text = $"{BattleManager.Instance.player.currentHealth}/{BattleManager.Instance.player.maxHealth}";
 
-            // ������һ��ܣ����ף���ʾ
+
             playerShieldText.text = $"{BattleManager.Instance.player.currentArmor}";
 
-            // �������ʣ��������ʾ
+
             playerEnergyText.text = $"{BattleManager.Instance.player.currentEnergy}";
 
-            // ���µ�ǰ�غ�����ʾ
+
             roundText.text = $"Round: {BattleManager.Instance.CurrentRoundNumber}";
 
-            //�������Ѫ����������
             UpdatePlayerUIBar();
         }
     }
