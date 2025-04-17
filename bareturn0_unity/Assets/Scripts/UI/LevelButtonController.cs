@@ -71,6 +71,10 @@ public class LevelButtonManager : MonoBehaviour
             {
                 SceneManager.LoadScene("calcuProblem");
             }
+            else if ((levelIndex + 1 == 6))
+            {
+                SceneManager.LoadScene("JumpGame");
+            }
         }
     }
     public void UpdateLevelUI()
