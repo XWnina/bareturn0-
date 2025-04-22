@@ -585,4 +585,119 @@ router.get("/:saveName/profileInfo", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/:saveName/minigamesStatus", authMiddleware, async (req, res) => {
+  try {
+    const saveFile = await SaveFile.findOne({
+      saveName: req.params.saveName,
+      userId: req.user.id,
+    });
+
+    if (!saveFile) {
+      const errorResponse = { error: "Save file not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    const rawStatus = saveFile.minigameStatus || ["", "", ""];
+    let statusString = "";
+
+    for (let i = 0; i < rawStatus.length; i++) {
+      const s = rawStatus[i];
+      if (s === "0" || s === "1") {
+        statusString += s;
+      } else {
+        statusString += " ";
+      }
+    }
+
+    const successResponse = { status: statusString };
+    logRequestResponse(req, res, successResponse);
+    res.json(successResponse);
+  } catch (err) {
+    const errorResponse = { error: err.message };
+    logRequestResponse(req, res, errorResponse);
+    res.status(500).json(errorResponse);
+  }
+});
+
+router.post("/:saveName/updateMinigames", authMiddleware, async (req, res) => {
+  try {
+    const { index, value } = req.body;
+
+    if (index < 0 || index > 2) {
+      const errorResponse = { error: "Index must be 0, 1, or 2" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(400).json(errorResponse);
+    }
+
+    if (value !== "0" && value !== "1") {
+      const errorResponse = { error: "Status must be '0' or '1'" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(400).json(errorResponse);
+    }
+
+    const saveFile = await SaveFile.findOne({
+      saveName: req.params.saveName,
+      userId: req.user.id,
+    });
+
+    if (!saveFile) {
+      const errorResponse = { error: "Save file not found" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(404).json(errorResponse);
+    }
+
+    let statusArray = saveFile.minigameStatus || ["", "", ""];
+
+    for (let i = 0; i < 3; i++) {
+      if (statusArray[i] !== "0" && statusArray[i] !== "1") {
+        statusArray[i] = "";
+      }
+    }
+
+    const currentStatus = statusArray[index];
+
+    if (currentStatus === "1") {
+      const errorResponse = { error: "Minigame already completed" };
+      logRequestResponse(req, res, errorResponse);
+      return res.status(400).json(errorResponse);
+    }
+
+    if (currentStatus === "0" && value === "0") {
+      let statusString = "";
+      for (let i = 0; i < statusArray.length; i++) {
+        const s = statusArray[i];
+        statusString += s === "0" || s === "1" ? s : " ";
+      }
+      const infoResponse = {
+        message: "Already unlocked",
+        status: statusString,
+      };
+      logRequestResponse(req, res, infoResponse);
+      return res.status(200).json(infoResponse);
+    }
+
+    statusArray[index] = value;
+    saveFile.minigameStatus = statusArray;
+    await saveFile.save();
+
+    let updatedStatus = "";
+    for (let i = 0; i < statusArray.length; i++) {
+      const s = statusArray[i];
+      updatedStatus += s === "0" || s === "1" ? s : " ";
+    }
+
+    const successResponse = {
+      message: "Minigame status updated",
+      status: updatedStatus,
+    };
+    logRequestResponse(req, res, successResponse);
+    res.json(successResponse);
+  } catch (err) {
+    const errorResponse = { error: err.message };
+    logRequestResponse(req, res, errorResponse);
+    res.status(500).json(errorResponse);
+  }
+});
+
 module.exports = router;
