@@ -58,9 +58,9 @@ public class AchievementPopUpManager : MonoBehaviour
 
         achievementPopupPanel.SetActive(true);
 
-        // Optional: auto-close after 15 seconds
+        // Optional: auto-close after 3 seconds
         CancelInvoke();
-        Invoke(nameof(ClosePopup), 15f);
+        Invoke(nameof(ClosePopup), 3f);
     }
 
     void ClosePopup()

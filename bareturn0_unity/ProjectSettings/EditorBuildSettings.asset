@@ -48,6 +48,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Town.unity
     guid: 4d4c248db6be3754eb39a1bc27ad83e3
   - enabled: 1
+    path: Assets/Scenes/MatchGameScene.unity
+    guid: 4bb100967d6244328ba58a81dc803409
+  - enabled: 1
     path: Assets/Scenes/BlackSmithScene.unity
     guid: c1b6a086056b0d740954f38af523a7d4
   - enabled: 1

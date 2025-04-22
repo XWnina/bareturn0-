@@ -15,12 +15,17 @@ const SaveFileSchema = new mongoose.Schema(
     maxHealth: { type: Number, default: 20 },
     speed: { type: Number, default: 1 },
 
+    minigameStatus: {
+      type: [String],
+      default: [" ", " ", " "],
+    },
+
     unlockedAchievements: [
       {
         name: { type: String, required: true },
-        achievedDate: { type: Date, default: null }
-      }
-    ],// Reference to the Achievement model
+        achievedDate: { type: Date, default: null },
+      },
+    ], // Reference to the Achievement model
 
     selectedDeck: {
       type: mongoose.Schema.Types.ObjectId,
@@ -49,7 +54,6 @@ const SaveFileSchema = new mongoose.Schema(
         },
       ],
     },
-    
   },
   { timestamps: true }
 );
