@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,10 +18,10 @@ namespace JumpGame
         void Start()
         {
             if (runButton != null)
-                runButton.onClick.AddListener(RunCode);
+                runButton.onClick.AddListener(() => StartCoroutine(RunCode()));
         }
 
-        void RunCode()
+        IEnumerator RunCode()
         {
             Debug.Log("▶ 执行所有 IfBlock 模块...");
 
@@ -29,11 +30,12 @@ namespace JumpGame
                 IfBlockExecutor ifBlock = child.GetComponent<IfBlockExecutor>();
                 if (ifBlock != null)
                 {
-                    ifBlock.Execute(player);
+                    yield return StartCoroutine(ifBlock.Execute(player));
                 }
             }
 
             Debug.Log("✅ 所有逻辑执行完毕！");
         }
+
     }
 }

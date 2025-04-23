@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using TMPro;
 
@@ -10,7 +11,7 @@ namespace JumpGame
         public GameObject elseContainer;
         public TMP_Dropdown elseDropdown;
 
-        public void Execute(PlayerController player)
+        public IEnumerator Execute(PlayerController player)
         {
             string condition = conditionDropdown.options[conditionDropdown.value].text;
             string trueAction = trueDropdown.options[trueDropdown.value].text;
@@ -18,18 +19,17 @@ namespace JumpGame
                 ? elseDropdown.options[elseDropdown.value].text
                 : null;
 
-            bool conditionMet = EvaluateCondition(player, condition);
+            bool conditionMet = false;
+            yield return player.EvaluateConditionAsync(condition, result => conditionMet = result);
             Debug.Log($"▶ 判断：{condition} = {conditionMet}");
 
-            if (conditionMet)
+            string action = conditionMet ? trueAction : elseAction;
+            if (!string.IsNullOrEmpty(action))
             {
-                ExecuteAction(player, trueAction);
-            }
-            else if (!string.IsNullOrEmpty(elseAction))
-            {
-                ExecuteAction(player, elseAction);
+                yield return player.ExecuteActionAsync(action);
             }
         }
+
 
         private bool EvaluateCondition(PlayerController player, string condition)
         {
@@ -38,7 +38,9 @@ namespace JumpGame
                 case "rock ahead": return player.IsRockAhead();
                 case "platform up": return player.IsPlatformAbove();
                 case "always true": return true;
-                default: return false;
+                default:
+                    Debug.LogWarning($"⚠ 未知条件：{condition}");
+                    return false;
             }
         }
 
@@ -46,19 +48,11 @@ namespace JumpGame
         {
             switch (action)
             {
-                case "jump":
-                    Debug.Log("🟢 jump()");
-                    player.Jump();
-                    break;
-                case "say hello":
-                    Debug.Log("🟢 say hello");
-                    break;
-                case "do nothing":
-                    Debug.Log("🟡 do nothing");
-                    break;
-                default:
-                    Debug.LogWarning($"⚠ 未知动作：{action}");
-                    break;
+                case "jump": player.EnqueueAction(PlayerAction.Jump); break;
+                case "walk": player.EnqueueAction(PlayerAction.Walk); break;
+                case "say hello": Debug.Log("👋 Hello"); break;
+                case "do nothing": Debug.Log("😴 do nothing"); break;
+                default: Debug.LogWarning($"⚠ 未知动作：{action}"); break;
             }
         }
     }
