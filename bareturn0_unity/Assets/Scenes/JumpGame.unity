@@ -345,6 +345,7 @@ GameObject:
   - component: {fileID: 619257842}
   - component: {fileID: 619257841}
   - component: {fileID: 619257840}
+  - component: {fileID: 619257843}
   m_Layer: 5
   m_Name: RockAheadButton
   m_TagString: Untagged
@@ -454,6 +455,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 619257838}
   m_CullTransparentMesh: 1
+--- !u!114 &619257843
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619257838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40df434a8e15943ddbd9c9434fc80d5d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  runButton: {fileID: 619257840}
+  codeWorkspace: {fileID: 530692287}
+  player: {fileID: 621698335}
 --- !u!1 &621698330
 GameObject:
   m_ObjectHideFlags: 0
@@ -466,6 +482,7 @@ GameObject:
   - component: {fileID: 621698333}
   - component: {fileID: 621698332}
   - component: {fileID: 621698331}
+  - component: {fileID: 621698335}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -616,6 +633,25 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &621698335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 621698330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e268c62d104e4bbf8e7dc0c189384b0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  moveSpeed: 2
+  jumpForce: 7
+  groundCheck: {fileID: 1905186907}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  groundRadius: 0.3
 --- !u!1 &818003406
 GameObject:
   m_ObjectHideFlags: 0
@@ -1586,9 +1622,9 @@ GameObject:
   - component: {fileID: 1436094894}
   - component: {fileID: 1436094893}
   - component: {fileID: 1436094892}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Tilemap
-  m_TagString: Untagged
+  m_TagString: Ground
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2354,6 +2390,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1757508847}
   m_CullTransparentMesh: 1
+--- !u!1 &1905186906
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1905186907}
+  m_Layer: 0
+  m_Name: ground
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1905186907
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1905186906}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -7.248036, y: -1.9643991, z: 0}
+  m_LocalScale: {x: 0.6667, y: 0.6667, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1931910898
 GameObject:
   m_ObjectHideFlags: 0
@@ -2411,7 +2478,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: run
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2771,7 +2838,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6b8d20ea0d8946bfbdc233b18b04604, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blockPrefab: {fileID: 8760300257239397347, guid: c3da99f4b706b4245b560ab4c529af13, type: 3}
+  blockPrefab: {fileID: 677723489335042789, guid: 74e49f784accc4266a9eb9441c97647a, type: 3}
   targetParent: {fileID: 0}
 --- !u!114 &2012566245
 MonoBehaviour:
@@ -2860,6 +2927,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 456866553}
+  - {fileID: 1905186907}
   - {fileID: 621698334}
   - {fileID: 930648472}
   - {fileID: 1396859857}
