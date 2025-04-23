@@ -61,8 +61,12 @@ MonoBehaviour:
   spriteRenderer: {fileID: 7241535689762677544}
   enlargeFactor: 1.1
   statusUI: {fileID: 0}
+  sharpnessLayers: 0
+  poisonLayers: 0
+  bleedLayers: 0
   animatorController: {fileID: 1354544605362301238}
-  enemyDeck: []
+  enemyDeck:
+  - {fileID: 11400000, guid: 6166c5785a77da74b844428327b72098, type: 2}
   enemyHand: []
   drawCount: 1
 --- !u!70 &8920047322979453000

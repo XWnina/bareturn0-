@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour, ICharacter
@@ -15,6 +16,10 @@ public class PlayerController : MonoBehaviour, ICharacter
 
     //护甲
     public int currentArmor = 0;
+
+    public int sharpnessLayers = 0;
+    public int poisonLayers = 0;
+    public int bleedLayers = 0;
 
     [SerializeField] private PlayerAnimator animatorController;
 
@@ -48,8 +53,12 @@ public class PlayerController : MonoBehaviour, ICharacter
         int effectiveDamage = Mathf.Max(damage - currentArmor, 0);
         currentArmor = Mathf.Max(currentArmor - damage, 0);
         currentHealth -= effectiveDamage;
+        Vector3 pos = transform.position;
+
 
         animatorController?.PlayHurtAnimation(); // 受击动画
+        BattleManager.Instance.ShowFloatingValue(pos, effectiveDamage);
+
 
         Debug.Log("Player takes " + effectiveDamage + " damage. HP=" + currentHealth);
     }
@@ -71,5 +80,44 @@ public class PlayerController : MonoBehaviour, ICharacter
         currentEnergy += amount;
         currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
         animatorController?.PlayGainEnergyAnimation();
+    }
+
+    // 应用锐利buff
+    public void ApplySharpness(int layersToAdd)
+    {
+        sharpnessLayers += layersToAdd;
+    }
+
+    public void ApplyPoison(int layersToAdd)
+    {
+        poisonLayers += layersToAdd;
+    }
+    public void ApplyBleed(int layersToAdd)
+    {
+        bleedLayers += layersToAdd;
+        Debug.Log($"{name} gains {layersToAdd} layers of Bleed. Total bleed layers: {bleedLayers}");
+    }
+
+    public IEnumerator ProcessStartOfTurnBuffs()
+    {
+        if (sharpnessLayers > 0)
+        {
+            sharpnessLayers--;
+            Debug.Log("Player's Sharpness reduced by 1, now: " + sharpnessLayers);
+        }
+
+        if (poisonLayers > 0)
+        {
+            int damage = poisonLayers;
+            yield return new WaitForSeconds(0.5f);
+            TakeDamage(damage);
+            poisonLayers = Mathf.Max(poisonLayers - 1, 0);
+            Debug.Log(name + " takes " + damage + " poison damage, remaining poison: " + poisonLayers);
+        }
+
+        else
+        {
+            yield return null;
+        }
     }
 }
