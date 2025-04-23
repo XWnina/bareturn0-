@@ -31,6 +31,11 @@ public class BattleManager : MonoBehaviour
 
     public Button endActionButton;  // “结束行动”按钮
 
+    [Header("特效 Prefab")]
+    public GameObject effectPrefab;
+    public Canvas effectCanvas;
+
+
 
     public BattleState state;
     public CardData currentDraggingCardData; //记录当前正在拖拽的卡牌数据
@@ -287,7 +292,7 @@ public class BattleManager : MonoBehaviour
     {
         Debug.Log(">>> Player Turn <<<");
         bool isPlayerDone = false;
-
+        yield return StartCoroutine(player.ProcessStartOfTurnBuffs());
         //抽牌
         deckManager.DrawCard(5);
         // 打开按钮
@@ -318,6 +323,7 @@ public class BattleManager : MonoBehaviour
     // 敌人行动阶段
     IEnumerator EnemyActionPhase(EnemyController enemy)
     {
+        yield return StartCoroutine(enemy.ProcessStartOfTurnBuffs());
         Debug.Log(">>> Enemy Turn: {enemy.name} <<<");
 
         //敌人动作
@@ -417,7 +423,56 @@ public class BattleManager : MonoBehaviour
         return lowest;
     }
 
+    public void ShowEffectOnly(Vector3 worldPos, EffectType type)
+    {
+        if (effectPrefab == null || effectCanvas == null) return;
+        var fx = Instantiate(effectPrefab, effectCanvas.transform, false);
+        Vector2 screenPoint = Camera.main.WorldToScreenPoint(worldPos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            effectCanvas.transform as RectTransform,
+            screenPoint, effectCanvas.worldCamera, out Vector2 localPoint);
+        fx.GetComponent<RectTransform>().anchoredPosition = localPoint;
+        fx.GetComponent<EffectController>().PlayEffect(worldPos, type);
+    }
 
+    public void ShowFullEffect(Vector3 worldPos, int value, EffectType type)
+    {
+        if (effectPrefab == null || effectCanvas == null) return;
+        var fx = Instantiate(effectPrefab, effectCanvas.transform, false);
+        Vector2 screenPoint = Camera.main.WorldToScreenPoint(worldPos);
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            effectCanvas.transform as RectTransform,
+            screenPoint, effectCanvas.worldCamera, out Vector2 localPoint);
+        fx.GetComponent<RectTransform>().anchoredPosition = localPoint;
+        fx.GetComponent<EffectController>().PlayFullEffect(worldPos, value, type);
+    }
+
+    public void ShowFloatingValue(Vector3 worldPos, int value)
+    {
+        if (effectPrefab == null || effectCanvas == null) return;
+
+        // 1. 实例化到 canvas 下（worldPositionStays=false，方便我们用 AnchoredPosition）
+        GameObject fx = Instantiate(effectPrefab, effectCanvas.transform, false);
+
+        // 2. 计算在 canvas 下的本地坐标
+        //    首先把世界坐标转成屏幕坐标
+        Vector2 screenPoint = Camera.main.WorldToScreenPoint(worldPos);
+        //    再把屏幕坐标转成 canvas 的本地坐标
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            effectCanvas.transform as RectTransform,
+            screenPoint,
+            effectCanvas.worldCamera,   // Screen Space - Camera 或 Overlay 时使用 null
+            out Vector2 localPoint
+        );
+
+        // 3. 设置 UI 元素的位置
+        var rt = fx.GetComponent<RectTransform>();
+        rt.anchoredPosition = localPoint + /* 可选偏移 */ Vector2.zero;
+
+        // 4. 播放浮字
+        var ctrl = fx.GetComponent<EffectController>();
+        ctrl.PlayFloatingValue(rt.position, value);
+    }
 
 
     //当玩家使用一张牌

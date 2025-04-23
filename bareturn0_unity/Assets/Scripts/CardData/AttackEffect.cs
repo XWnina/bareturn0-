@@ -16,19 +16,22 @@ public class AttackEffect : CardEffect
             return;
         }
 
-        battleManager.lastAttackDamage = damage;
+        
 
-        if (caster is PlayerController)
+        if (caster is PlayerController player)
         {
-            // 将目标存入 BattleManager 供动画事件使用
+            int totalDamage = damage + player.sharpnessLayers;
+            battleManager.lastAttackDamage = totalDamage;
+
             battleManager.selectedEnemy = target as EnemyController;
-            // 触发玩家攻击动画，动画事件将负责在合适时机调用 TriggerEnemyHit()
-            (caster as PlayerController).Attack();
+
+            player.Attack();
             Debug.Log($"Player uses {cardData.cardName}, scheduled {damage} damage on target.");
 
         }
         else if (caster is EnemyController)
         {
+            battleManager.lastAttackDamage = damage;
             (caster as EnemyController).Attack();
         }
     }

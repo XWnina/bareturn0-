@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using static UnityEditor.PlayerSettings;
 using static UnityEngine.GraphicsBuffer;
 
 public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, IPointerExitHandler
@@ -20,6 +21,11 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
 
     private bool needEnlarge = false;
     private bool needResetScale = false;
+
+    public int sharpnessLayers = 0;
+    public int poisonLayers = 0;
+    public int bleedLayers = 0;
+
 
     [SerializeField] EnemyAnimator animatorController;
 
@@ -65,6 +71,8 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         currentArmor = Mathf.Max(currentArmor - damage, 0);
         currentHealth -= effectiveDamage;
         animatorController?.EnemyHurttAnimation();
+        Vector3 pos = transform.position;
+        BattleManager.Instance.ShowFloatingValue(pos, effectiveDamage);
         Debug.Log("Enemy takes " + damage + " damage. HP=" + currentHealth);
 
        
@@ -178,6 +186,52 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         yield break;
     }
 
+    public IEnumerator ProcessStartOfTurnBuffs()
+    {
+        if (sharpnessLayers > 0)
+        {
+            sharpnessLayers--;
+            Debug.Log("Player's Sharpness reduced by 1, now: " + sharpnessLayers);
+        }
+
+        if (poisonLayers > 0)
+        {
+            int damage = poisonLayers;
+            yield return new WaitForSeconds(0.5f);
+            TakeDamage(damage);
+            poisonLayers = Mathf.Max(poisonLayers - 1, 0);
+            Debug.Log(name + " takes " + damage + " poison damage, remaining poison: " + poisonLayers);
+        }
+
+        if (bleedLayers > 0)
+        {
+            int bleedDamage = bleedLayers;
+            yield return new WaitForSeconds(0.5f); // —” ±
+            TakeDamage(bleedDamage);
+            bleedLayers = Mathf.Max(bleedLayers - 1, 0);
+            Debug.Log($"{name} takes {bleedDamage} bleed damage, remaining bleed: {bleedLayers}");
+        }
+        else
+        {
+            yield return null;
+        }
+    }
+
+    public void ApplySharpness(int layersToAdd)
+    {
+        sharpnessLayers += layersToAdd;
+    }
+
+    public void ApplyPoison(int layersToAdd)
+    {
+        poisonLayers += layersToAdd;
+    }
+
+    public void ApplyBleed(int layersToAdd)
+    {
+        bleedLayers += layersToAdd;
+        Debug.Log($"{name} gains {layersToAdd} layers of Bleed. Total bleed layers: {bleedLayers}");
+    }
 
 
     public void OnPointerEnter(PointerEventData eventData)

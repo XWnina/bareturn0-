@@ -1030,6 +1030,9 @@ MonoBehaviour:
   currentEnergy: 0
   maxEnergy: 10
   currentArmor: 0
+  sharpnessLayers: 0
+  poisonLayers: 0
+  bleedLayers: 0
   animatorController: {fileID: 1182409712}
 --- !u!212 &219764940
 SpriteRenderer:
@@ -2444,6 +2447,8 @@ MonoBehaviour:
   levelData: {fileID: 11400000, guid: 13b40bcedac95e143a2721fbcfe5dae9, type: 2}
   enemyStatusUIPrefab: {fileID: 3443713436305215946, guid: ba46ea82e7069bd4d892de5b6e78276a, type: 3}
   endActionButton: {fileID: 319843588}
+  effectPrefab: {fileID: 3035817259308259852, guid: 64bea8648c11d834b97dd6f0333b42d5, type: 3}
+  effectCanvas: {fileID: 1641559627}
   state: 0
   currentDraggingCardData: {fileID: 0}
   lastAttackDamage: 0
@@ -4030,7 +4035,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1457659279
 RectTransform:
   m_ObjectHideFlags: 0
