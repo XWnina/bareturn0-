@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.SceneManagement;
 using System.Collections;
 using UnityEngine.Networking;
+using UnityEditor.Rendering;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -127,7 +128,7 @@ public class InventoryManager : MonoBehaviour
             cardThumbnail.enableHoverDescription = true;
             cardThumbnail.hoverDescriptionGroup = card.transform.Find("HoverDecriptionImage").gameObject;
             cardThumbnail.hoverDescriptionTMP = card.transform.Find("HoverDecriptionImage/HoverDescriptionTMP").GetComponent<TextMeshProUGUI>();
-            
+
             cardThumbnail.SetCardThumbnail(cardData);
 
         }
@@ -142,13 +143,21 @@ public class InventoryManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
-
+        
+        List<string> materialList = new List<string>();
         for (int i = 0; i < talentList.Count; i++)
         {
-            string scrollName = talentList[i];
+            if (!materialList.Contains(talentList[i]))
+            {
+                materialList.Add(talentList[i]);
+            }
+        }
+
+        for (int i = 0; i < materialList.Count; i++)
+        {
+            string scrollName = materialList[i];
             GameObject scrollObject = Instantiate(TalentPrefab, MaterialPanel.transform);
             TalentUI scrollUI = scrollObject.GetComponent<TalentUI>();
-
             if (scrollName == "if" && ifNum != 0)
             {
                 scrollUI.setScroll(scrollName, ifNum);
@@ -174,6 +183,9 @@ public class InventoryManager : MonoBehaviour
         {
             talentList.Clear();
             blankcardNum = 0;
+            ifNum = 0;
+            whileNum = 0;
+            mathNum = 0;
 
             foreach (string material in playerInfoLoader.materials)
             {
