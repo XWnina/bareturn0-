@@ -25,9 +25,9 @@ namespace JumpGame
                 targetParent = GameObject.Find("CodeWorkspaceContent")?.transform;
 
             // 自动找 CodeWorkspaceScrollView（作为放置判定区域）
-            GameObject scrollViewGO = GameObject.Find("CodeWorkspaceScrollView");
-            if (scrollViewGO != null)
-                _scrollViewRect = scrollViewGO.GetComponent<RectTransform>();
+            GameObject scrollViewGo = GameObject.Find("CodeWorkspaceScrollView");
+            if (scrollViewGo != null)
+                _scrollViewRect = scrollViewGo.GetComponent<RectTransform>();
             else
                 Debug.LogWarning("❗未找到 CodeWorkspaceScrollView，请检查命名或手动拖入！");
         }

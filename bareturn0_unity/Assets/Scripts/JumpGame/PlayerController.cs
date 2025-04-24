@@ -149,18 +149,48 @@ namespace JumpGame
             _isExecuting = false;
         }
 
+        
+
+        public LayerMask obstacleLayer; // 请在 Inspector 中勾选包含 Tilemap 的 Layer
+
         public bool IsRockAhead()
         {
+            // ✅ 推荐从角色底部（如 groundCheck）发射射线
+            Vector2 origin =  transform.position;
+
+            // ✅ 向角色面朝方向发射
             Vector2 dir = Vector2.right * transform.localScale.x;
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, 1f);
-            return hit.collider != null && hit.collider.CompareTag("Obstacle");
+
+            float distance = 2f; // 根据需要调整检测距离
+
+            // ✅ 使用 LayerMask，只检测 obstacleLayer 中的物体
+            RaycastHit2D hit = Physics2D.Raycast(origin, dir, distance, obstacleLayer);
+
+            // ✅ 可视化射线（Scene 视图中看到）
+            Debug.DrawRay(origin, dir * distance, Color.yellow, 2f);
+
+            // ✅ 调试输出
+            if (hit.collider != null)
+            {
+                Debug.Log($"🪨 检测到 Obstacle：{hit.collider.name}（层：{LayerMask.LayerToName(hit.collider.gameObject.layer)}）");
+                return true;
+            }
+            else
+            {
+                Debug.Log("✅ 脚前方没有障碍物");
+                return false;
+            }
         }
 
 
+
+
+
+        
         public bool IsPlatformAbove()
         {
             Vector2 origin = transform.position;
-            float angle = 35f * Mathf.Deg2Rad;
+            float angle = 30f * Mathf.Deg2Rad;
             float dirX = Mathf.Cos(angle) * (transform.localScale.x >= 0 ? 1 : -1);
             Vector2 dir = new Vector2(dirX, Mathf.Sin(angle)).normalized;
 
