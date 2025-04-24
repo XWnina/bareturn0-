@@ -65,6 +65,7 @@ public class MatchGameManager : MonoBehaviour
         string jsonBody = JsonUtility.ToJson(payload);
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonBody);
 
+
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
         request.downloadHandler = new DownloadHandlerBuffer();
         request.SetRequestHeader("Content-Type", "application/json");

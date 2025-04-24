@@ -210,7 +210,7 @@ public class MatchLogicManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("✅ Minigame status updated to: " + value);
+            Debug.Log("Minigame status updated to: " + value);
         }
     }
 
