@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: ToxicInjection
   description: Apply 5 stacks of Poison to the enemy, causing damage each turn.
   cost: 2
-  artwork: {fileID: 0}
+  artwork: {fileID: -6195865351565212998, guid: a30920f0c6386a943a59a6dfb6925389, type: 3}
   quality: 1
   cardEffect: {fileID: 11400000, guid: 12fdad9e1b17c7f458b9b89469c8c501, type: 2}
   targetingType: 3

@@ -69,7 +69,7 @@ public class EffectController : MonoBehaviour
         startPosition = anchoredPos;
 
         if (valueText != null)
-            valueText.text = value > 0 ? $"-{value}" : $"+{-value}";
+            valueText.text = value >= 0 ? $"-{value}" : $"+{-value}";
         StartCoroutine(FloatAndDestroy());
     }
 
@@ -99,6 +99,6 @@ public class EffectController : MonoBehaviour
             }
             yield return null;
         }
-        //Destroy(gameObject);
+        Destroy(gameObject);
     }
 }

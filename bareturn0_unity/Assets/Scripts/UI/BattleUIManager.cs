@@ -35,19 +35,10 @@ public class BattleUIManager : MonoBehaviour
 
     [Header("Warnings")]
     public TextMeshProUGUI energyWarningText;
-    public bool passed = false;
 
     private void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-        else
-        {
-            Destroy(gameObject); // 避免重复
-        }
+        Instance = this;
 
         // Energy Warning
         if (energyWarningText != null)
@@ -123,10 +114,11 @@ public class BattleUIManager : MonoBehaviour
         if (isVictory)
         {
             BattleManager.Instance.sendProgress();
-            passed = true;
+            BattleResultManager.Instance.passed = true;
+            BattleResultManager.Instance.CheckPerfectPass();
         }
         else {
-            passed = false;
+            BattleResultManager.Instance.passed = false;
         }
 
         returnButton.onClick.RemoveAllListeners();

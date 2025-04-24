@@ -789,7 +789,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 223ff3869e4b6424e839507c4acc20c7, type: 2}
   - {fileID: 11400000, guid: 4c378a8434a1e5346bf4b8564e9fd80f, type: 2}
   ifCards: []
-  whileCards: []
+  whileCards:
+  - {fileID: 11400000, guid: 6166c5785a77da74b844428327b72098, type: 2}
   mathCards:
   - {fileID: 11400000, guid: 64abc73a6252d0f4aa9abeb209334663, type: 2}
   - {fileID: 11400000, guid: 760ce11bd2c1480439b5c3d27198f810, type: 2}
