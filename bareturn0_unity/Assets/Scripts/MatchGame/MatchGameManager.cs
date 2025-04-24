@@ -33,28 +33,42 @@ public class MatchGameManager : MonoBehaviour
 
     IEnumerator CheckProgressAndMinigameStatus()
     {
-        string progressUrl = $"http://localhost:3000/savefiles/{saveFileName}/progress";
-        UnityWebRequest progressRequest = UnityWebRequest.Get(progressUrl);
-        progressRequest.SetRequestHeader("Authorization", "Bearer " + authToken);
+        string statusUrl = $"http://localhost:3000/savefiles/{saveFileName}/minigamesStatus";
+        UnityWebRequest statusRequest = UnityWebRequest.Get(statusUrl);
+        statusRequest.SetRequestHeader("Authorization", "Bearer " + authToken);
+        yield return statusRequest.SendWebRequest();
 
-        yield return progressRequest.SendWebRequest();
-
-        if (progressRequest.result == UnityWebRequest.Result.Success)
+        char status = ' ';
+        if (statusRequest.result == UnityWebRequest.Result.Success)
         {
-            ProgressResponse progressData = JsonUtility.FromJson<ProgressResponse>(progressRequest.downloadHandler.text);
-
-            if (progressData.progress >= 3)
+            MinigameStatusResponse response = JsonUtility.FromJson<MinigameStatusResponse>(statusRequest.downloadHandler.text);
+            if (!string.IsNullOrEmpty(response.status) && response.status.Length > matchGameIndex)
             {
-                yield return StartCoroutine(UpdateMinigameStatus(matchGameIndex, "0"));
+                status = response.status[matchGameIndex];
             }
         }
-        else
-        {
-            Debug.LogError("MatchGameManager Error: getting progress: " + progressRequest.error);
-        }
 
-        yield return StartCoroutine(CheckMinigameStatus());
+        // if the current status is " " and level is larger than 3, update the status to 0
+        if (status == ' ')
+        {
+            string progressUrl = $"http://localhost:3000/savefiles/{saveFileName}/progress";
+            UnityWebRequest progressRequest = UnityWebRequest.Get(progressUrl);
+            progressRequest.SetRequestHeader("Authorization", "Bearer " + authToken);
+            yield return progressRequest.SendWebRequest();
+
+            if (progressRequest.result == UnityWebRequest.Result.Success)
+            {
+                ProgressResponse progressData = JsonUtility.FromJson<ProgressResponse>(progressRequest.downloadHandler.text);
+                if (progressData.progress >= 3)
+                {
+                    yield return StartCoroutine(UpdateMinigameStatus(matchGameIndex, "0"));
+                    status = '0';
+                }
+            }
+        }
+        ApplyButtonStyle(status);
     }
+
 
     IEnumerator UpdateMinigameStatus(int index, string value)
     {
@@ -76,38 +90,6 @@ public class MatchGameManager : MonoBehaviour
         if (request.result != UnityWebRequest.Result.Success)
         {
             Debug.LogError("MatchGameManager Error: updating minigame status: " + request.error);
-        }
-    }
-
-    IEnumerator CheckMinigameStatus()
-    {
-        string url = $"http://localhost:3000/savefiles/{saveFileName}/minigamesStatus";
-        UnityWebRequest request = UnityWebRequest.Get(url);
-        request.SetRequestHeader("Authorization", "Bearer " + authToken);
-
-        yield return request.SendWebRequest();
-
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            MinigameStatusResponse response = JsonUtility.FromJson<MinigameStatusResponse>(request.downloadHandler.text);
-
-            char status;
-
-            if (!string.IsNullOrEmpty(response.status) && response.status.Length > matchGameIndex)
-            {
-                status = response.status[matchGameIndex];
-            }
-            else
-            {
-                status = ' ';
-            }
-
-            ApplyButtonStyle(status);
-        }
-        else
-        {
-            Debug.LogError("MatchGameManager Error: getting minigame status: " + request.error);
-            ApplyButtonStyle(' ');
         }
     }
 
