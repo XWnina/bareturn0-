@@ -120,7 +120,7 @@ public class MapUrlManager : MonoBehaviour
         int curProcess = CurrentLevel;
         //Debug.Log($"上一个场景是: {previousScene}");
         //previousScene == "BattleScenes"
-        if (BattleUIManager.Instance != null && BattleUIManager.Instance.passed && curProcess == 2)  // 确保是从 level2 进入的
+        if (BattleResultManager.Instance != null && BattleResultManager.Instance.passed && curProcess == 2)  // 确保是从 level2 进入的
         {
             playerInfoLoader.LoadPlayerCoins(() =>
             {
@@ -129,17 +129,19 @@ public class MapUrlManager : MonoBehaviour
                 coins += 100;
                 StartCoroutine(UpdateCoins(coins)); // 更新数据库
                 ShowRewardPanel(2, 100); // 弹出奖励界面
-                BattleUIManager.Instance.passed = false;
+                //BattleUIManager.Instance.passed = false;
+                BattleResultManager.Instance.passed = false;
             });
         }
-        if (BattleUIManager.Instance != null && BattleUIManager.Instance.passed && curProcess == 5)
+        if (BattleResultManager.Instance != null && BattleResultManager.Instance.passed && curProcess == 5)
         {
             coins = playerInfoLoader.coins;
             Debug.Log("🎉 通过 level5，奖励 150 coins！");
             coins += 150;
             StartCoroutine(UpdateCoins(coins)); // 更新数据库
             ShowRewardPanel(5, 150); // 弹出奖励界面
-            BattleUIManager.Instance.passed = false;
+            //BattleUIManager.Instance.passed = false;
+            BattleResultManager.Instance.passed = false;
         }
 
         // 控制提示文字显示
