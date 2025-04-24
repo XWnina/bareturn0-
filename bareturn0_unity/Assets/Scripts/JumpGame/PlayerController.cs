@@ -183,7 +183,6 @@ namespace JumpGame
                     break;
             }
         }
-
         public IEnumerator ExecuteActionAsync(string action)
         {
             switch (action)
