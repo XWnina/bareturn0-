@@ -924,7 +924,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000495578}
+  m_AnchoredPosition: {x: 0, y: 0.00011332817}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &522550873
@@ -1036,7 +1036,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1449383658}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99998975
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1189,8 +1189,8 @@ MonoBehaviour:
   typeParent: {fileID: 522550872}
   statusMessage: {fileID: 176378307}
   messageDisplayTime: 2
-  winPanel: {fileID: 0}
-  winPanelText: {fileID: 0}
+  winPanel: {fileID: 1232796745}
+  winPanelText: {fileID: 1692609540}
 --- !u!4 &848548922
 Transform:
   m_ObjectHideFlags: 0
@@ -1481,7 +1481,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000495578}
+  m_AnchoredPosition: {x: 0, y: 0.00011332817}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1224571978
@@ -2438,7 +2438,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1942989784}
   m_Direction: 2
   m_Value: 0
-  m_Size: 1
+  m_Size: 0.99998975
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

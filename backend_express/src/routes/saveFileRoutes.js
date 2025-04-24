@@ -657,11 +657,6 @@ router.post("/:saveName/updateMinigames", authMiddleware, async (req, res) => {
 
     const currentStatus = statusArray[index];
 
-    if (currentStatus === "1") {
-      const errorResponse = { error: "Minigame already completed" };
-      logRequestResponse(req, res, errorResponse);
-      return res.status(400).json(errorResponse);
-    }
 
     if (currentStatus === "0" && value === "0") {
       let statusString = "";
