@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class MapZoomInOut : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class MapZoomInOut : MonoBehaviour
     void Update()
     {
         HandleZoom();
-        HandlePan();
+        //HandlePan();
     }
 
     void HandleZoom()
@@ -31,32 +32,51 @@ public class MapZoomInOut : MonoBehaviour
         }
     }
 
-    void HandlePan()
-{
-    // 如果鼠标指在 UI 上，直接退出，不做拖动
-    if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
-    {
-        return;
-    }
+    // void HandlePan()
+    // {
+    //     // 准确判断鼠标是否在 UI 上（支持 world-space canvas）
+    //     if (IsPointerOverUI())
+    //     {
+    //         return;
+    //     }
 
-    if (Input.GetMouseButtonDown(0))
-    {
-        dragOrigin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-    }
+    //     if (Input.GetMouseButtonDown(0))
+    //     {
+    //         dragOrigin = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    //     }
 
-    if (Input.GetMouseButton(0))
-    {
-        Vector3 difference = dragOrigin - Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 newPosition = Camera.main.transform.position + difference;
+    //     if (Input.GetMouseButton(0))
+    //     {
+    //         Vector3 currentPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+    //         Vector3 difference = dragOrigin - currentPoint;
 
-        float camHeight = Camera.main.orthographicSize;
-        float camWidth = camHeight * Camera.main.aspect;
+    //         if (difference.magnitude > 0.05f) // 加个拖拽阈值防止误触
+    //         {
+    //             Vector3 newPosition = Camera.main.transform.position + difference;
 
-        newPosition.x = Mathf.Clamp(newPosition.x, panLimitMin.x + camWidth, panLimitMax.x - camWidth);
-        newPosition.y = Mathf.Clamp(newPosition.y, panLimitMin.y + camHeight, panLimitMax.y - camHeight);
+    //             float camHeight = Camera.main.orthographicSize;
+    //             float camWidth = camHeight * Camera.main.aspect;
 
-        Camera.main.transform.position = new Vector3(newPosition.x, newPosition.y, Camera.main.transform.position.z);
-    }
-}
+    //             newPosition.x = Mathf.Clamp(newPosition.x, panLimitMin.x + camWidth, panLimitMax.x - camWidth);
+    //             newPosition.y = Mathf.Clamp(newPosition.y, panLimitMin.y + camHeight, panLimitMax.y - camHeight);
 
+    //             Camera.main.transform.position = new Vector3(newPosition.x, newPosition.y, Camera.main.transform.position.z);
+    //         }
+    //     }
+    // }
+
+    // private bool IsPointerOverUI()
+    // {
+    //     PointerEventData eventData = new PointerEventData(EventSystem.current);
+    //     eventData.position = Input.mousePosition;
+
+    //     List<RaycastResult> results = new List<RaycastResult>();
+    //     GraphicRaycaster raycaster = FindObjectOfType<GraphicRaycaster>();
+    //     if (raycaster != null)
+    //     {
+    //         raycaster.Raycast(eventData, results);
+    //     }
+
+    //     return results.Count > 0;
+    // }
 }

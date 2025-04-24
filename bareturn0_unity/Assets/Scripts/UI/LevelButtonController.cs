@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using UnityEngine.SceneManagement;   
+using UnityEngine.SceneManagement;
 
 
 public class LevelButtonManager : MonoBehaviour
@@ -71,28 +71,32 @@ public class LevelButtonManager : MonoBehaviour
             {
                 SceneManager.LoadScene("calcuProblem");
             }
+            else if ((levelIndex + 1 == 6))
+            {
+                SceneManager.LoadScene("JumpGame");
+            }
         }
     }
     public void UpdateLevelUI()
-{
-    currentLevelIndex = MapUrlManager.CurrentLevel;
-   // Debug.Log($"LevelButtonController: Updating Level UI: Current Level = {currentLevelIndex}");
-
-    for (int i = 0; i < levels.Count; i++)
     {
-        //Debug.Log($"Levels.count {levels.Count}, i {i}");
-        LevelButtonData level = levels[i];
+        currentLevelIndex = MapUrlManager.CurrentLevel;
+        // Debug.Log($"LevelButtonController: Updating Level UI: Current Level = {currentLevelIndex}");
 
-        if (i < currentLevelIndex) // Levels that have been completed
+        for (int i = 0; i < levels.Count; i++)
         {
-            //Debug.Log($"button {i} color change, currentLevelIndex is {currentLevelIndex}");
-            level.icon.sprite = level.passedSprite;
-            // if(level.icon.sprite == level.passedSprite){
-            //     Debug.Log($"change successful!");
-            // }
-        }
-        else if (i == currentLevelIndex) // The current level (where the indicator should be)
-        {       
+            //Debug.Log($"Levels.count {levels.Count}, i {i}");
+            LevelButtonData level = levels[i];
+
+            if (i < currentLevelIndex) // Levels that have been completed
+            {
+                //Debug.Log($"button {i} color change, currentLevelIndex is {currentLevelIndex}");
+                level.icon.sprite = level.passedSprite;
+                // if(level.icon.sprite == level.passedSprite){
+                //     Debug.Log($"change successful!");
+                // }
+            }
+            else if (i == currentLevelIndex) // The current level (where the indicator should be)
+            {
                 //Debug.Log($"currentLevelIndex is {currentLevelIndex}");
                 Vector3 buttonPos = level.levelButton.transform.position;
 
@@ -103,15 +107,37 @@ public class LevelButtonManager : MonoBehaviour
                 youAreHereIndicator.transform.position = buttonPos + offset;
 
                 youAreHereIndicator.SetActive(true);
+            }
+            else if (i > currentLevelIndex) // Locked levels
+            {
+                level.icon.sprite = level.lockedSprite;
+            }
+            //levels[0].icon.sprite = level.lockedSprite;
         }
-        else if (i > currentLevelIndex) // Locked levels
-        {
-            level.icon.sprite = level.lockedSprite;
-        }
-        //levels[0].icon.sprite = level.lockedSprite;
-    }
+        // 控制交互范围
+        int unlockThreshold = MapUrlManager.CurrentLevel;
 
-}
+        for (int i = 0; i < levels.Count; i++)
+        {
+            bool interactable = false;
+
+            if (unlockThreshold >= 8)
+            {
+                interactable = true; // 所有关卡
+            }
+            else if (unlockThreshold >= 4 && i < 8)
+            {
+                interactable = true; // 1~8 关
+            }
+            else if (unlockThreshold < 4 && i < 4)
+            {
+                interactable = true; // 1~4 关
+            }
+
+            levels[i].levelButton.interactable = interactable;
+        }
+
+    }
 
 
     public void CompleteLevel(int levelIndex)

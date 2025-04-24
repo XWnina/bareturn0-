@@ -48,6 +48,9 @@ EditorBuildSettings:
     path: Assets/Scenes/Town.unity
     guid: 4d4c248db6be3754eb39a1bc27ad83e3
   - enabled: 1
+    path: Assets/Scenes/MatchGameScene.unity
+    guid: 4bb100967d6244328ba58a81dc803409
+  - enabled: 1
     path: Assets/Scenes/BlackSmithScene.unity
     guid: c1b6a086056b0d740954f38af523a7d4
   - enabled: 1
@@ -59,6 +62,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/calcuProblem.unity
     guid: 6eabba326af544621bea1bf50665ddbc
+  - enabled: 1
+    path: Assets/Scenes/JumpGame.unity
+    guid: f1ae96f41cda846449314022c50562a6
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

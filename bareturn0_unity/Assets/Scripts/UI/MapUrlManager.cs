@@ -16,10 +16,13 @@ public class MapUrlManager : MonoBehaviour
     private string saveName;
     public Button settingButton; // 添加 Setting 按钮
     public Button townButton;
-    public GameObject rewardPanel; 
+    public GameObject rewardPanel;
     public TextMeshProUGUI coinsText;
     public Button okButton;
     //public BattleUIManager battleUIManager;
+    public TextMeshProUGUI close4Text;
+    public TextMeshProUGUI close8Text;
+
 
     void Start()
     {
@@ -107,7 +110,7 @@ public class MapUrlManager : MonoBehaviour
     }
 
     IEnumerator CheckLevelAndReward()
-    {   
+    {
         yield return StartCoroutine(GetUserLevel());
         string previousScene = PlayerPrefs.GetString("PreviousScene", "");
         //BattleUIManager uiManager = FindObjectOfType<BattleUIManager>();
@@ -138,6 +141,24 @@ public class MapUrlManager : MonoBehaviour
             ShowRewardPanel(5, 150); // 弹出奖励界面
             BattleUIManager.Instance.passed = false;
         }
+
+        // 控制提示文字显示
+        if (CurrentLevel >= 8)
+        {
+            close4Text.gameObject.SetActive(false);
+            close8Text.gameObject.SetActive(false);
+        }
+        else if (CurrentLevel >= 4)
+        {
+            close4Text.gameObject.SetActive(false);
+            close8Text.gameObject.SetActive(true);
+        }
+        else
+        {
+            close4Text.gameObject.SetActive(true);
+            close8Text.gameObject.SetActive(true);
+        }
+
     }
 
     IEnumerator UpdateCoins(int amount)
