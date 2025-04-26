@@ -44,6 +44,8 @@ public class BattleManager : MonoBehaviour
     public EnemyController selectedEnemy;
     public bool isCardBeingDragged = false;
 
+    private int currentProgress;
+
     private int roundNumber = 0;
     public int CurrentRoundNumber
     {
@@ -517,8 +519,58 @@ public class BattleManager : MonoBehaviour
 
     public void sendProgress()
     {
-        StartCoroutine(UpdateProgress());
+        StartCoroutine(GetUserProgress( ()=>
+        {
+            if (currentProgress < levelData.processNum)
+            {
+                StartCoroutine(UpdateProgress());
+            }
+        }));
+        
     }
+
+    IEnumerator GetUserProgress(System.Action onGetUserProgress)
+    {
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        if (string.IsNullOrEmpty(saveName))
+        {
+            Debug.LogError("MapUrlManager: SaveName is missing in PlayerPrefs!");
+            yield break;
+        }
+
+        string url = $"http://localhost:3000/savefiles/{saveName}/progress";
+        //  Debug.Log($"[MapUrlManager] Requesting: {url}");
+
+        UnityWebRequest request = UnityWebRequest.Get(url);
+        string authToken = PlayerPrefs.GetString("token", "");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+        //  Debug.Log($"[MapUrlManager] Using auth token: {authToken}");
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            string json = request.downloadHandler.text;
+            //  Debug.Log($"✅ [MapUrlManager] Server Response: {json}");
+
+            ProgressResponse progressData = JsonUtility.FromJson<ProgressResponse>(json);
+            if (progressData != null)
+            {
+                currentProgress = progressData.progress;
+                Debug.Log($"MapUrlManager: Successfully fetched progress: {currentProgress} for save: {saveName}");
+            }
+            else
+            {
+                Debug.LogError("❌ Failed to parse JSON response.");
+            }
+        }
+        else
+        {
+            Debug.LogError($"❌ Error fetching user progress: {request.error}");
+        }
+        onGetUserProgress?.Invoke();
+    }
+
     private IEnumerator UpdateProgress()
     {
         string saveName = PlayerPrefs.GetString("currentSaveName", "");
@@ -570,5 +622,11 @@ public class BattleManager : MonoBehaviour
     {
         public int progress;
         public ProgressData(int progressNum) { progress = progressNum; }
+    }
+
+    [System.Serializable]
+    private class ProgressResponse
+    {
+        public int progress;
     }
 }
