@@ -3,6 +3,7 @@ using UnityEngine;
 public class BattleResultManager : MonoBehaviour
 {
     public static BattleResultManager Instance;
+
     public bool passed = false;
     public bool isPefectPassed = false;
     private void Awake()
