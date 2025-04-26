@@ -164,10 +164,10 @@ public class LevelButtonManager : MonoBehaviour
         switch (index)
         {
             case 0: return "Level 1:\nTopic: printf in C\nDetails: different typs of printf(), %s,%f, etc.";
-            case 1: return "Level 2:\nTopic: Battle!\nDetails: card game\nRewards: +100 Coins";
+            case 1: return "Level 2:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +100 coins";
             case 2: return "Level 3:\nTopic: Calculation level (1/2)\nDetails: different datatypes for math";
             case 3: return "Level 4:\nTopic: Calculation level (2/2)\nDetails: more complex senaieros with calculation";
-            case 4: return "Level 5:\nTopic: Battle!\nDetails: card game\nRewards: +100 Coins";
+            case 4: return "Level 5:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +150 coins";
             case 5: return "Level 6:\nTopic:Jump game!\nDetails: dataflow(if-else)";
             default: return "Level ?:\nTopic:???\nDetails: ???";
         }
