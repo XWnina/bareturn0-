@@ -221,6 +221,9 @@ MonoBehaviour:
   elseContainer: {fileID: 2077919799394417827}
   addElseButton: {fileID: 722448172679784694}
   deleteElseButton: {fileID: 1730038653503256136}
+  trueContainer: {fileID: 0}
+  addIfButton: {fileID: 0}
+  ifBlockPrefab: {fileID: 0}
 --- !u!114 &1135670742738649295
 MonoBehaviour:
   m_ObjectHideFlags: 0

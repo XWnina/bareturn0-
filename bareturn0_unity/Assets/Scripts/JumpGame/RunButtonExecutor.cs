@@ -23,19 +23,30 @@ namespace JumpGame
 
         IEnumerator RunCode()
         {
-            Debug.Log("▶ 执行所有 IfBlock 模块...");
+            Debug.Log("▶ 执行所有模块...");
 
             foreach (Transform child in codeWorkspace)
             {
                 IfBlockExecutor ifBlock = child.GetComponent<IfBlockExecutor>();
+                WhileBlockExecutor whileBlock = child.GetComponent<WhileBlockExecutor>();
+
                 if (ifBlock != null)
                 {
+                    Debug.Log($"🧩 执行 IfBlock：{child.name}");
                     yield return StartCoroutine(ifBlock.Execute(player));
+                }
+                else if (whileBlock != null)
+                {
+                    Debug.Log($"🔁 执行 WhileBlock：{child.name}");
+                    yield return StartCoroutine(whileBlock.Execute(player));
+                }
+                else
+                {
+                    Debug.LogWarning($"⚠ 未知模块类型：{child.name}");
                 }
             }
 
             Debug.Log("✅ 所有逻辑执行完毕！");
         }
-
     }
 }
