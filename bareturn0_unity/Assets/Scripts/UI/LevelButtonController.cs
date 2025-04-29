@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 
 public class LevelButtonManager : MonoBehaviour
@@ -41,6 +42,26 @@ public class LevelButtonManager : MonoBehaviour
             //{
             //    levels[i].levelButton.onClick.AddListener(() => SceneManager.LoadScene("calcuTeaching"));
             //}
+            EventTrigger trigger = levels[i].levelButton.gameObject.AddComponent<EventTrigger>();
+
+            // mouse on
+            EventTrigger.Entry enterEntry = new EventTrigger.Entry();
+            enterEntry.eventID = EventTriggerType.PointerEnter;
+            enterEntry.callback.AddListener((data) =>
+            {
+                string tooltip = GetTooltipTextForLevel(index);
+                LevelTooltip.Instance.ShowTooltip(tooltip, Input.mousePosition);
+            });
+            trigger.triggers.Add(enterEntry);
+
+            // mouse off
+            EventTrigger.Entry exitEntry = new EventTrigger.Entry();
+            exitEntry.eventID = EventTriggerType.PointerExit;
+            exitEntry.callback.AddListener((data) =>
+            {
+                LevelTooltip.Instance.HideTooltip();
+            });
+            trigger.triggers.Add(exitEntry);
         }
     }
 
@@ -137,6 +158,19 @@ public class LevelButtonManager : MonoBehaviour
             levels[i].levelButton.interactable = interactable;
         }
 
+    }
+    private string GetTooltipTextForLevel(int index)
+    {
+        switch (index)
+        {
+            case 0: return "Level 1:\nTopic: printf in C\nDetails: different typs of printf(), %s,%f, etc.";
+            case 1: return "Level 2:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +100 coins";
+            case 2: return "Level 3:\nTopic: Calculation level (1/2)\nDetails: different datatypes for math";
+            case 3: return "Level 4:\nTopic: Calculation level (2/2)\nDetails: more complex senaieros with calculation";
+            case 4: return "Level 5:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +150 coins";
+            case 5: return "Level 6:\nTopic:Jump game!\nDetails: dataflow(if-else)";
+            default: return "Level ?:\nTopic:???\nDetails: ???";
+        }
     }
 
 
