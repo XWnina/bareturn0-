@@ -161,7 +161,7 @@ namespace JumpGame
             // ✅ 向角色面朝方向发射
             Vector2 dir = Vector2.right * transform.localScale.x;
 
-            float distance = 2f; // 根据需要调整检测距离
+            float distance = 1f; // 根据需要调整检测距离
 
             // ✅ 使用 LayerMask，只检测 obstacleLayer 中的物体
             RaycastHit2D hit = Physics2D.Raycast(origin, dir, distance, obstacleLayer);
