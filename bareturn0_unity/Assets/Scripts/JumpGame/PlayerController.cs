@@ -181,11 +181,6 @@ namespace JumpGame
                 return false;
             }
         }
-
-
-
-
-
         
         public bool IsPlatformAbove()
         {
@@ -207,6 +202,7 @@ namespace JumpGame
                 case "platform up": callback(IsPlatformAbove()); break;
                 case "rock ahead": callback(IsRockAhead()); break;
                 case "always true": callback(true); break;
+                case "is grounded": callback(_isGrounded); break;
                 default:
                     Debug.LogWarning($"⚠ 未知条件：{condition}");
                     callback(false);
