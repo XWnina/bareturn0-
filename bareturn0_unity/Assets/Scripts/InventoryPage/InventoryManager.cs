@@ -14,6 +14,7 @@ public class InventoryManager : MonoBehaviour
     public GameObject CardCollection;
     public GameObject CardDeck;
     public Button MaterialsButton;
+    public Button CardCollectionButton;
     public Button NewDeckButton;
 
     // Card Collection
@@ -48,6 +49,16 @@ public class InventoryManager : MonoBehaviour
     public TMP_InputField DeckNameInput;
     public Button ConfirmCreateDeckButton;
     public Button CancelCreateDeckButton;
+
+    // Card Collection Panel
+    public GameObject CardCollectionPanel;
+    public Button CardCollectionCloseButton;
+    public CardDatabase cardDatabase; // 拖入 AACardDatabase.asset
+    public Transform CardCollectionGrid; // ScrollView下的内容区域
+
+    public GameObject CardDetailsPanel;
+
+
 
     void Awake()
     {
@@ -110,6 +121,19 @@ public class InventoryManager : MonoBehaviour
             }
         });
 
+
+        CardCollectionPanel.SetActive(false);
+        CardCollectionButton.onClick.AddListener(() =>
+        {
+            CardCollectionPanel.SetActive(true);
+            populateCardCollectionPanel();
+        });
+
+        CardCollectionCloseButton.onClick.AddListener(() =>
+        {
+            CardCollectionPanel.SetActive(false);
+        });
+        CardDetailsPanel.SetActive(false);
     }
 
     public void populateCollection()
@@ -143,7 +167,7 @@ public class InventoryManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
-        
+
         List<string> materialList = new List<string>();
         for (int i = 0; i < talentList.Count; i++)
         {
@@ -279,6 +303,62 @@ public class InventoryManager : MonoBehaviour
             DisplayAllDeckButtons(); // Refresh deck list
         }
     }
+
+    public void populateCardCollectionPanel()
+    {
+        Debug.Log($"📦 cardDatabase 中实际有 {cardDatabase.allCards.Count} 张卡");
+
+        // 清空旧图鉴
+        foreach (Transform child in CardCollectionGrid)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 统计拥有的卡片数量
+        Dictionary<string, int> cardCounts = new Dictionary<string, int>();
+        foreach (var card in playerCards)
+        {
+            if (!cardCounts.ContainsKey(card.cardName))
+                cardCounts[card.cardName] = 1;
+            else
+                cardCounts[card.cardName]++;
+        }
+
+        // 显示所有卡（已拥有 & 未拥有）
+        foreach (var cardData in cardDatabase.allCards)
+        {
+            try
+            {
+                Debug.Log("🟢 正在生成卡：" + cardData.cardName);
+
+                GameObject cardObj = Instantiate(CardPrefab, CardCollectionGrid);
+                CardThumbnailUI ui = cardObj.GetComponent<CardThumbnailUI>();
+
+                bool isOwned = cardCounts.ContainsKey(cardData.cardName);
+                ui.SetCardThumbnail(cardData, isOwned);
+
+                if (isOwned)
+                {
+                    ui.SetCardCount(cardCounts[cardData.cardName]);
+
+                    var btn = cardObj.GetComponent<Button>();
+                    btn.onClick.AddListener(() =>
+                    {
+                        CardDetailsPanel.SetActive(true);
+                        Debug.Log("🧩 Listener set");
+                    });
+                    
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("❌ 构建卡片失败：" + cardData.cardName + "\n" + e.Message);
+            }
+        }
+
+    }
+
+
     [System.Serializable]
     public class CreateDeckRequest
     {
