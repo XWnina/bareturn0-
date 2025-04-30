@@ -42,7 +42,7 @@ namespace JumpGame
                     }
                     else
                     {
-                        Debug.LogWarning($"⚠ 子物体 {child.name} 没有挂 IfBlockExecutor");
+                        Debug.Log($"⚠ 子物体 {child.name} 没有挂 IfBlockExecutor");
                     }
                 }
 

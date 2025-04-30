@@ -24,6 +24,7 @@ namespace JumpGame
         IEnumerator RunCode()
         {
             Debug.Log("▶ 执行所有模块...");
+            player.reachedGoal = false; 
 
             foreach (Transform child in codeWorkspace)
             {

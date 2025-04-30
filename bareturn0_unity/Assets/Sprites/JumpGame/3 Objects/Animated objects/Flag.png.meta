@@ -1,10 +1,19 @@
 fileFormatVersion: 2
-guid: 2fbd38fb40159427aaf26beef9d9337d
+guid: f323e5ca04fb14a2b8188de6c1d0bc77
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4127586352961116206
-    second: Tile_20_0
+      213: 1805158079502305607
+    second: Flag_0
+  - first:
+      213: -477789389410734736
+    second: Flag_1
+  - first:
+      213: -8119871676797884261
+    second: Flag_2
+  - first:
+      213: 5006722515616286978
+    second: Flag_3
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -109,56 +118,17 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: Android
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: tvOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 4
-    buildTarget: iOS
-    maxTextureSize: 2048
-    resizeAlgorithm: 0
-    textureFormat: -1
-    textureCompression: 1
-    compressionQuality: 50
-    crunchedCompression: 0
-    allowsAlphaSplitting: 0
-    overridden: 0
-    ignorePlatformSupport: 0
-    androidETC2FallbackOverride: 0
-    forceMaximumCompressionQuality_BC6H_BC7: 0
   spriteSheet:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Tile_20_0
+      name: Flag_0
       rect:
         serializedVersion: 2
         x: 0
         y: 0
-        width: 32
-        height: 32
+        width: 31
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -167,8 +137,74 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 2d7a004b41ed7b6c0800000000000000
-      internalID: -4127586352961116206
+      spriteID: 749492c85b53d0910800000000000000
+      internalID: 1805158079502305607
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Flag_1
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 07de8bee41d8e59f0800000000000000
+      internalID: -477789389410734736
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Flag_2
+      rect:
+        serializedVersion: 2
+        x: 63
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b98e4ba1bbb605f80800000000000000
+      internalID: -8119871676797884261
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Flag_3
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 0
+        width: 32
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2094248e9937b7540800000000000000
+      internalID: 5006722515616286978
       vertices: []
       indices: 
       edges: []
@@ -187,7 +223,10 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Tile_20_0: -4127586352961116206
+      Flag_0: 1805158079502305607
+      Flag_1: -477789389410734736
+      Flag_2: -8119871676797884261
+      Flag_3: 5006722515616286978
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
