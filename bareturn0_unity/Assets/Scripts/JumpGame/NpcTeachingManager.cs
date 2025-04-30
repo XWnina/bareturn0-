@@ -18,6 +18,8 @@ namespace JumpGame
         public GameObject codeWorkspace;
         public GameObject ifBlockPrefab;
         public Button runButton;
+        public GameObject npcDialog; // NpcDialog 总容器
+
 
         private readonly Queue<string> _dialogueQueue = new Queue<string>();
         private bool _waitingForPlayer = false;
@@ -79,6 +81,8 @@ namespace JumpGame
             _dialogueQueue.Enqueue("[WAIT_FOR_WHILE_SETUP]");
             _dialogueQueue.Enqueue("Now run the code and see what happens!");
             _dialogueQueue.Enqueue("[WAIT_FOR_FINAL_RUN]");
+            _dialogueQueue.Enqueue("Great! Next, you can try nesting an if statement inside the while loop. You're doing an excellent job — I'll be waiting for you at the finish line. See you there!");
+            _dialogueQueue.Enqueue("[FINISH_TEACHING]");
 
         }
 
@@ -172,6 +176,15 @@ namespace JumpGame
                         _currentPhase = "run3";
                         runButton.onClick.AddListener(OnRunClicked);
                         yield break;
+                    
+                    case "[FINISH_TEACHING]":
+                        rightHint.SetActive(false);
+                        dragHintIf.SetActive(false);
+                        runHint.SetActive(false);
+                        bubbleBg.SetActive(false);
+                        whileHint.SetActive(false); 
+                        npcDialog.SetActive(false);
+                        break;
 
                 }
             }
@@ -268,6 +281,48 @@ namespace JumpGame
             }
             return false;
         }
+        private Coroutine _hideCoroutine;
+        public void TriggerObstacleFeedback()
+        {
+            npcDialog.SetActive(true);
+            bubbleBg.SetActive(true);
+            textP.text = "Hmm... It seems you hit the rock. Try jumping over it!";
+    
+            if (_hideCoroutine != null)
+                StopCoroutine(_hideCoroutine);
+    
+            _hideCoroutine = StartCoroutine(HideNpcDialogAfterDelay(5f));
+        }
+        IEnumerator HideNpcDialogAfterDelay(float seconds)
+        {
+            yield return new WaitForSeconds(seconds);
+    
+            if (!_waitingForPlayer) {
+                npcDialog.SetActive(false);
+                bubbleBg.SetActive(false);
+            }
+        }
+        
+        public void OnPlayerReachedFlag()
+        {
+            if (_currentPhase == "run3" && _waitingForPlayer)
+            {
+                PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+                if (player != null)
+                {
+                    player.ForceStop();
+                    player.reachedGoal = false; // ✅ 重置以便后续还能用 while
+                }
+
+                _waitingForPlayer = false;
+                StartCoroutine(ShowNextDialogue());
+            }
+        }
+
+
+
+
+
 
 
     }

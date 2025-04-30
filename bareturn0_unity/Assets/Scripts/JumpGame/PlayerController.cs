@@ -31,6 +31,7 @@ namespace JumpGame
 
         [Header("是否启用测试模式 (键盘控制)")]
         public bool enableTestInput = true;
+        [HideInInspector] public bool reachedGoal = false;
 
         private Rigidbody2D _rb;
         private Animator _animator;
@@ -181,6 +182,48 @@ namespace JumpGame
                 return false;
             }
         }
+        void OnCollisionEnter2D(Collision2D collision)
+        {
+            if (collision.collider.CompareTag("Obstacle"))
+            {
+                Debug.Log("🪨 撞到了石头！");
+                Object.FindFirstObjectByType<NpcTeachingDialogue>()?.TriggerObstacleFeedback();
+
+            }
+        }
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            Debug.Log($"[DEBUG] 触发器命中：{other.name}，tag = {other.tag}, layer = {LayerMask.LayerToName(other.gameObject.layer)}");
+
+            if (other.CompareTag("Goal"))
+            {
+                Debug.Log("🎌 碰到了终点旗帜！");
+                reachedGoal = true; // ✅ 一定要设置为 true！
+                var dialogue = Object.FindFirstObjectByType<NpcTeachingDialogue>();
+                dialogue?.OnPlayerReachedFlag();
+            }
+
+        }
+
+        public void ForceStop()
+        {
+            // 停止一切移动
+            _rb.linearVelocity = Vector2.zero;
+
+            // 清空动作队列
+            _actionQueue.Clear();
+            _conditionQueue.Clear();
+
+            // 强制终止协程
+            StopAllCoroutines();
+            _isExecuting = false;
+
+            // 动画状态可选恢复为 idle（或你已有逻辑中会自动处理）
+            Debug.Log("🛑 玩家已强制停止");
+        }
+
+
+
         
         public bool IsPlatformAbove()
         {

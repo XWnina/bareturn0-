@@ -24,7 +24,7 @@ namespace JumpGame
                 yield return player.EvaluateConditionAsync(condition, result => conditionMet = result);
                 Debug.Log($"🔁 While 条件：{condition} = {conditionMet}");
 
-                if (!conditionMet)
+                if (!conditionMet || player.reachedGoal)
                 {
                     Debug.Log("🛑 条件不再满足，退出 while");
                     break;
