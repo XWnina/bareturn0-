@@ -11,7 +11,7 @@ namespace JumpGame
 
         private static readonly List<string> Actions = new List<string>
         {
-            "None",
+            "Action",
             "jump",
             "walk",
             "do nothing"
