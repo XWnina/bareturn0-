@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eddb690bca9f9fb41bd5f14bc0e139e1, type: 3}
   m_Name: RangeGoblin
   m_EditorClassIdentifier: 
-  enemyName: 
-  maxHealth: 0
-  speed: 0
-  enemyPrefab: {fileID: 0}
+  enemyName: RangeGoblin
+  maxHealth: 15
+  speed: 10
+  enemyPrefab: {fileID: 649636296582216838, guid: fe132c434dd51a644a3807b9e1de4649, type: 3}

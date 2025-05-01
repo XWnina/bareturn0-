@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 067a6d3d29224904d87d31dca1d025fa, type: 3}
   m_Name: Heal5
   m_EditorClassIdentifier: 
-  layers: 1
+  layers: 5

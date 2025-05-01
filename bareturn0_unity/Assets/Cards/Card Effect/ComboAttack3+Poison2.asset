@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   subEffects:
   - {fileID: 11400000, guid: c9e6aff28d4fb444b9440556f505a3f7, type: 2}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: e214de88960919a40b1b819563fb1b65, type: 2}

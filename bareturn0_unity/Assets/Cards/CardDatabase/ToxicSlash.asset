@@ -15,7 +15,7 @@ MonoBehaviour:
   cardName: ToxicSlash
   description: Deal 1 damage and apply 2 stacks of Poison to the enemy.
   cost: 1
-  artwork: {fileID: -1405953137018486681, guid: 2fa707f20c6e96c49a62f7f099c886b0, type: 3}
+  artwork: {fileID: 0}
   quality: 1
   cardEffect: {fileID: 11400000, guid: b4c104e0c58e38d458a97a1dde4e6fa7, type: 2}
   targetingType: 0

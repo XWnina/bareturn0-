@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: WolfData
   m_EditorClassIdentifier: 
   enemyName: Wolf
-  maxHealth: 10
+  maxHealth: 15
   speed: 15
-  attackDamage: 0
   enemyPrefab: {fileID: 649636296582216838, guid: 05306c88008b95a41a6410d244a4bb1f, type: 3}

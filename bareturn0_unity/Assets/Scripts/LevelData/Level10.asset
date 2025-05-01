@@ -12,5 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1150e4001d99e0e44ac4f8fbd0b61f94, type: 3}
   m_Name: Level10
   m_EditorClassIdentifier: 
-  enemyDatas: []
-  processNum: 0
+  enemyDatas:
+  - {fileID: 11400000, guid: 6a064bf1ca527064fa859bfb01b98fb0, type: 2}
+  processNum: 10
