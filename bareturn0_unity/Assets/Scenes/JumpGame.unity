@@ -2738,10 +2738,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: Clear All
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 4254f6b6079add54f92f3b5c761931c2, type: 2}
+  m_sharedMaterial: {fileID: -3309186978010668473, guid: 4254f6b6079add54f92f3b5c761931c2, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2765,8 +2765,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 45
+  m_fontSizeBase: 45
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -8196,8 +8196,9 @@ GameObject:
   - component: {fileID: 2002218204}
   - component: {fileID: 2002218203}
   - component: {fileID: 2002218202}
+  - component: {fileID: 2002218205}
   m_Layer: 5
-  m_Name: JumpBlockButton
+  m_Name: ClearAllButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8305,6 +8306,20 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2002218200}
   m_CullTransparentMesh: 1
+--- !u!114 &2002218205
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2002218200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6ca2a7c8ec134833b77d2ba0710f1483, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  codeWorkspace: {fileID: 530692287}
+  clearButton: {fileID: 2002218202}
 --- !u!1 &2008717029
 GameObject:
   m_ObjectHideFlags: 0
