@@ -20,9 +20,9 @@ namespace JumpGame
             if (runButton != null)
                 runButton.onClick.AddListener(() => StartCoroutine(RunCode()));
         }
-
         IEnumerator RunCode()
         {
+            player.interrupted = false; // ✅ 清除上次的中断状态
             Debug.Log("▶ 执行所有模块...");
             player.reachedGoal = false; 
 
