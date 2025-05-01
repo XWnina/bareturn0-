@@ -53,8 +53,8 @@ public class InventoryManager : MonoBehaviour
     // Card Collection Panel
     public GameObject CardCollectionPanel;
     public Button CardCollectionCloseButton;
-    public CardDatabase cardDatabase; // 拖入 AACardDatabase.asset
-    public Transform CardCollectionGrid; // ScrollView下的内容区域
+    public CardDatabase cardDatabase;
+    public Transform CardCollectionGrid; 
 
     public GameObject CardDetailsPanel;
 
