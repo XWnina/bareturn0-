@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using static UnityEditor.PlayerSettings;
@@ -8,6 +9,7 @@ using static UnityEngine.GraphicsBuffer;
 
 public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, IPointerExitHandler
 {
+    public string enemyName = "";
     public int currentHealth = 40;
     public int maxHealth = 40;
     public int speed = 8;
@@ -25,6 +27,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
     public int sharpnessLayers = 0;
     public int poisonLayers = 0;
     public int bleedLayers = 0;
+    public int burnLayers = 0;
 
 
     [SerializeField] EnemyAnimator animatorController;
@@ -39,7 +42,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
     // 每回合抽牌数量
     public int drawCount = 1;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         currentHealth = maxHealth;
         // 保存初始的局部缩放
@@ -48,29 +51,30 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
 
     public void Initialize(EnemyData data)
     {
+        this.enemyName = data.enemyName;
         this.maxHealth = data.maxHealth;
         this.currentHealth = data.maxHealth;
         this.speed = data.speed;
-        this.attackDamage = data.attackDamage;
+        //this.attackDamage = data.attackDamage;
         // 如果还需要别的初始化逻辑，可以放在这里
     }
 
-    public void Attack()
+    public virtual void Attack()
     {
         animatorController?.EnemyAttackAnimation();
     }
 
-    public void Cast()
+    public virtual void Cast()
     {
         animatorController?.CastingAnimation();
     }
 
-    public void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage)
     {
         int effectiveDamage = Mathf.Max(damage - currentArmor, 0);
         currentArmor = Mathf.Max(currentArmor - damage, 0);
         currentHealth -= effectiveDamage;
-        animatorController?.EnemyHurttAnimation();
+        animatorController?.EnemyHurtAnimation();
         Vector3 pos = transform.position;
         BattleManager.Instance.ShowFloatingValue(pos, effectiveDamage);
         Debug.Log("Enemy takes " + damage + " damage. HP=" + currentHealth);
@@ -112,10 +116,15 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
     public void Heal(int amount)
     {
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        Vector3 pos = transform.position;
+        BattleManager.Instance.ShowEffectOnly(pos, EffectType.Heal);
+        BattleManager.Instance.ShowFloatingValue(pos, -amount);
+
+        UpdateStatusUI();
     }
 
 
-    private IEnumerator HandleDeath()
+    protected virtual IEnumerator HandleDeath()
     {
         animatorController.EnemyDeathAnimation(); // 播放死亡动画
 
@@ -125,7 +134,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         BattleManager.Instance.CheckWinLose(); // 重新检查战斗胜负
     }
 
-    public IEnumerator ExecuteTurn()
+    public virtual IEnumerator ExecuteTurn()
     {
         // 1. 清空手牌
         enemyHand.Clear();
@@ -150,7 +159,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         ICharacter target = null;
         foreach (CardData card in enemyHand)
         {
-            yield return new WaitForSeconds(1.3f);
+            yield return new WaitForSeconds(2f);
 
             // 选择目标
             if (card.cardEffect != null)
@@ -190,6 +199,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
     {
         if (sharpnessLayers > 0)
         {
+
             sharpnessLayers--;
             Debug.Log("Player's Sharpness reduced by 1, now: " + sharpnessLayers);
         }
@@ -211,26 +221,45 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
             bleedLayers = Mathf.Max(bleedLayers - 1, 0);
             Debug.Log($"{name} takes {bleedDamage} bleed damage, remaining bleed: {bleedLayers}");
         }
+        if (burnLayers > 0)
+        {
+            int burnDamage = burnLayers;
+            yield return new WaitForSeconds(0.5f);
+            TakeDamage(burnDamage);
+            burnLayers = Mathf.Max(burnLayers - 1, 0);
+            Debug.Log(name + " takes " + burnDamage + " burn damage, remaining burn: " + burnLayers);
+        }
         else
         {
             yield return null;
         }
+        UpdateBuffUI();
     }
 
     public void ApplySharpness(int layersToAdd)
-    {
+    {  
         sharpnessLayers += layersToAdd;
+        UpdateBuffUI();
     }
 
     public void ApplyPoison(int layersToAdd)
     {
         poisonLayers += layersToAdd;
+        UpdateBuffUI();
     }
 
     public void ApplyBleed(int layersToAdd)
     {
         bleedLayers += layersToAdd;
+        UpdateBuffUI();
         Debug.Log($"{name} gains {layersToAdd} layers of Bleed. Total bleed layers: {bleedLayers}");
+    }
+
+    public void ApplyBurn(int layersToAdd)
+    {
+        burnLayers += layersToAdd;
+        UpdateBuffUI();
+        Debug.Log($"{name} gains {layersToAdd} burn layers. Total burn: {burnLayers}");
     }
 
 
@@ -266,6 +295,18 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         // 设置标记，在 LateUpdate 中处理
         needResetScale = true;
         needEnlarge = false;
+    }
+
+    public void UpdateBuffUI()
+    {
+        if (statusUI != null)
+        {
+            EnemyStatusUI ui = statusUI.GetComponent<EnemyStatusUI>();
+            if (ui != null)
+            {
+                ui.updateBuffUI(poisonLayers, burnLayers, bleedLayers, sharpnessLayers);
+            }
+        }
     }
 
 

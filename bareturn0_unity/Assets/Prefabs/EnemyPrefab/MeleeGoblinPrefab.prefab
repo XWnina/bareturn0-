@@ -53,6 +53,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 294c17cea39cce443b0e62fc40983685, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyName: 
   currentHealth: 40
   maxHealth: 40
   speed: 8
@@ -64,9 +65,10 @@ MonoBehaviour:
   sharpnessLayers: 0
   poisonLayers: 0
   bleedLayers: 0
+  burnLayers: 0
   animatorController: {fileID: 1354544605362301238}
   enemyDeck:
-  - {fileID: 11400000, guid: 6166c5785a77da74b844428327b72098, type: 2}
+  - {fileID: 11400000, guid: 9b36041fbbe410441a0bfd4116476786, type: 2}
   enemyHand: []
   drawCount: 1
 --- !u!70 &8920047322979453000
@@ -103,8 +105,8 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -10.270857, y: -5.5235586}
-  m_Size: {x: 125.09704, y: 199.48315}
+  m_Offset: {x: -10.270857, y: -2.2263215}
+  m_Size: {x: 125.09704, y: 192.88869}
   m_Direction: 0
 --- !u!50 &8458856394531334817
 Rigidbody2D:

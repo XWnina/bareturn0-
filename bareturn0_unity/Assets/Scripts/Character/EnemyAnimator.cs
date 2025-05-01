@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class EnemyAnimator : MonoBehaviour
 {
-    [SerializeField] private Animator animator;
+    [SerializeField] protected Animator animator;
 
     [Header("Audio")]
     public AudioSource audioSource;  // 角色的音频组件
     public AudioClip attackSound;    // 攻击音效
     public AudioClip hurtSound; //受击音效
 
-    private void Awake()
+    protected virtual void Awake()
     {
         animator = GetComponent<Animator>();
     }
 
-    public void EnemyAttackAnimation()
+    public virtual void EnemyAttackAnimation()
     {
         if (animator != null)
         {
@@ -22,7 +22,7 @@ public class EnemyAnimator : MonoBehaviour
         }
     }
 
-    public void EnemyHurttAnimation()
+    public virtual void EnemyHurtAnimation()
     {
         if (animator != null)
         {
@@ -35,7 +35,7 @@ public class EnemyAnimator : MonoBehaviour
         }
     }
 
-    public void EnemyDeathAnimation()
+    public virtual void EnemyDeathAnimation()
     {
         if (animator != null)
         {
@@ -43,7 +43,7 @@ public class EnemyAnimator : MonoBehaviour
         }
     }
 
-    public void CastingAnimation()
+    public virtual void CastingAnimation()
     {
         if (animator != null)
         {

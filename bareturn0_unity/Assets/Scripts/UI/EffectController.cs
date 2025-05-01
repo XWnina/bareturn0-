@@ -7,7 +7,10 @@ public enum EffectType
     Poison,
     Bleed,
     Damage,
-    Armor,    // 建议保持首字母大写
+    Armor,
+    Burn,
+    Heal,
+    Burst
 }
 
 public class EffectController : MonoBehaviour
@@ -69,7 +72,15 @@ public class EffectController : MonoBehaviour
         startPosition = anchoredPos;
 
         if (valueText != null)
+        {
             valueText.text = value >= 0 ? $"-{value}" : $"+{-value}";
+            if (value >= 0)
+                valueText.color = Color.red;
+            else
+                valueText.color = Color.green;
+        }
+           
+
         StartCoroutine(FloatAndDestroy());
     }
 

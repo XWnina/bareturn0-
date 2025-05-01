@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c921fd2ae4c7564d824d2e0456a2959, type: 3}
   m_Name: Poison2
   m_EditorClassIdentifier: 
-  layers: 1
+  layers: 2
