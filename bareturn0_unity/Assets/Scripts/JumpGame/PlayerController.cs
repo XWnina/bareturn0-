@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace JumpGame
 {
@@ -32,6 +34,7 @@ namespace JumpGame
         [Header("是否启用测试模式 (键盘控制)")]
         public bool enableTestInput = true;
         [HideInInspector] public bool reachedGoal = false;
+        [HideInInspector] public bool interrupted = false;
 
         private Rigidbody2D _rb;
         private Animator _animator;
@@ -112,7 +115,7 @@ namespace JumpGame
                             if (Mathf.Abs(_rb.linearVelocity.x) < 0.05f) break;
                             yield return null;
                         }
-
+                        
                         _rb.linearVelocity = new Vector2(0f, _rb.linearVelocity.y);
                         Debug.Log("🏁 Walk 结束");
                         break;
@@ -156,39 +159,65 @@ namespace JumpGame
 
         public bool IsRockAhead()
         {
-            // ✅ 推荐从角色底部（如 groundCheck）发射射线
-            Vector2 origin =  transform.position;
+            Vector2 centerOrigin = transform.position;
+            Vector2 groundOrigin = groundCheck != null ? groundCheck.position : centerOrigin + Vector2.down * 0.5f;
+            Vector2 middleOrigin = (centerOrigin + groundOrigin) / 2f;
 
-            // ✅ 向角色面朝方向发射
             Vector2 dir = Vector2.right * transform.localScale.x;
+            float distance = 1.5f;
 
-            float distance = 1f; // 根据需要调整检测距离
+            // 射线1：中心
+            RaycastHit2D centerHit = Physics2D.Raycast(centerOrigin, dir, distance, obstacleLayer);
+            Debug.DrawRay(centerOrigin, dir * distance, Color.yellow, 1f);
 
-            // ✅ 使用 LayerMask，只检测 obstacleLayer 中的物体
-            RaycastHit2D hit = Physics2D.Raycast(origin, dir, distance, obstacleLayer);
+            // 射线2：中间
+            RaycastHit2D middleHit = Physics2D.Raycast(middleOrigin, dir, distance, obstacleLayer);
+            Debug.DrawRay(middleOrigin, dir * distance, Color.cyan, 1f);
 
-            // ✅ 可视化射线（Scene 视图中看到）
-            Debug.DrawRay(origin, dir * distance, Color.yellow, 2f);
+            // 射线3：脚底
+            RaycastHit2D groundHit = Physics2D.Raycast(groundOrigin, dir, distance, obstacleLayer);
+            Debug.DrawRay(groundOrigin, dir * distance, Color.green, 1f);
 
-            // ✅ 调试输出
-            if (hit.collider != null)
+            if (centerHit.collider != null)
             {
-                Debug.Log($"🪨 检测到 Obstacle：{hit.collider.name}（层：{LayerMask.LayerToName(hit.collider.gameObject.layer)}）");
+                Debug.Log($"🪨 中间上方检测到障碍物：{centerHit.collider.name}");
+                return true;
+            }
+            else if (middleHit.collider != null)
+            {
+                Debug.Log($"🪨 中间高度检测到障碍物：{middleHit.collider.name}");
+                return true;
+            }
+            else if (groundHit.collider != null)
+            {
+                Debug.Log($"🪨 脚底检测到障碍物：{groundHit.collider.name}");
                 return true;
             }
             else
             {
-                Debug.Log("✅ 脚前方没有障碍物");
+                Debug.Log("✅ 前方没有障碍物");
                 return false;
             }
         }
+
+
         void OnCollisionEnter2D(Collision2D collision)
         {
             if (collision.collider.CompareTag("Obstacle"))
             {
                 Debug.Log("🪨 撞到了石头！");
                 Object.FindFirstObjectByType<NpcTeachingDialogue>()?.TriggerObstacleFeedback();
+                interrupted = true; 
 
+                // ➤ 后退一点
+                float retreatDistance = 0.5f;
+                float direction = -Mathf.Sign(transform.localScale.x); // 面朝方向反向
+                Vector2 retreat = new Vector2(retreatDistance * direction, 0f);
+
+                _rb.MovePosition(_rb.position + retreat);
+                Debug.Log("🔙 已自动后退一点");
+                
+                
             }
         }
         private void OnTriggerEnter2D(Collider2D other)
@@ -202,7 +231,28 @@ namespace JumpGame
                 var dialogue = Object.FindFirstObjectByType<NpcTeachingDialogue>();
                 dialogue?.OnPlayerReachedFlag();
             }
+            if (other.CompareTag("FinalFlag"))
+            {
+                Debug.Log("🎯 到达终点 FinalFlag！");
+                ForceStop(); // 停止所有行为
+                reachedGoal = true;
 
+                var dialogue = Object.FindFirstObjectByType<NpcTeachingDialogue>();
+                if (dialogue != null)
+                {
+                    dialogue.ShowFinalMessageAndHide();
+                    StartCoroutine(HandleLevelComplete());
+                }
+            }
+            
+        }
+        private IEnumerator HandleLevelComplete()
+        {
+            yield return new WaitForSeconds(3f); // 显示对话
+
+            yield return StartCoroutine(UpdateProgress(6)); // 上传进度值为 2，可自定义
+
+            UnityEngine.SceneManagement.SceneManager.LoadScene("DraftMap"); // 切换场景
         }
 
         public void ForceStop()
@@ -269,6 +319,49 @@ namespace JumpGame
 
             yield return new WaitUntil(() => !_isExecuting); // 等待执行完成
         }
+        public IEnumerator UpdateProgress(int progress)
+        {
+            string token = PlayerPrefs.GetString("token", "");
+            string saveName = PlayerPrefs.GetString("currentSaveName", "");
+
+            if (string.IsNullOrEmpty(token))
+            {
+                Debug.LogError("❌ No Token Found! Player is not authenticated.");
+                yield break;
+            }
+
+            if (string.IsNullOrEmpty(saveName))
+            {
+                Debug.LogError("❌ No SaveName Found! Cannot update progress.");
+                yield break;
+            }
+
+            string url = $"http://localhost:3000/savefiles/{saveName}/updateProgress";
+            string jsonData = $"{{\"progress\":{progress}}}";
+            Debug.Log("📤 发送的 JSON 数据：" + jsonData);
+
+            using (UnityWebRequest request = UnityWebRequest.Put(url, jsonData))
+            {
+                request.method = "PUT";
+                request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonData));
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.SetRequestHeader("Authorization", "Bearer " + token);
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log("✅ Progress updated successfully: " + request.downloadHandler.text);
+                }
+                else
+                {
+                    Debug.LogError("❌ Failed to update progress: " + request.error);
+                }
+            }
+        }
+
+        
 
     }
 }

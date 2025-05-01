@@ -8,17 +8,17 @@ namespace JumpGame
     {
         public TMP_Dropdown conditionDropdown;
         public TMP_Dropdown trueDropdown;
-        public Transform trueContainer;
+        public Transform ifBlockContainer; // ✅ 存放嵌套的 IfBlock
 
         public IEnumerator Execute(PlayerController player)
         {
             string condition = conditionDropdown.options[conditionDropdown.value].text;
             string action = trueDropdown.options[trueDropdown.value].text;
 
-            int maxIterations = 50; // 防止死循环
+            int maxIterations = 50;
             int iteration = 0;
 
-            while (iteration++ < maxIterations)
+            while (iteration++ < maxIterations && !player.interrupted)
             {
                 bool conditionMet = false;
                 yield return player.EvaluateConditionAsync(condition, result => conditionMet = result);
@@ -30,17 +30,19 @@ namespace JumpGame
                     break;
                 }
 
-                if (!string.IsNullOrEmpty(action))
-                    yield return player.ExecuteActionAsync(action); // 比如 walk
-
-                foreach (Transform child in trueContainer)
+                // ✅ 先执行嵌套 ifBlock
+                foreach (Transform child in ifBlockContainer)
                 {
                     IfBlockExecutor nested = child.GetComponent<IfBlockExecutor>();
                     if (nested != null)
-                        yield return nested.Execute(player);
+                        yield return StartCoroutine(nested.Execute(player));
                 }
 
-                yield return null; // 每次循环小等待
+                // ✅ 最后再执行 dropdown 动作（例如 walk）
+                if (!string.IsNullOrEmpty(action))
+                    yield return player.ExecuteActionAsync(action);
+
+                yield return null;
             }
         }
     }

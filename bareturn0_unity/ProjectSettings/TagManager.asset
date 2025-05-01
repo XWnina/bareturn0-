@@ -8,6 +8,7 @@ TagManager:
   - Trap
   - Obstacle
   - Goal
+  - FinalFlag
   layers:
   - Default
   - TransparentFX

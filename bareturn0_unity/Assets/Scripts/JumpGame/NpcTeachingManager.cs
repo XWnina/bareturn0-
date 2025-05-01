@@ -318,6 +318,13 @@ namespace JumpGame
                 StartCoroutine(ShowNextDialogue());
             }
         }
+        public void ShowFinalMessageAndHide()
+        {
+            npcDialog.SetActive(true);
+            bubbleBg.SetActive(true);
+            textP.text = "Wow! You did it! You’ve mastered if and while loops. You passed the level!";
+        }
+
 
 
 
