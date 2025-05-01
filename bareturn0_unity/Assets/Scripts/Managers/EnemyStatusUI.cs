@@ -9,6 +9,8 @@ public class EnemyStatusUI : MonoBehaviour
     public TMP_Text hpText;         // 血量文本
     public Slider hpBar;            // 血条Slider
     public TMP_Text shieldText;     // Shield文本
+    public GameObject buffPanel;
+    public BuffUIPrefab buffPrefab;
 
     [Header("New Element: Card Name")]
     public TMP_Text enemyCardNameText;
@@ -77,5 +79,41 @@ public class EnemyStatusUI : MonoBehaviour
         }
         // 淡出完成后，将文本设为空（或隐藏该对象）
         enemyCardNameText.text = "";
+    }
+    public void updateBuffUI(int poisonLayers, int burnLayers, int bleedlayers, int sharpnessLayers)
+    {
+        foreach (Transform child in buffPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        if (poisonLayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.poisonSprite;
+            newBuff.BuffCount.text = poisonLayers.ToString();
+        }
+
+        if (burnLayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.burnSprite;
+            newBuff.BuffCount.text = burnLayers.ToString();
+        }
+
+        if(bleedlayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.bleedSprite;
+            newBuff.BuffCount.text = bleedlayers.ToString();
+        }
+
+        if (sharpnessLayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.sharpnessSprite;
+            newBuff.BuffCount.text = sharpnessLayers.ToString();
+        }
+
     }
 }

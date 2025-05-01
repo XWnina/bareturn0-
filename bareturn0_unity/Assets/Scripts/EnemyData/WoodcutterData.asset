@@ -13,7 +13,6 @@ MonoBehaviour:
   m_Name: WoodcutterData
   m_EditorClassIdentifier: 
   enemyName: Woodcutter
-  maxHealth: 20
+  maxHealth: 25
   speed: 10
-  attackDamage: 5
-  enemyPrefab: {fileID: 649636296582216838, guid: fe132c434dd51a644a3807b9e1de4649, type: 3}
+  enemyPrefab: {fileID: 649636296582216838, guid: fec3ef6c6c44e8144829b282913c5fc4, type: 3}

@@ -27,6 +27,8 @@ public class BattleUIManager : MonoBehaviour
     public TextMeshProUGUI playerEnergyText;
     public TextMeshProUGUI roundText;
     public Slider PlayerHealthBar;
+    public GameObject buffPanel;
+    public BuffUIPrefab buffPrefab;
 
     [Header("Energy Segment Images (in order)")]
     public List<Image> energySegments;
@@ -156,6 +158,43 @@ public class BattleUIManager : MonoBehaviour
             {
                 energySegments[i].sprite = unlitSegmentSprite;
             }
+        }
+
+    }
+
+    public void updateBuffUI(int poisonLayers, int burnLayers, int bleedlayers, int sharpnessLayers)
+    {
+        foreach (Transform child in buffPanel.transform)
+        {
+            Destroy(child.gameObject);
+        }
+
+        if (poisonLayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.poisonSprite;
+            newBuff.BuffCount.text = poisonLayers.ToString();
+        }
+
+        if (burnLayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.burnSprite;
+            newBuff.BuffCount.text = burnLayers.ToString();
+        }
+
+        if (bleedlayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.bleedSprite;
+            newBuff.BuffCount.text = bleedlayers.ToString();
+        }
+
+        if (sharpnessLayers > 0)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.sharpnessSprite;
+            newBuff.BuffCount.text = sharpnessLayers.ToString();
         }
 
     }

@@ -145,8 +145,8 @@ public class BattleManager : MonoBehaviour
 
         // 例如，这里我们为每个敌人生成一个位置（可根据实际需求修改）
         // 此处简单安排在一个横向排列的位置
-        float startX = 2;
-        float offsetX = 2.5f;
+        float startX = 7;
+        float offsetX = -2.5f;
         Vector3 spawnPos = Vector3.zero;
 
         for (int i = 0; i < levelData.enemyDatas.Count; i++)
@@ -225,7 +225,7 @@ public class BattleManager : MonoBehaviour
             else
             {
                 // 之后的回合给energyGainPerRound
-                player.currentEnergy += player.energyGainPerRound;
+                player.currentEnergy = Mathf.Max(player.currentEnergy + player.energyGainPerRound, 10);
             }
             Debug.Log($"Player's energy = {player.currentEnergy}");
 
@@ -330,6 +330,7 @@ public class BattleManager : MonoBehaviour
 
         //敌人动作
         yield return StartCoroutine(enemy.ExecuteTurn());
+        yield return new WaitForSeconds(1f);
 
         Debug.Log("Enemy Turn End: {enemy.name}");
     }
@@ -401,10 +402,10 @@ public class BattleManager : MonoBehaviour
 
     public ICharacter GetFirstAliveEnemy()
     {
-        foreach (EnemyController enemy in enemies)
+        for (int i = enemies.Count - 1; i >= 0; i--)
         {
-            if (enemy != null && enemy.currentHealth > 0)
-                return enemy;
+            if (enemies[i] != null && enemies[i].currentHealth > 0)
+                return enemies[i];
         }
         return null;
     }

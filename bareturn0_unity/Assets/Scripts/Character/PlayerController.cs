@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour, ICharacter
     public int sharpnessLayers = 0;
     public int poisonLayers = 0;
     public int bleedLayers = 0;
+    public int burnLayers = 0;
 
     [SerializeField] private PlayerAnimator animatorController;
 
@@ -86,16 +87,26 @@ public class PlayerController : MonoBehaviour, ICharacter
     public void ApplySharpness(int layersToAdd)
     {
         sharpnessLayers += layersToAdd;
+        UpdateBuffUI();
     }
 
     public void ApplyPoison(int layersToAdd)
     {
         poisonLayers += layersToAdd;
+        UpdateBuffUI();
     }
     public void ApplyBleed(int layersToAdd)
     {
         bleedLayers += layersToAdd;
+        UpdateBuffUI();
         Debug.Log($"{name} gains {layersToAdd} layers of Bleed. Total bleed layers: {bleedLayers}");
+    }
+
+    public void ApplyBurn(int layersToAdd)
+    {
+        burnLayers += layersToAdd;
+        UpdateBuffUI();
+        Debug.Log($"{name} gains {layersToAdd} burn layers. Total burn: {burnLayers}");
     }
 
     public IEnumerator ProcessStartOfTurnBuffs()
@@ -115,9 +126,28 @@ public class PlayerController : MonoBehaviour, ICharacter
             Debug.Log(name + " takes " + damage + " poison damage, remaining poison: " + poisonLayers);
         }
 
+        if (burnLayers > 0)
+        {
+            int burnDamage = burnLayers;
+            yield return new WaitForSeconds(0.5f);
+            TakeDamage(burnDamage);
+            burnLayers = Mathf.Max(burnLayers - 1, 0);
+            Debug.Log(name + " takes " + burnDamage + " burn damage, remaining burn: " + burnLayers);
+        }
+
         else
         {
             yield return null;
+        }
+
+        UpdateBuffUI();
+    }
+
+    public void UpdateBuffUI()
+    {
+        if (BattleUIManager.Instance != null)
+        {
+            BattleUIManager.Instance.updateBuffUI(poisonLayers, burnLayers, bleedLayers, sharpnessLayers);
         }
     }
 }
