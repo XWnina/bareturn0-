@@ -39,11 +39,38 @@ namespace JumpGame
 
         void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Return) && !_waitingForPlayer)
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-                StartCoroutine(ShowNextDialogue());
+                // 如果在等待 final 阶段 Enter
+                if (_currentPhase == "final" && _waitingForPlayer)
+                {
+                    
+                    _waitingForPlayer = false;
+                    StartCoroutine(FinishSequence());
+                    return;
+                }
+
+                // 如果当前不处于任何特殊等待阶段（正常对话）
+                if (!_waitingForPlayer)
+                {
+                    StartCoroutine(ShowNextDialogue());
+                }
             }
         }
+
+        private IEnumerator FinishSequence()
+        {
+            PlayerController player = Object.FindFirstObjectByType<PlayerController>();
+            if (player != null)
+            {
+                yield return player.StartCoroutine(player.HandleLevelComplete()); // 👈 等待上传 + 跳转
+            }
+
+            npcDialog.SetActive(false);
+            bubbleBg.SetActive(false);
+        }
+
+
 
         void EnqueueAllDialogues()
         {
@@ -55,8 +82,10 @@ namespace JumpGame
             _dialogueQueue.Enqueue("You can drag them into the code panel above.");
             _dialogueQueue.Enqueue("Now drag an 'if' block into the code panel.");
             _dialogueQueue.Enqueue("[WAIT_FOR_IF_BLOCK]");
-            _dialogueQueue.Enqueue("This is an if block. Inside, you’ll see a dropdown menu labeled 'condition'.");
-            _dialogueQueue.Enqueue("Try selecting 'rock ahead'.");
+            _dialogueQueue.Enqueue("This is an if block. It lets your code make decisions.");
+            _dialogueQueue.Enqueue("Inside, you’ll see a dropdown menu labeled 'condition'. If the condition is true, the action inside will run.");
+            _dialogueQueue.Enqueue("For example, if there's a rock ahead, we can choose to jump over it.");
+            _dialogueQueue.Enqueue("Try selecting 'obstacle ahead'.");
             _dialogueQueue.Enqueue("[WAIT_FOR_CONDITION]");
             _dialogueQueue.Enqueue("Good. Now the action dropdown lets you choose what to do.");
             _dialogueQueue.Enqueue("Try selecting 'jump'.");
@@ -68,7 +97,7 @@ namespace JumpGame
             _dialogueQueue.Enqueue("Wow, look! You did it.");
             _dialogueQueue.Enqueue("Now you see an 'else' button on the block.");
             _dialogueQueue.Enqueue("You can click it to add an else clause for when the condition is false. " +
-                                   "Try selecting 'walk' as the action when there is no rock ahead.");
+                                   "Try selecting 'walk' as the action when there is no obstacle ahead");
             _dialogueQueue.Enqueue("[WAIT_FOR_ELSE_WALK]");
             _dialogueQueue.Enqueue("Now click the 'Run' button again to test it.");
             _dialogueQueue.Enqueue("[WAIT_FOR_RUN_AGAIN]");
@@ -77,7 +106,9 @@ namespace JumpGame
             _dialogueQueue.Enqueue("Let's try using a while block to walk continuously.");
             _dialogueQueue.Enqueue("Drag in a while block into the panel.");
             _dialogueQueue.Enqueue("[WAIT_FOR_WHILE_BLOCK]");
-            _dialogueQueue.Enqueue("Set the condition to 'is grounded'.And set the action to 'walk'.");
+            _dialogueQueue.Enqueue("A while block keeps running its action again and again *as long as* the condition is true.");
+            _dialogueQueue.Enqueue("It's great for repeating behaviors like walking while the you are still standing on the ground.");
+            _dialogueQueue.Enqueue("Now try to set the condition to 'is grounded'.And set the action to 'walk'.");
             _dialogueQueue.Enqueue("[WAIT_FOR_WHILE_SETUP]");
             _dialogueQueue.Enqueue("Now run the code and see what happens!");
             _dialogueQueue.Enqueue("[WAIT_FOR_FINAL_RUN]");
@@ -223,7 +254,7 @@ namespace JumpGame
                 if (headerRow != null)
                 {
                     var dropdown = headerRow.GetComponentInChildren<TMP_Dropdown>();
-                    if (dropdown != null && dropdown.options[dropdown.value].text == "rock ahead")
+                    if (dropdown != null && dropdown.options[dropdown.value].text == "obstacle ahead")
                         return true;
                 }
             }
@@ -286,7 +317,8 @@ namespace JumpGame
         {
             npcDialog.SetActive(true);
             bubbleBg.SetActive(true);
-            textP.text = "Hmm... It seems you hit the rock. Try jumping over it!";
+            textP.text = "Hmm... You seem to have hit an obstacle. Try using an if block to check if there's a obstacle ahead, and then jump!";
+
     
             if (_hideCoroutine != null)
                 StopCoroutine(_hideCoroutine);
@@ -323,7 +355,11 @@ namespace JumpGame
             npcDialog.SetActive(true);
             bubbleBg.SetActive(true);
             textP.text = "Wow! You did it! You’ve mastered if and while loops. You passed the level!";
+
+            _waitingForPlayer = true;
+            _currentPhase = "final"; // 设置新阶段标识
         }
+
 
 
 

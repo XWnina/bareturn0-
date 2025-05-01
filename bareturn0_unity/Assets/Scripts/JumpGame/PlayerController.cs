@@ -240,17 +240,19 @@ namespace JumpGame
                 var dialogue = Object.FindFirstObjectByType<NpcTeachingDialogue>();
                 if (dialogue != null)
                 {
-                    dialogue.ShowFinalMessageAndHide();
-                    StartCoroutine(HandleLevelComplete());
+                    dialogue.ShowFinalMessageAndHide(); // ✅ 只显示台词
+                    // ❌ 不要立刻调用 HandleLevelComplete
+                    // StartCoroutine(HandleLevelComplete());
                 }
             }
+
             
         }
-        private IEnumerator HandleLevelComplete()
+        public IEnumerator HandleLevelComplete()
         {
             yield return new WaitForSeconds(3f); // 显示对话
 
-            yield return StartCoroutine(UpdateProgress(6)); // 上传进度值为 2，可自定义
+            yield return StartCoroutine(UpdateProgress(9)); // 上传进度值为 2，可自定义
 
             UnityEngine.SceneManagement.SceneManager.LoadScene("DraftMap"); // 切换场景
         }
@@ -293,7 +295,7 @@ namespace JumpGame
             switch (condition)
             {
                 case "platform up": callback(IsPlatformAbove()); break;
-                case "rock ahead": callback(IsRockAhead()); break;
+                case "obstacle ahead": callback(IsRockAhead()); break;
                 case "always true": callback(true); break;
                 case "is grounded": callback(_isGrounded); break;
                 default:

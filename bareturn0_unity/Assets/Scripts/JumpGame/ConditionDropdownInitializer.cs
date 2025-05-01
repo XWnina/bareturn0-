@@ -11,9 +11,9 @@ namespace JumpGame
 
         private static readonly List<string> Conditions = new List<string>
         {
-            "None",
+            "Condition",
             "platform up",
-            "rock ahead",
+            "obstacle ahead",
             "always true",
             "is grounded"
             
