@@ -157,7 +157,7 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public void SetCardThumbnail(CardData data, bool owned)
     {
         cardData = data;
-
+        button = GetComponentInChildren<Button>();
         if (!owned)
         {
             cardNameText.text = "???";
@@ -167,15 +167,16 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             artworkImage.color = new Color(0.5f, 0.5f, 0.5f);
             cardFrame.sprite = commonFrame;
 
-            GetComponent<Button>().interactable = false;
+            if (button != null)
+                button.interactable = false;
 
             ClearCardCount();
-
             return;
         }
 
         SetCardThumbnail(data);
     }
+
 
     public void ClearCardCount()
     {

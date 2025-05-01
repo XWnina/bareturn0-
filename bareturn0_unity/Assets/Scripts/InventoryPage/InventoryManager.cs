@@ -306,15 +306,14 @@ public class InventoryManager : MonoBehaviour
 
     public void populateCardCollectionPanel()
     {
-        Debug.Log($"📦 cardDatabase 中实际有 {cardDatabase.allCards.Count} 张卡");
 
-        // 清空旧图鉴
+        // Clear existing card thumbnails
         foreach (Transform child in CardCollectionGrid)
         {
             Destroy(child.gameObject);
         }
 
-        // 统计拥有的卡片数量
+        // Count the number of each card in playerCards
         Dictionary<string, int> cardCounts = new Dictionary<string, int>();
         foreach (var card in playerCards)
         {
@@ -324,13 +323,11 @@ public class InventoryManager : MonoBehaviour
                 cardCounts[card.cardName]++;
         }
 
-        // 显示所有卡（已拥有 & 未拥有）
+        // Populate the card collection panel
         foreach (var cardData in cardDatabase.allCards)
         {
             try
             {
-                Debug.Log("🟢 正在生成卡：" + cardData.cardName);
-
                 GameObject cardObj = Instantiate(CardPrefab, CardCollectionGrid);
                 CardThumbnailUI ui = cardObj.GetComponent<CardThumbnailUI>();
 
@@ -341,18 +338,21 @@ public class InventoryManager : MonoBehaviour
                 {
                     ui.SetCardCount(cardCounts[cardData.cardName]);
 
-                    var btn = cardObj.GetComponent<Button>();
-                    btn.onClick.AddListener(() =>
+                    Button btn = cardObj.GetComponentInChildren<Button>();
+                    if (btn != null)
                     {
-                        CardDetailsPanel.SetActive(true);
-                        Debug.Log("🧩 Listener set");
-                    });
-                    
+                        btn.onClick.AddListener(() =>
+                        {
+                            CardDetailsPanel.SetActive(true);
+                        });
+                    }
+                   
+
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogError("❌ 构建卡片失败：" + cardData.cardName + "\n" + e.Message);
+                Debug.LogError("InventoryManager: Card Building Failed" + cardData.cardName + "\n" + e.Message);
             }
         }
 
