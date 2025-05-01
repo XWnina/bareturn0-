@@ -92,10 +92,11 @@ public class LevelButtonManager : MonoBehaviour
             {
                 SceneManager.LoadScene("calcuProblem");
             }
-            else if ((levelIndex + 1 == 6))
+            else if ((levelIndex + 1 == 9))
             {
                 SceneManager.LoadScene("JumpGame");
             }
+
         }
     }
     public void UpdateLevelUI()
@@ -168,7 +169,11 @@ public class LevelButtonManager : MonoBehaviour
             case 2: return "Level 3:\nTopic: Calculation level (1/2)\nDetails: different datatypes for math";
             case 3: return "Level 4:\nTopic: Calculation level (2/2)\nDetails: more complex senaieros with calculation";
             case 4: return "Level 5:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +150 coins";
-            case 5: return "Level 6:\nTopic:Jump game!\nDetails: dataflow(if-else)";
+            case 5: return "Level 6:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +150 coins";
+            case 6: return "Level 7:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +150 coins";
+            case 7: return "Level 8:\nTopic: Battle!\nDetails: card game\nRewards: Complete in 5 rounds +300 Coins, otherwise +150 coins";
+            case 8: return "Level 9:\nTopic:Jump game!\nDetails: dataflow(if-else)";
+            case 9: return "Level 10:\nTopic: BOSS Battle!\nDetails: card game\nRewards: Complete in 5 rounds +500 Coins, otherwise +250 coins";
             default: return "Level ?:\nTopic:???\nDetails: ???";
         }
     }

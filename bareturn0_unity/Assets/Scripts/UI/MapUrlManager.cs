@@ -193,6 +193,106 @@ public class MapUrlManager : MonoBehaviour
                 BattleResultManager.Instance.passed = false;
             });
         }
+        if (BattleResultManager.Instance != null && BattleResultManager.Instance.passed && curProcess == 6)
+        {
+            playerInfoLoader.LoadPlayerCoins(() =>
+            {
+                coins = playerInfoLoader.coins;
+
+                int rewardAmount = 0;
+                if (BattleResultManager.Instance.isPefectPassed)
+                {
+                    Debug.Log("🎯 完美通关 level6，奖励 300 coins！");
+                    rewardAmount = 300;
+                }
+                else
+                {
+                    Debug.Log("✅ 普通通关 level6，奖励 150 coins！");
+                    rewardAmount = 150;
+                }
+
+                coins += rewardAmount;
+                StartCoroutine(UpdateCoins(coins)); // 更新数据库
+                ShowRewardPanel(6, rewardAmount); // 弹出奖励界面
+
+                BattleResultManager.Instance.passed = false;
+            });
+        }
+        if (BattleResultManager.Instance != null && BattleResultManager.Instance.passed && curProcess == 7)
+        {
+            playerInfoLoader.LoadPlayerCoins(() =>
+            {
+                coins = playerInfoLoader.coins;
+
+                int rewardAmount = 0;
+                if (BattleResultManager.Instance.isPefectPassed)
+                {
+                    Debug.Log("🎯 完美通关 level7，奖励 300 coins！");
+                    rewardAmount = 300;
+                }
+                else
+                {
+                    Debug.Log("✅ 普通通关 level7，奖励 150 coins！");
+                    rewardAmount = 150;
+                }
+
+                coins += rewardAmount;
+                StartCoroutine(UpdateCoins(coins)); // 更新数据库
+                ShowRewardPanel(7, rewardAmount); // 弹出奖励界面
+
+                BattleResultManager.Instance.passed = false;
+            });
+        }
+        if (BattleResultManager.Instance != null && BattleResultManager.Instance.passed && curProcess == 8)
+        {
+            playerInfoLoader.LoadPlayerCoins(() =>
+            {
+                coins = playerInfoLoader.coins;
+
+                int rewardAmount = 0;
+                if (BattleResultManager.Instance.isPefectPassed)
+                {
+                    Debug.Log("🎯 完美通关 level8，奖励 300 coins！");
+                    rewardAmount = 300;
+                }
+                else
+                {
+                    Debug.Log("✅ 普通通关 level8，奖励 150 coins！");
+                    rewardAmount = 150;
+                }
+
+                coins += rewardAmount;
+                StartCoroutine(UpdateCoins(coins)); // 更新数据库
+                ShowRewardPanel(8, rewardAmount); // 弹出奖励界面
+
+                BattleResultManager.Instance.passed = false;
+            });
+        }
+        if (BattleResultManager.Instance != null && BattleResultManager.Instance.passed && curProcess == 10)
+        {
+            playerInfoLoader.LoadPlayerCoins(() =>
+            {
+                coins = playerInfoLoader.coins;
+
+                int rewardAmount = 0;
+                if (BattleResultManager.Instance.isPefectPassed)
+                {
+                    Debug.Log("🎯 完美通关 level8，奖励 300 coins！");
+                    rewardAmount = 500;
+                }
+                else
+                {
+                    Debug.Log("✅ 普通通关 level8，奖励 150 coins！");
+                    rewardAmount = 250;
+                }
+
+                coins += rewardAmount;
+                StartCoroutine(UpdateCoins(coins)); // 更新数据库
+                ShowRewardPanel(10, rewardAmount); // 弹出奖励界面
+
+                BattleResultManager.Instance.passed = false;
+            });
+        }
         // 控制提示文字显示
         if (CurrentLevel >= 8)
         {
