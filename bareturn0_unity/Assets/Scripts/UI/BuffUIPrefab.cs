@@ -11,4 +11,5 @@ public class BuffUIPrefab : MonoBehaviour
     public Sprite sharpnessSprite;
     public Sprite poisonSprite;
     public Sprite bleedSprite;
+    public Sprite PrecisionMark;
 }

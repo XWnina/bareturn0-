@@ -18,7 +18,7 @@ MonoBehaviour:
   artwork: {fileID: 0}
   quality: 0
   cardEffect: {fileID: 11400000, guid: da0f3bfefbb5931458e22917758fed5a, type: 2}
-  targetingType: 0
+  targetingType: 1
   upgradeOptions:
   - {fileID: 0}
   - {fileID: 0}

@@ -78,16 +78,35 @@ public class StoreManager : MonoBehaviour
         });
 
         // 更新材料（先统计当前数量 +1）
-        int newCount = CountMaterial(item.name) + 1;
-        playerMaterial.Add(item.name); // 更新本地
-        playerInfoLoader.UpdateMaterial(item.name, newCount, () =>
+        int oldCount = CountMaterial(item.name);
+        int newCount = oldCount + 1;
+        
+        if (oldCount == 0)
         {
-            Debug.Log($"{item.name} 材料数量更新为 {newCount}");
-            StartCoroutine(ShowWarning(
-                $"Successfully purchased {item.name}! \n current count: {newCount}",
-                Color.green
-                ));
-        });
+            playerInfoLoader.CreateNewMaterial(item.name, 1, () =>
+            {
+                Debug.Log($"{item.name} 材料数量更新为 {newCount}");
+                playerMaterial.Add(item.name); // 更新本地
+                StartCoroutine(ShowWarning(
+                    $"Successfully purchased {item.name}! \n current count: {newCount}",
+                    Color.green
+                    ));
+            });
+        }
+        else {
+            playerInfoLoader.UpdateMaterial(item.name, newCount, () =>
+            {
+                Debug.Log($"{item.name} 材料数量更新为 {newCount}");
+                playerMaterial.Add(item.name); // 更新本地
+                StartCoroutine(ShowWarning(
+                    $"Successfully purchased {item.name}! \n current count: {newCount}",
+                    Color.green
+                    ));
+            });
+        }
+
+        
+
 
         Debug.Log($"点击了 {item.name}，价格为 {item.cost}");
     }

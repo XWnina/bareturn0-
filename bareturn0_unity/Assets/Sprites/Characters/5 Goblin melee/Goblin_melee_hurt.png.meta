@@ -158,10 +158,10 @@ TextureImporter:
       name: Goblin_melee_hurt_0
       rect:
         serializedVersion: 2
-        x: 19
+        x: 0
         y: 0
-        width: 28
-        height: 32
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -180,10 +180,10 @@ TextureImporter:
       name: Goblin_melee_hurt_1
       rect:
         serializedVersion: 2
-        x: 65
+        x: 48
         y: 0
-        width: 28
-        height: 31
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -202,7 +202,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 04820e98e0fdf7a43a00fa8c20c70852
     internalID: 0
     vertices: []
     indices: 

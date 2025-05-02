@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eddb690bca9f9fb41bd5f14bc0e139e1, type: 3}
   m_Name: MeleeGoblinData
   m_EditorClassIdentifier: 
-  enemyName: 
-  maxHealth: 50
+  enemyName: MeleeGoblin
+  maxHealth: 40
   speed: 10
   enemyPrefab: {fileID: 649636296582216838, guid: 3c49672ee3ac90f49804bbc8fce91265, type: 3}

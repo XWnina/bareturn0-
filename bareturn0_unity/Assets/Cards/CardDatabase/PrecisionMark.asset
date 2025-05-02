@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af4d6d6adf0810d4583376e695fb712a, type: 3}
+  m_Name: PrecisionMark
+  m_EditorClassIdentifier: 
+  cardName: PrecisionMark
+  description: Mark an enemy. If the marked enemy takes damage this turn, gain 1
+    Sharpness each time.
+  cost: 1
+  artwork: {fileID: -249846149000139564, guid: 1d32c72ea12aba440b5936c6323ec1dd, type: 3}
+  quality: 2
+  cardEffect: {fileID: 11400000, guid: d8568ba8a08e49141bfb9ba921b3b888, type: 2}
+  targetingType: 0
+  upgradeOptions:
+  - {fileID: 0}
+  - {fileID: 0}

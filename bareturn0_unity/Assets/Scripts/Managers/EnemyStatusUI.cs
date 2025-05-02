@@ -80,7 +80,7 @@ public class EnemyStatusUI : MonoBehaviour
         // 淡出完成后，将文本设为空（或隐藏该对象）
         enemyCardNameText.text = "";
     }
-    public void updateBuffUI(int poisonLayers, int burnLayers, int bleedlayers, int sharpnessLayers)
+    public void updateBuffUI(int poisonLayers, int burnLayers, int bleedlayers, int sharpnessLayers, int precisionMark)
     {
         foreach (Transform child in buffPanel.transform)
         {
@@ -113,6 +113,13 @@ public class EnemyStatusUI : MonoBehaviour
             BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
             newBuff.buffImage.sprite = newBuff.sharpnessSprite;
             newBuff.BuffCount.text = sharpnessLayers.ToString();
+        }
+
+        if (precisionMark == 1)
+        {
+            BuffUIPrefab newBuff = Instantiate(buffPrefab, buffPanel.transform);
+            newBuff.buffImage.sprite = newBuff.PrecisionMark;
+            newBuff.BuffCount.text = "1";
         }
 
     }

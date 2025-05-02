@@ -83,6 +83,9 @@ public class NecroController : EnemyController
         currentArmor = Mathf.Max(currentArmor - damage, 0);
         currentHealth -= effectiveDamage;
 
+        Vector3 pos = transform.position;
+        BattleManager.Instance.ShowFloatingValue(pos, effectiveDamage);
+
         if (necroAnimator != null)
             necroAnimator.EnemyHurtAnimation();
 
@@ -96,6 +99,12 @@ public class NecroController : EnemyController
         if (currentHealth <= 0)
         {
             StartCoroutine(HandleDeath());
+        }
+
+        if (BattleManager.Instance.markActive && BattleManager.Instance.markedEnemy == this)
+        {
+            BattleManager.Instance.player.ApplySharpness(1);
+            Debug.Log("追踪生效：玩家获得1层锐利");
         }
     }
 

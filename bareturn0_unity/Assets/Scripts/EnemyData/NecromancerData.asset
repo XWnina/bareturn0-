@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eddb690bca9f9fb41bd5f14bc0e139e1, type: 3}
   m_Name: NecromancerData
   m_EditorClassIdentifier: 
-  enemyName: 
-  maxHealth: 100
+  enemyName: Necromancer
+  maxHealth: 200
   speed: 10
   enemyPrefab: {fileID: 649636296582216838, guid: dc81b766f03ea1840af8b54d9ff1f265, type: 3}

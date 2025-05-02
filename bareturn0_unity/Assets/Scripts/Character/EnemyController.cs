@@ -28,6 +28,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
     public int poisonLayers = 0;
     public int bleedLayers = 0;
     public int burnLayers = 0;
+    public int precisionMark = 0;
 
 
     [SerializeField] EnemyAnimator animatorController;
@@ -74,12 +75,20 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         int effectiveDamage = Mathf.Max(damage - currentArmor, 0);
         currentArmor = Mathf.Max(currentArmor - damage, 0);
         currentHealth -= effectiveDamage;
+
         animatorController?.EnemyHurtAnimation();
         Vector3 pos = transform.position;
         BattleManager.Instance.ShowFloatingValue(pos, effectiveDamage);
         Debug.Log("Enemy takes " + damage + " damage. HP=" + currentHealth);
 
-       
+
+        if (BattleManager.Instance.markActive && BattleManager.Instance.markedEnemy == this)
+        {
+            BattleManager.Instance.player.ApplySharpness(1);
+            Debug.Log("追踪生效：玩家获得1层锐利");
+        }
+
+
 
         // 死亡逻辑
         if (currentHealth <= 0)
@@ -128,7 +137,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
     {
         animatorController.EnemyDeathAnimation(); // 播放死亡动画
 
-        yield return new WaitForSeconds(1.2f); // 等待动画播放完成
+        yield return new WaitForSeconds(1f); // 等待动画播放完成
 
         Destroy(gameObject); // 移除敌人对象（或者可以替换成游戏胜利界面）
         BattleManager.Instance.CheckWinLose(); // 重新检查战斗胜负
@@ -136,6 +145,8 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
 
     public virtual IEnumerator ExecuteTurn()
     {
+        
+
         // 1. 清空手牌
         enemyHand.Clear();
 
@@ -159,7 +170,16 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         ICharacter target = null;
         foreach (CardData card in enemyHand)
         {
+            //检测是否被销毁
+            if (this == null || this.gameObject == null || !this.isActiveAndEnabled) 
+                yield break;
+
             yield return new WaitForSeconds(2f);
+
+            if (BattleManager.Instance.ShouldPlayCast(card))
+            {
+                Cast();
+            }
 
             // 选择目标
             if (card.cardEffect != null)
@@ -169,11 +189,19 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
                     case TargetingType.Self:
                         target = this;
                         break;
+                    case TargetingType.LowestHPEnemy:
+                        target = BattleManager.Instance.GetRelativelyLowestHpEnemy(); 
+                        break;
+                    case TargetingType.FirstEnemy:
+                        target = BattleManager.Instance.GetFirstAliveEnemy();
+                        break;
                     default:
                         target = BattleManager.Instance.player;
                         break;
                 }
             }
+
+            
             // 调用卡牌效果，施法者为当前敌人，目标为上面选定的
             card.cardEffect.ApplyEffect(BattleManager.Instance, card, this, target);
             Debug.Log($"{gameObject.name} used card: {card.cardName}");
@@ -262,6 +290,12 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
         Debug.Log($"{name} gains {layersToAdd} burn layers. Total burn: {burnLayers}");
     }
 
+    public void AplplyPrecisionMark()
+    {
+        precisionMark = 1;
+        UpdateBuffUI();
+    }
+
 
     public void OnPointerEnter(PointerEventData eventData)
     {
@@ -304,7 +338,7 @@ public class EnemyController : MonoBehaviour, ICharacter, IPointerEnterHandler, 
             EnemyStatusUI ui = statusUI.GetComponent<EnemyStatusUI>();
             if (ui != null)
             {
-                ui.updateBuffUI(poisonLayers, burnLayers, bleedLayers, sharpnessLayers);
+                ui.updateBuffUI(poisonLayers, burnLayers, bleedLayers, sharpnessLayers, precisionMark);
             }
         }
     }

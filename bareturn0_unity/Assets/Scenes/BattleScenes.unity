@@ -1559,7 +1559,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &304590389
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2435,6 +2435,8 @@ MonoBehaviour:
   effectCanvas: {fileID: 1641559627}
   state: 0
   currentDraggingCardData: {fileID: 0}
+  markedEnemy: {fileID: 0}
+  markActive: 0
   lastAttackDamage: 0
   selectedEnemy: {fileID: 0}
   isCardBeingDragged: 0

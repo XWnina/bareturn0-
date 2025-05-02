@@ -55,7 +55,7 @@ TextureImporter:
   maxTextureSize: 2048
   textureSettings:
     serializedVersion: 2
-    filterMode: 1
+    filterMode: 0
     aniso: 1
     mipBias: 0
     wrapU: 1
@@ -69,7 +69,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 16
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -93,7 +93,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -173,10 +173,10 @@ TextureImporter:
       name: GraveRobber_cast_0
       rect:
         serializedVersion: 2
-        x: 8
+        x: 0
         y: 0
-        width: 18
-        height: 34
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -195,10 +195,10 @@ TextureImporter:
       name: GraveRobber_cast_1
       rect:
         serializedVersion: 2
-        x: 55
+        x: 48
         y: 0
-        width: 19
-        height: 34
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -217,10 +217,10 @@ TextureImporter:
       name: GraveRobber_cast_2
       rect:
         serializedVersion: 2
-        x: 103
+        x: 96
         y: 0
-        width: 19
-        height: 34
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -239,10 +239,10 @@ TextureImporter:
       name: GraveRobber_cast_3
       rect:
         serializedVersion: 2
-        x: 152
+        x: 144
         y: 0
-        width: 32
-        height: 34
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -261,10 +261,10 @@ TextureImporter:
       name: GraveRobber_cast_4
       rect:
         serializedVersion: 2
-        x: 200
+        x: 192
         y: 0
-        width: 36
-        height: 34
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -283,10 +283,10 @@ TextureImporter:
       name: GraveRobber_cast_5
       rect:
         serializedVersion: 2
-        x: 248
+        x: 240
         y: 0
-        width: 20
-        height: 34
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -301,33 +301,11 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
-    - serializedVersion: 2
-      name: GraveRobber_cast_6
-      rect:
-        serializedVersion: 2
-        x: 263
-        y: 12
-        width: 22
-        height: 19
-      alignment: 0
-      pivot: {x: 0, y: 0}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 92a621f1e00a1e260800000000000000
-      internalID: 7125152067988122153
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b61601166748c8b44ae121c9461e103f
     internalID: 0
     vertices: []
     indices: 
@@ -343,7 +321,6 @@ TextureImporter:
       GraveRobber_cast_3: -8824824301237167082
       GraveRobber_cast_4: -1937491426157923619
       GraveRobber_cast_5: 110199444580878350
-      GraveRobber_cast_6: 7125152067988122153
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

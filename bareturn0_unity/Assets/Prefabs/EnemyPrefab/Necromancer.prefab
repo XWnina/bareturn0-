@@ -282,6 +282,7 @@ MonoBehaviour:
   poisonLayers: 0
   bleedLayers: 0
   burnLayers: 0
+  precisionMark: 0
   animatorController: {fileID: 0}
   enemyDeck:
   - {fileID: 11400000, guid: 0bf271687c7e50d42be59895050f35b9, type: 2}
@@ -291,7 +292,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 50e21b43637c40949b610e8c09d476ce, type: 2}
   - {fileID: 11400000, guid: 83e59e018fad59140a68bf9a565a6c2c, type: 2}
   enemyHand: []
-  drawCount: 1
+  drawCount: 2
   necroAnimator: {fileID: 4545539201071340265}
 --- !u!1 &2402029399885119728
 GameObject:
