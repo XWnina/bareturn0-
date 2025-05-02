@@ -330,6 +330,8 @@ public class BattleManager : MonoBehaviour
     // 敌人行动阶段
     IEnumerator EnemyActionPhase(EnemyController enemy)
     {
+        if (enemy == null || enemy.currentHealth <= 0)
+            yield break;
         yield return StartCoroutine(enemy.ProcessStartOfTurnBuffs());
         Debug.Log(">>> Enemy Turn: {enemy.name} <<<");
 
