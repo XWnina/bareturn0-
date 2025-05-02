@@ -164,10 +164,10 @@ TextureImporter:
       name: Goblin_melee_idle_0
       rect:
         serializedVersion: 2
-        x: 17
+        x: 0
         y: 0
-        width: 28
-        height: 32
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -186,10 +186,10 @@ TextureImporter:
       name: Goblin_melee_idle_1
       rect:
         serializedVersion: 2
-        x: 65
+        x: 48
         y: 0
-        width: 28
-        height: 31
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -208,10 +208,10 @@ TextureImporter:
       name: Goblin_melee_idle_2
       rect:
         serializedVersion: 2
-        x: 114
+        x: 96
         y: 0
-        width: 28
-        height: 31
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -230,10 +230,10 @@ TextureImporter:
       name: Goblin_melee_idle_3
       rect:
         serializedVersion: 2
-        x: 162
+        x: 144
         y: 0
-        width: 28
-        height: 32
+        width: 48
+        height: 48
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -252,7 +252,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 070c363b37af3fb4380bb90f37c351ac
     internalID: 0
     vertices: []
     indices: 

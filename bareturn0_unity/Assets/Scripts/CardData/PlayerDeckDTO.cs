@@ -131,3 +131,10 @@ public class SaveIdResponseDTO
 {
     public string saveFileId;
 }
+
+[System.Serializable]
+public class MaterialCreateDTO
+{
+    public string name;
+    public int count;
+}

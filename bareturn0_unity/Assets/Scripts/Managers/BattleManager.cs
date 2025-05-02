@@ -40,6 +40,9 @@ public class BattleManager : MonoBehaviour
     public BattleState state;
     public CardData currentDraggingCardData; //记录当前正在拖拽的卡牌数据
 
+    public EnemyController markedEnemy = null; // 当前被标记的敌人
+    public bool markActive = false;           // 是否处于标记状态（本回合）
+
     public int lastAttackDamage;
     public EnemyController selectedEnemy;
     public bool isCardBeingDragged = false;
@@ -225,7 +228,7 @@ public class BattleManager : MonoBehaviour
             else
             {
                 // 之后的回合给energyGainPerRound
-                player.currentEnergy = Mathf.Max(player.currentEnergy + player.energyGainPerRound, 10);
+                player.currentEnergy = Mathf.Min(player.currentEnergy + player.energyGainPerRound, 10);
             }
             Debug.Log($"Player's energy = {player.currentEnergy}");
 
@@ -320,6 +323,8 @@ public class BattleManager : MonoBehaviour
         // 玩家回合结束时，弃掉所有手牌
         deckManager.DiscardAllHand();
 
+        ClearMark();
+
     }
 
     // 敌人行动阶段
@@ -329,6 +334,8 @@ public class BattleManager : MonoBehaviour
         Debug.Log(">>> Enemy Turn: {enemy.name} <<<");
 
         //敌人动作
+        if (enemy == null || enemy.currentHealth <= 0) 
+            yield break;
         yield return StartCoroutine(enemy.ExecuteTurn());
         yield return new WaitForSeconds(1f);
 
@@ -346,6 +353,8 @@ public class BattleManager : MonoBehaviour
         yield return null;
         Debug.Log("Round End done");
     }
+
+
 
 
 
@@ -378,6 +387,23 @@ public class BattleManager : MonoBehaviour
                 return false;
         }
         return true;
+    }
+
+    public void RegisterMark(EnemyController enemy)
+    {
+        markedEnemy = enemy;
+        markActive = true;
+    }
+
+    public void ClearMark()
+    {
+        if (markedEnemy != null)
+        {
+            markedEnemy.precisionMark = 0;
+            markedEnemy.UpdateBuffUI();
+            markedEnemy = null;
+            markActive = false;
+        }
     }
 
     //Triiger hit
@@ -424,6 +450,28 @@ public class BattleManager : MonoBehaviour
             }
         }
         return lowest;
+    }
+
+    public ICharacter GetRelativelyLowestHpEnemy()
+    {
+        EnemyController selected = null;
+        int maxLostHp = -1;
+
+        foreach (var enemy in enemies)
+        {
+            if (enemy != null && enemy.currentHealth > 0)
+            {
+                int lostHp = enemy.maxHealth - enemy.currentHealth;
+
+                if (lostHp > maxLostHp)
+                {
+                    maxLostHp = lostHp;
+                    selected = enemy;
+                }
+            }
+        }
+
+        return selected;
     }
 
     public void ShowEffectOnly(Vector3 worldPos, EffectType type)
@@ -500,6 +548,11 @@ public class BattleManager : MonoBehaviour
         // 2. 扣除能量
         player.currentEnergy -= cardData.cost;
 
+        if (ShouldPlayCast(cardData))
+        {
+            player.Cast();
+        }
+
         // 3. 执行效果
         if (cardData.targetingType == TargetingType.FirstEnemy)
         {
@@ -516,6 +569,15 @@ public class BattleManager : MonoBehaviour
         // 5.Destroy卡牌UI
         Destroy(cardView.gameObject);
         return true;
+    }
+
+    public bool ShouldPlayCast(CardData cardData)
+    {
+        if (cardData.cardEffect is AttackEffect)
+            return false;
+        if (cardData.cardEffect is CompositeEffect)
+            return false;
+        return true;  // 其它默认播放
     }
 
     public void sendProgress()

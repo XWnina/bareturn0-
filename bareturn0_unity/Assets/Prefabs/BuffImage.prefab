@@ -203,7 +203,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 3467602711024822113, guid: b7ebdbc45e905554ca9ccea5a526744f, type: 3}
+  m_Sprite: {fileID: -249846149000139564, guid: 1d32c72ea12aba440b5936c6323ec1dd, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -228,6 +228,7 @@ MonoBehaviour:
   buffImage: {fileID: 6781431329302813878}
   BuffCount: {fileID: 9054239391078200858}
   burnSprite: {fileID: 3467602711024822113, guid: b7ebdbc45e905554ca9ccea5a526744f, type: 3}
-  sharpnessSprite: {fileID: 6386939168143869935, guid: 89434328a384afa4c9c6d11fb538ca9e, type: 3}
+  sharpnessSprite: {fileID: 3931297853700523068, guid: 89434328a384afa4c9c6d11fb538ca9e, type: 3}
   poisonSprite: {fileID: 6576065424514455642, guid: 80c6dbdab90e6a24faf5ff248ae5dec8, type: 3}
   bleedSprite: {fileID: 8522528588496318180, guid: a8442c397fd62c44d8b4ea33b5dc5a13, type: 3}
+  PrecisionMark: {fileID: -249846149000139564, guid: 1d32c72ea12aba440b5936c6323ec1dd, type: 3}

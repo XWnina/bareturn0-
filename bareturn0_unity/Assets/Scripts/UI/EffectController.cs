@@ -10,7 +10,7 @@ public enum EffectType
     Armor,
     Burn,
     Heal,
-    Burst
+    Burst,
 }
 
 public class EffectController : MonoBehaviour

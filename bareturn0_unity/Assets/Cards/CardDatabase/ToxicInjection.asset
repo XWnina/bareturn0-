@@ -20,5 +20,5 @@ MonoBehaviour:
   cardEffect: {fileID: 11400000, guid: 12fdad9e1b17c7f458b9b89469c8c501, type: 2}
   targetingType: 3
   upgradeOptions:
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 5169e5a6fa0abe04bb4624ed5e2ef1a5, type: 2}
+  - {fileID: 11400000, guid: fbdc84e3664ac2e46a27e90aebea48f4, type: 2}

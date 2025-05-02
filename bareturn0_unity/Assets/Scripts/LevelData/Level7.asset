@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Level7
   m_EditorClassIdentifier: 
   enemyDatas:
-  - {fileID: 0}
-  - {fileID: 0}
   - {fileID: 11400000, guid: 9c315e05a3c4c2642bc71ab7957003e6, type: 2}
+  - {fileID: 11400000, guid: 9c315e05a3c4c2642bc71ab7957003e6, type: 2}
+  - {fileID: 11400000, guid: 99570a9926df4de41a1bf108bee29b40, type: 2}
   processNum: 7

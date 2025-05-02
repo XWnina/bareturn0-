@@ -472,6 +472,49 @@ public class PlayerInfoLoader : MonoBehaviour
     #endregion
 
 
+    #region 创建新材料
+    public void CreateNewMaterial(string materialName, int count, System.Action onCreated)
+    {
+        StartCoroutine(CreateNewMaterialRequest(materialName, count, onCreated));
+    }
+
+    private IEnumerator CreateNewMaterialRequest(string materialName, int count, System.Action onCreated)
+    {
+        string saveName = PlayerPrefs.GetString("currentSaveName", "");
+        string url = $"http://localhost:3000/materials/create/{saveName}";
+        string authToken = PlayerPrefs.GetString("token", "");
+
+        // 创建 JSON payload
+        MaterialCreateDTO dto = new MaterialCreateDTO
+        {
+            name = materialName,
+            count = count
+        };
+        string jsonBody = JsonUtility.ToJson(dto);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonBody);
+
+        UnityWebRequest request = new UnityWebRequest(url, "POST");
+        request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+        request.downloadHandler = new DownloadHandlerBuffer();
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Authorization", "Bearer " + authToken);
+
+        yield return request.SendWebRequest();
+
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Debug.Log($"✅ 材料 {materialName} 创建成功: {request.downloadHandler.text}");
+            onCreated?.Invoke();
+        }
+        else
+        {
+            Debug.LogError($"❌ 创建材料失败: {request.error} - {request.downloadHandler.text}");
+            onCreated?.Invoke();
+        }
+    }
+    #endregion
+
+
     #region 获取所有材料
     public void GetAllMaterials(System.Action onMaterialsLoaded)
     {

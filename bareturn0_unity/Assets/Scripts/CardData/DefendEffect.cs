@@ -18,31 +18,8 @@ public class DefendEffect : CardEffect
         }
         else if (caster is EnemyController)
         {
-            EnemyController shieldTarget = null;
-            switch (cardData.targetingType)
-            {
-                case TargetingType.Self:
-                    shieldTarget = caster as EnemyController;
-                    break;
-                case TargetingType.Ally:
-                    shieldTarget = battleManager.GetLowestHPEnemy();
-                    break;
-                default:
-                    // 若未指定其他规则，默认给予施法者自己
-                    shieldTarget = caster as EnemyController;
-                    break;
-            }
-
-            if (shieldTarget != null)
-            {
-                shieldTarget.GainArmor(armorGain);
-                caster.Cast();
-                Debug.Log($"{shieldTarget.name} gains {armorGain} armor.");
-            }
-            else
-            {
-                Debug.Log("No valid enemy target found for shield effect.");
-            }
+            target.GainArmor(armorGain);
+            caster.Cast();
         }
 
     }

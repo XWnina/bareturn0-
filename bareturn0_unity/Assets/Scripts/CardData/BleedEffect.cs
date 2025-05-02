@@ -20,11 +20,13 @@ public class BleedEffect : CardEffect
         if (target is EnemyController enemy)
         {
             enemy.ApplyBleed(layers);
+            battleManager.ShowEffectOnly(enemy.transform.position, EffectType.Bleed);
             Debug.Log($"{enemy.name} gains {layers} layers of Bleed.");
         }
         else if (target is PlayerController player)
         {
             player.ApplyBleed(layers);
+            battleManager.ShowEffectOnly(player.transform.position, EffectType.Bleed);
             Debug.Log($"Player gains {layers} layers of Bleed.");
         }
         else
