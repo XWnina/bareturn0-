@@ -43,6 +43,10 @@ namespace JumpGame
         private readonly Queue<System.Action> _conditionQueue = new Queue<System.Action>();
         private readonly Queue<PlayerAction> _actionQueue = new Queue<PlayerAction>();
         private bool _isExecuting = false;
+        private string baseUrl = "http://localhost:3000/";
+        string _token = PlayerPrefs.GetString("token", "");
+        string _saveName = PlayerPrefs.GetString("currentSaveName", "");
+        
 
         void Awake()
         {
@@ -240,21 +244,49 @@ namespace JumpGame
                 var dialogue = Object.FindFirstObjectByType<NpcTeachingDialogue>();
                 if (dialogue != null)
                 {
-                    dialogue.ShowFinalMessageAndHide(); // ✅ 只显示台词
-                    // ❌ 不要立刻调用 HandleLevelComplete
-                    // StartCoroutine(HandleLevelComplete());
+                    dialogue.ShowFinalMessageAndHide(); 
                 }
             }
 
             
         }
+        // 这里跳转！
         public IEnumerator HandleLevelComplete()
         {
             yield return new WaitForSeconds(3f); // 显示对话
 
             yield return StartCoroutine(UpdateProgress(9)); // 上传进度值为 2，可自定义
+            StartCoroutine(UnlockAchievement(_saveName, "Your Way"));
+            PlayerPrefs.SetInt("AchievementUnlock", 9);
 
             UnityEngine.SceneManagement.SceneManager.LoadScene("DraftMap"); // 切换场景
+        }
+        private IEnumerator UnlockAchievement(string saveName, string achievementName)
+        {
+            string url = $"{baseUrl}achievements/{saveName}/unlock";
+
+            string jsonData = "{ \"achievementName\": \"" + achievementName + "\" }";
+
+            using (UnityWebRequest request = new UnityWebRequest(url, "PUT"))
+            {
+                byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+                request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+                request.downloadHandler = new DownloadHandlerBuffer();
+                request.SetRequestHeader("Content-Type", "application/json");
+                request.SetRequestHeader("Authorization", "Bearer " + _token);
+
+                yield return request.SendWebRequest();
+
+                if (request.result == UnityWebRequest.Result.Success)
+                {
+                    Debug.Log("✅ Achievement unlocked successfully: " + request.downloadHandler.text);
+                }
+                else
+                {
+                    Debug.LogError("❌ Failed to unlock achievement: " + request.error);
+                    Debug.LogError("Response: " + request.downloadHandler.text);
+                }
+            }
         }
 
         public void ForceStop()
