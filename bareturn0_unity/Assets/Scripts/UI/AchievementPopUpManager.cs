@@ -16,7 +16,7 @@ public class AchievementPopUpManager : MonoBehaviour
         { 1, "Person You Know Who" },
         { 2, "Fighter" },
         { 4, "Live For Your Own" },
-        
+        { 9, "Your Way"},        
         // Hidden achievements
         { 10, "Rich Kid"},
         { 11, "Mini Tycoon"},
