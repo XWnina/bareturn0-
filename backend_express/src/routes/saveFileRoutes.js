@@ -75,7 +75,7 @@ router.post("/", authMiddleware, async (req, res) => {
     let achievementUnlocked = null;
 
     if (saveFileCount === 1) {
-      const firstStep = await Achievement.findOne({ name: "FirstStep" });
+      const firstStep = await Achievement.findOne({ name: "First Step" });
 
       if (firstStep) {
         const unlockTime = new Date();
@@ -88,7 +88,7 @@ router.post("/", authMiddleware, async (req, res) => {
         await newSave.save();
 
         achievementUnlocked = {
-          message: "FirstStep achievement unlocked!",
+          message: "First Step achievement unlocked!",
           achievement: {
             name: firstStep.name,
             method: firstStep.method,
