@@ -70,6 +70,7 @@ router.post("/", authMiddleware, async (req, res) => {
     const saveFileCount = await SaveFile.countDocuments({
       userId: req.user.id,
     });
+    console.log("Save file count after save:", saveFileCount);
 
     let achievementUnlocked = null;
 

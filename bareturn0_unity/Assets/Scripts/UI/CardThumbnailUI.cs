@@ -23,8 +23,6 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
     public bool enableHoverDescription = false;
 
 
-
-
     // Ԥ�費ͬƷ�ʵĿ��Ʊ߿�
     public Sprite commonFrame;
     public Sprite rareFrame;
@@ -148,4 +146,44 @@ public class CardThumbnailUI : MonoBehaviour, IPointerEnterHandler, IPointerExit
             hoverDescriptionGroup.SetActive(false);
         }
     }
+
+    public TextMeshProUGUI countCornerText;
+    public Sprite defaultUnknownSprite;
+    public void SetCardCount(int count)
+    {
+        if (countCornerText != null)
+            countCornerText.text = count.ToString();
+    }
+    public void SetCardThumbnail(CardData data, bool owned)
+    {
+        cardData = data;
+        button = GetComponentInChildren<Button>();
+        if (!owned)
+        {
+            cardNameText.text = "???";
+            costText.text = "";
+            descriptionText.text = "";
+            artworkImage.sprite = defaultUnknownSprite;
+            artworkImage.color = new Color(0.5f, 0.5f, 0.5f);
+            cardFrame.sprite = commonFrame;
+
+            if (button != null)
+                button.interactable = false;
+
+            ClearCardCount();
+            return;
+        }
+
+        SetCardThumbnail(data);
+    }
+
+
+    public void ClearCardCount()
+    {
+        if (countCornerText != null)
+            countCornerText.text = "";
+    }
+
+
+
 }

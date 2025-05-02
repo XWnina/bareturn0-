@@ -14,6 +14,7 @@ public class InventoryManager : MonoBehaviour
     public GameObject CardCollection;
     public GameObject CardDeck;
     public Button MaterialsButton;
+    public Button CardCollectionButton;
     public Button NewDeckButton;
 
     // Card Collection
@@ -48,6 +49,33 @@ public class InventoryManager : MonoBehaviour
     public TMP_InputField DeckNameInput;
     public Button ConfirmCreateDeckButton;
     public Button CancelCreateDeckButton;
+
+    // Card Collection Panel
+    public GameObject CardCollectionPanel;
+    public Button CardCollectionCloseButton;
+    public CardDatabase cardDatabase;
+    public Transform CardCollectionGrid;
+
+    public GameObject CardDetailsPanel;
+
+    private int currentPage = 0;
+    private int cardsPerPage = 4;
+    private int totalPages = 0;
+
+    public Button NextPageButton;
+    public Button PrevPageButton;
+
+    // Card Detail Panel
+    public Button CardDetailCloseButton;
+    public TextMeshProUGUI CardNameText;
+    public TextMeshProUGUI CardCostText;
+    public TextMeshProUGUI CardTargetText;
+    public TextMeshProUGUI CardDescriptionText;
+    public TextMeshProUGUI CardQualityText;
+    public Image CardImage;
+
+
+
 
     void Awake()
     {
@@ -110,6 +138,35 @@ public class InventoryManager : MonoBehaviour
             }
         });
 
+        CardCollectionPanel.SetActive(false);
+        CardCollectionButton.onClick.AddListener(() =>
+        {
+            CardCollectionPanel.SetActive(true);
+            populateCardCollectionPanel();
+        });
+
+        CardCollectionCloseButton.onClick.AddListener(() =>
+        {
+            CardCollectionPanel.SetActive(false);
+        });
+        CardDetailsPanel.SetActive(false);
+
+        NextPageButton.onClick.AddListener(NextPage);
+        PrevPageButton.onClick.AddListener(PrevPage);
+
+        CardDetailsPanel.SetActive(false);
+
+
+        Transform closeButtonTransform = CardDetailsPanel.transform.Find("CardDetailCloseButton");
+        if (closeButtonTransform != null)
+        {
+            Button closeButton = closeButtonTransform.GetComponent<Button>();
+            closeButton.onClick.AddListener(() =>
+            {
+                CardDetailsPanel.SetActive(false);
+            });
+        }
+
     }
 
     public void populateCollection()
@@ -143,7 +200,7 @@ public class InventoryManager : MonoBehaviour
                 Destroy(child.gameObject);
             }
         }
-        
+
         List<string> materialList = new List<string>();
         for (int i = 0; i < talentList.Count; i++)
         {
@@ -279,6 +336,100 @@ public class InventoryManager : MonoBehaviour
             DisplayAllDeckButtons(); // Refresh deck list
         }
     }
+
+    public void populateCardCollectionPanel()
+    {
+
+        foreach (Transform child in CardCollectionGrid)
+        {
+            Destroy(child.gameObject);
+        }
+
+
+        totalPages = Mathf.CeilToInt(cardDatabase.allCards.Count / (float)cardsPerPage);
+        int startIndex = currentPage * cardsPerPage;
+        int endIndex = Mathf.Min(startIndex + cardsPerPage, cardDatabase.allCards.Count);
+
+        Dictionary<string, int> cardCounts = new Dictionary<string, int>();
+        foreach (var card in playerCards)
+        {
+            if (!cardCounts.ContainsKey(card.cardName))
+                cardCounts[card.cardName] = 1;
+            else
+                cardCounts[card.cardName]++;
+        }
+
+        for (int i = startIndex; i < endIndex; i++)
+        {
+            var cardData = cardDatabase.allCards[i];
+            try
+            {
+                GameObject cardObj = Instantiate(CardPrefab, CardCollectionGrid);
+                CardThumbnailUI ui = cardObj.GetComponent<CardThumbnailUI>();
+
+                bool isOwned = cardCounts.ContainsKey(cardData.cardName);
+                ui.SetCardThumbnail(cardData, isOwned);
+
+                if (isOwned)
+                {
+                    ui.SetCardCount(cardCounts[cardData.cardName]);
+
+                    Button btn = cardObj.GetComponentInChildren<Button>();
+                    if (btn != null)
+                    {
+                        btn.onClick.AddListener(() =>
+                        {
+                            ShowCardDetails(cardData);
+                        });
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("InventoryManager: Failed in building card:" + cardData.cardName + "\n" + e.Message);
+            }
+        }
+
+        UpdatePageButtons();
+    }
+    public void NextPage()
+    {
+        if (currentPage < totalPages - 1)
+        {
+            currentPage++;
+            populateCardCollectionPanel();
+        }
+    }
+
+    public void PrevPage()
+    {
+        if (currentPage > 0)
+        {
+            currentPage--;
+            populateCardCollectionPanel();
+        }
+    }
+
+    private void UpdatePageButtons()
+    {
+        PrevPageButton.interactable = currentPage > 0;
+        NextPageButton.interactable = currentPage < totalPages - 1;
+    }
+
+    public void ShowCardDetails(CardData cardData)
+    {
+        CardNameText.text = cardData.cardName;
+        CardCostText.text = "Cost:  " + cardData.cost.ToString();
+        CardTargetText.text = "Target at:   " + cardData.targetingType.ToString();
+        CardDescriptionText.text = "Description:\n" + cardData.description;
+        CardQualityText.text = cardData.quality.ToString();
+        CardImage.sprite = cardData.artwork;
+
+        CardDetailsPanel.SetActive(true);
+    }
+
+
+
     [System.Serializable]
     public class CreateDeckRequest
     {
