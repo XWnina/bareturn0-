@@ -44,14 +44,16 @@ namespace JumpGame
         private readonly Queue<PlayerAction> _actionQueue = new Queue<PlayerAction>();
         private bool _isExecuting = false;
         private string baseUrl = "http://localhost:3000/";
-        string _token = PlayerPrefs.GetString("token", "");
-        string _saveName = PlayerPrefs.GetString("currentSaveName", "");
+        private string _token ;
+        private string _saveName ;
         
 
         void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
             _animator = GetComponent<Animator>();
+            _token = PlayerPrefs.GetString("token", "");
+            _saveName = PlayerPrefs.GetString("currentSaveName", "");
         }
 
         void Update()
