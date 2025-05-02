@@ -54,9 +54,26 @@ public class InventoryManager : MonoBehaviour
     public GameObject CardCollectionPanel;
     public Button CardCollectionCloseButton;
     public CardDatabase cardDatabase;
-    public Transform CardCollectionGrid; 
+    public Transform CardCollectionGrid;
 
     public GameObject CardDetailsPanel;
+
+    private int currentPage = 0;
+    private int cardsPerPage = 4;
+    private int totalPages = 0;
+
+    public Button NextPageButton;
+    public Button PrevPageButton;
+
+    // Card Detail Panel
+    public Button CardDetailCloseButton;
+    public TextMeshProUGUI CardNameText;
+    public TextMeshProUGUI CardCostText;
+    public TextMeshProUGUI CardTargetText;
+    public TextMeshProUGUI CardDescriptionText;
+    public TextMeshProUGUI CardQualityText;
+    public Image CardImage;
+
 
 
 
@@ -121,7 +138,6 @@ public class InventoryManager : MonoBehaviour
             }
         });
 
-
         CardCollectionPanel.SetActive(false);
         CardCollectionButton.onClick.AddListener(() =>
         {
@@ -134,6 +150,23 @@ public class InventoryManager : MonoBehaviour
             CardCollectionPanel.SetActive(false);
         });
         CardDetailsPanel.SetActive(false);
+
+        NextPageButton.onClick.AddListener(NextPage);
+        PrevPageButton.onClick.AddListener(PrevPage);
+
+        CardDetailsPanel.SetActive(false);
+
+
+        Transform closeButtonTransform = CardDetailsPanel.transform.Find("CardDetailCloseButton");
+        if (closeButtonTransform != null)
+        {
+            Button closeButton = closeButtonTransform.GetComponent<Button>();
+            closeButton.onClick.AddListener(() =>
+            {
+                CardDetailsPanel.SetActive(false);
+            });
+        }
+
     }
 
     public void populateCollection()
@@ -307,13 +340,16 @@ public class InventoryManager : MonoBehaviour
     public void populateCardCollectionPanel()
     {
 
-        // Clear existing card thumbnails
         foreach (Transform child in CardCollectionGrid)
         {
             Destroy(child.gameObject);
         }
 
-        // Count the number of each card in playerCards
+
+        totalPages = Mathf.CeilToInt(cardDatabase.allCards.Count / (float)cardsPerPage);
+        int startIndex = currentPage * cardsPerPage;
+        int endIndex = Mathf.Min(startIndex + cardsPerPage, cardDatabase.allCards.Count);
+
         Dictionary<string, int> cardCounts = new Dictionary<string, int>();
         foreach (var card in playerCards)
         {
@@ -323,9 +359,9 @@ public class InventoryManager : MonoBehaviour
                 cardCounts[card.cardName]++;
         }
 
-        // Populate the card collection panel
-        foreach (var cardData in cardDatabase.allCards)
+        for (int i = startIndex; i < endIndex; i++)
         {
+            var cardData = cardDatabase.allCards[i];
             try
             {
                 GameObject cardObj = Instantiate(CardPrefab, CardCollectionGrid);
@@ -343,20 +379,55 @@ public class InventoryManager : MonoBehaviour
                     {
                         btn.onClick.AddListener(() =>
                         {
-                            CardDetailsPanel.SetActive(true);
+                            ShowCardDetails(cardData);
                         });
                     }
-                   
-
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogError("InventoryManager: Card Building Failed" + cardData.cardName + "\n" + e.Message);
+                Debug.LogError("InventoryManager: Failed in building card:" + cardData.cardName + "\n" + e.Message);
             }
         }
 
+        UpdatePageButtons();
     }
+    public void NextPage()
+    {
+        if (currentPage < totalPages - 1)
+        {
+            currentPage++;
+            populateCardCollectionPanel();
+        }
+    }
+
+    public void PrevPage()
+    {
+        if (currentPage > 0)
+        {
+            currentPage--;
+            populateCardCollectionPanel();
+        }
+    }
+
+    private void UpdatePageButtons()
+    {
+        PrevPageButton.interactable = currentPage > 0;
+        NextPageButton.interactable = currentPage < totalPages - 1;
+    }
+
+    public void ShowCardDetails(CardData cardData)
+    {
+        CardNameText.text = cardData.cardName;
+        CardCostText.text = "Cost:  " + cardData.cost.ToString();
+        CardTargetText.text = "Target at:   " + cardData.targetingType.ToString();
+        CardDescriptionText.text = "Description:\n" + cardData.description;
+        CardQualityText.text = cardData.quality.ToString();
+        CardImage.sprite = cardData.artwork;
+
+        CardDetailsPanel.SetActive(true);
+    }
+
 
 
     [System.Serializable]
