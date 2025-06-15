@@ -245,6 +245,7 @@ bareturn0-backend/
 
 ## License
 
-This project is licensed under the MIT License - see the [](LICENSE) file for details.
+All rights reserved.
 
-Other deployment insturction might be provided with further updates.
+This source code may not be copied, modified, or distributed without permission from the author.
+© 2025 Bareturn0; Team. All rights reserved.
