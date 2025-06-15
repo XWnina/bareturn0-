@@ -241,3 +241,10 @@ bareturn0-backend/
 │── package-lock.json    # 依赖锁文件
 │── README.md            # 项目说明文档
 ```
+
+
+## License
+
+This project is licensed under the MIT License - see the [](LICENSE) file for details.
+
+Other deployment insturction might be provided with further updates.
